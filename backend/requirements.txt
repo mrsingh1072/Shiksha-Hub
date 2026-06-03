@@ -4,6 +4,8 @@ pymongo
 motor
 python-dotenv
 python-jose
+python-multipart
 passlib
 bcrypt
+email-validator
 google-generativeai
