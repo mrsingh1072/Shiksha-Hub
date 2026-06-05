@@ -11,6 +11,12 @@ async def student_dashboard(
     )
 ):
     return {
-        "message": "Welcome Student",
-        "user": current_user
+        "profile": current_user,
+        "progress": {
+            "coursesCompleted": 0,
+            "assignmentsSubmitted": 0,
+            "overallScore": 0
+        },
+        "recentActivity": [],
+        "recommendations": []
     }

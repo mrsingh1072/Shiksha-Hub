@@ -11,6 +11,8 @@ async def teacher_dashboard(
     )
 ):
     return {
-        "message": "Welcome Teacher",
-        "user": current_user
+        "profile": current_user,
+        "classes": [],
+        "students": 0,
+        "assignments": []
     }
