@@ -6,6 +6,7 @@ from app.api.student import router as student_router
 from app.api.teacher import router as teacher_router
 from app.api.profile import router as profile_router
 from app.api.analytics import router as analytics_router
+from app.api.ai import router as ai_router
 
 app = FastAPI(
     title="EduVerse AI",
@@ -41,6 +42,11 @@ app.include_router(
     analytics_router,
     prefix="/analytics",
     tags=["Analytics"]
+)
+app.include_router(
+    ai_router,
+    prefix="/ai",
+    tags=["AI"]
 )
 
 @app.get("/")
