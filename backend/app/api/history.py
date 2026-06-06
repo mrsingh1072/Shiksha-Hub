@@ -161,3 +161,38 @@ async def delete_history_record(
     return {
         "deleted_count": result.deleted_count
     }
+@router.get("/search/{keyword}")
+async def search_history(
+    keyword: str,
+    current_user=Depends(
+        get_current_user
+    )
+):
+
+    history = []
+
+    cursor = db.chat_history.find(
+        {
+            "user_email": current_user["email"],
+            "$or": [
+                {
+                    "question": {
+                        "$regex": keyword,
+                        "$options": "i"
+                    }
+                },
+                {
+                    "answer": {
+                        "$regex": keyword,
+                        "$options": "i"
+                    }
+                }
+            ]
+        }
+    )
+
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        history.append(item)
+
+    return history
