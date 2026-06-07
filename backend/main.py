@@ -14,6 +14,7 @@ from app.api.assignment import router as assignment_router
 from app.api.pdf import router as pdf_router
 from app.api.history import router as history_router
 from app.api.assignment_upload import router as assignment_upload_router
+from app.api.avatar import router as avatar_router
 
 app = FastAPI(
     title="EduVerse AI",
@@ -89,6 +90,11 @@ app.include_router(
     assignment_upload_router,
     prefix="/assignment-upload",
     tags=["Assignment Upload"]
+)
+app.include_router(
+    avatar_router,
+    prefix="/avatar",
+    tags=["AI Avatar Teacher"]
 )
 
 @app.get("/")
