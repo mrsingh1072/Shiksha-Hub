@@ -181,3 +181,39 @@ async def admin_dashboard():
     "latestUser": "test@gmail.com",
     "latestActivity": "2026-06-06T15:17:06"
 }
+@router.get("/leaderboard")
+async def leaderboard():
+
+    students = []
+
+    cursor = db.users.find(
+        {
+            "role": "student"
+        }
+    )
+
+    async for student in cursor:
+
+        submissions = await db.submissions.count_documents(
+            {
+                "student_email":
+                student["email"]
+            }
+        )
+
+        students.append(
+            {
+                "name": student["name"],
+                "email": student["email"],
+                "assignmentsSubmitted":
+                submissions
+            }
+        )
+
+    students.sort(
+        key=lambda x:
+        x["assignmentsSubmitted"],
+        reverse=True
+    )
+
+    return students
