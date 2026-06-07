@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.database.mongodb import db
 from app.dependencies.auth import get_current_user
+import re
 
 router = APIRouter()
 
@@ -194,26 +195,73 @@ async def leaderboard():
 
     async for student in cursor:
 
-        submissions = await db.submissions.count_documents(
+        submissions_cursor = db.submissions.find(
             {
                 "student_email":
                 student["email"]
             }
         )
 
+        total_marks = 0
+        total_submissions = 0
+
+        async for submission in submissions_cursor:
+
+            evaluation = submission.get(
+                "evaluation",
+                ""
+            )
+
+            match = re.search(
+                r'(\d+)\s*/\s*10',
+                evaluation
+            )
+
+            if match:
+
+                total_marks += int(
+                    match.group(1)
+                )
+
+                total_submissions += 1
+
+        average_score = 0
+
+        if total_submissions > 0:
+
+            average_score = round(
+                total_marks /
+                total_submissions,
+                2
+            )
+
         students.append(
             {
-                "name": student["name"],
-                "email": student["email"],
+                "name":
+                student["name"],
+
+                "email":
+                student["email"],
+
                 "assignmentsSubmitted":
-                submissions
+                total_submissions,
+
+                "averageScore":
+                average_score
             }
         )
 
     students.sort(
         key=lambda x:
-        x["assignmentsSubmitted"],
+        x["averageScore"],
         reverse=True
     )
+
+    for index, student in enumerate(
+        students,
+        start=1
+    ):
+
+        student["rank"] = index
 
     return students
