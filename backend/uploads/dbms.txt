@@ -1,0 +1,15 @@
+A DBMS (Database Management System) is software used to store,
+manage and retrieve data efficiently.
+
+Advantages:
+1. Data Security
+2. Data Integrity
+3. Reduced Redundancy
+
+Examples:
+MySQL
+PostgreSQL
+Oracle
+
+A DBMS helps organizations manage large amounts
+of information efficiently.

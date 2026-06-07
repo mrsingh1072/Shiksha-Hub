@@ -5,6 +5,14 @@ from fastapi import File
 import shutil
 import os
 
+from app.services.assignment_service import (
+    evaluate_assignment
+)
+
+from app.services.history_service import (
+    save_history
+)
+
 from app.services.file_parser_service import (
     extract_text_from_pdf,
     extract_text_from_docx,
@@ -59,7 +67,18 @@ async def upload_assignment(
             "Unsupported file type"
         }
 
+    evaluation = evaluate_assignment(
+    text[:5000]
+)
+
+    await save_history(
+    user_email="anonymous",
+    history_type="assignment_upload",
+    question=file.filename,
+    answer=evaluation
+)
+
     return {
-        "filename": file.filename,
-        "text": text[:2000]
-    }
+    "filename": file.filename,
+    "evaluation": evaluation
+}
