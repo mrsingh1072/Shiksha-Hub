@@ -22,12 +22,18 @@ async def analytics_dashboard(
         }
     )
 
-    tutor_count = await db.chat_history.count_documents(
+    legacy_tutor_count = await db.chat_history.count_documents(
         {
             "user_email": email,
             "type": "tutor"
         }
     )
+
+    conversation_count = await db.tutor_conversations.count_documents(
+        {"user_email": email}
+    )
+
+    tutor_count = conversation_count + legacy_tutor_count
 
     notes_count = await db.chat_history.count_documents(
         {
@@ -49,6 +55,39 @@ async def analytics_dashboard(
             "type": "assignment"
         }
     )
+
+    exam_cursor = db.chat_history.find(
+        {
+            "user_email": email,
+            "type": "exam",
+            "percentage": {"$exists": True},
+        }
+    )
+
+    percentages = []
+    weak_topic_map = {}
+
+    async for exam in exam_cursor:
+        if isinstance(exam.get("percentage"), (int, float)):
+            percentages.append(exam["percentage"])
+
+        for topic in exam.get("weak_topics", []) or []:
+            if topic:
+                weak_topic_map[topic] = weak_topic_map.get(topic, 0) + 1
+
+    average_exam_score = (
+        round(sum(percentages) / len(percentages))
+        if percentages else 0
+    )
+
+    weak_topics = [
+        topic
+        for topic, _ in sorted(
+            weak_topic_map.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )[:6]
+    ]
 
     total_activities = (
         chat_count +
@@ -85,6 +124,8 @@ async def analytics_dashboard(
         "notesCount": notes_count,
         "examCount": exam_count,
         "assignmentCount": assignment_count,
+        "averageExamScore": average_exam_score,
+        "weakTopics": weak_topics,
         "mostUsedFeature": most_used_feature,
         "lastActivity": (
             latest_activity["created_at"]
@@ -177,11 +218,8 @@ async def admin_dashboard():
             if latest_activity else None
         )
     }
-{
-    "mostUsedFeature": "assignment",
-    "latestUser": "test@gmail.com",
-    "latestActivity": "2026-06-06T15:17:06"
-}
+
+
 @router.get("/leaderboard")
 async def leaderboard():
 

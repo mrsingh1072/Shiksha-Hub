@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi import HTTPException
 from app.dependencies.roles import require_role
 from app.database.mongodb import db
 
@@ -17,6 +18,12 @@ async def student_dashboard(
             "email": current_user["email"]
         }
     )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="Student profile not found"
+        )
 
     email = current_user["email"]
 
@@ -47,9 +54,18 @@ async def student_dashboard(
     )
 
     return {
+        "studentId": user.get("userId", ""),
+        "userId": user.get("userId", ""),
+        "studentType": user.get("studentType", ""),
         "studentName": user.get("name", ""),
         "email": user.get("email", ""),
 
+        "schoolName": user.get("schoolName", ""),
+        "studentClass": user.get("studentClass", ""),
+        "collegeName": user.get("collegeName", ""),
+        "degree": user.get("degree", ""),
+        "course": user.get("course", ""),
+        "yearSemester": user.get("yearSemester", ""),
         "branch": user.get("branch", ""),
         "semester": user.get("semester", ""),
 

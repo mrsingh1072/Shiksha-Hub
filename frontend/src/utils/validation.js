@@ -9,13 +9,20 @@ export const validateEmail = (email) => {
 }
 
 /**
- * Password validation
- * @param {string} password - Password to validate
- * @returns {boolean} - True if at least 8 characters
+ * Password validation (minimum length for login forms)
  */
-export const validatePassword = (password) => {
-  return password.length >= 8
-}
+export const validatePassword = (password) => password.length >= 8
+
+export const PASSWORD_RULES = [
+  { test: (value) => value.length >= 8, label: 'At least 8 characters' },
+  { test: (value) => /[A-Z]/.test(value), label: 'One uppercase letter' },
+  { test: (value) => /[a-z]/.test(value), label: 'One lowercase letter' },
+  { test: (value) => /\d/.test(value), label: 'One number' },
+  { test: (value) => /[^A-Za-z0-9]/.test(value), label: 'One special character' },
+]
+
+export const validateStrongPassword = (password = '') =>
+  PASSWORD_RULES.every((rule) => rule.test(password))
 
 /**
  * Phone number validation

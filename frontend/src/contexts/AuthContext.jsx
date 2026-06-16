@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import api from '../services/api'
 
 const AuthContext = createContext()
 
@@ -12,8 +13,11 @@ export function AuthProvider({ children }) {
     const checkAuth = async () => {
       try {
         const savedUser = localStorage.getItem('user')
+        const savedToken = localStorage.getItem('token')
         if (savedUser) {
           setUser(JSON.parse(savedUser))
+        } else if (savedToken) {
+          setUser({ role: 'student' })
         }
       } catch (err) {
         console.error('Auth check failed:', err)
@@ -29,24 +33,23 @@ export function AuthProvider({ children }) {
     setIsLoading(true)
     setError(null)
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/auth/login/${role}`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password })
-      // })
-      // const data = await response.json()
+      const response = await api.post('/auth/login', {
+        identifier: email,
+        password,
+      })
 
-      // Mock successful login
+      if (!response.data?.access_token) {
+        throw new Error(response.data?.message || 'Login failed. Please try again.')
+      }
+
       const userData = {
-        id: '1',
         email,
         role,
-        name: 'User Name',
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
+        name: email.includes('@') ? email.split('@')[0] : 'Student',
       }
 
       setUser(userData)
+      localStorage.setItem('token', response.data.access_token)
       localStorage.setItem('user', JSON.stringify(userData))
       return userData
     } catch (err) {
@@ -94,6 +97,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setUser(null)
+    localStorage.removeItem('token')
     localStorage.removeItem('user')
     setError(null)
   }

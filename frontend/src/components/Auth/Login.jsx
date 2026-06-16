@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import FormInput from './FormInput'
 import AuthLayout from './AuthLayout'
 import {validatePassword } from '../../utils/validation'
-import api from '../../services/api'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function Login() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -56,20 +59,8 @@ if (!validateForm()) return
 setIsLoading(true)
 
 try {
-  const response = await api.post('/auth/login', {
-    identifier: formData.identifier,
-    password: formData.password,
-  })
-
-  console.log("LOGIN SUCCESS")
-  console.log(response.data)
-
-  localStorage.setItem(
-    'token',
-    response.data.access_token
-  )
-
-  alert('Login Successful!')
+  await login(formData.identifier, formData.password, loginRole)
+  navigate(loginRole === 'student' ? '/student/dashboard' : '/', { replace: true })
 
 } catch (error) {
 
@@ -78,7 +69,7 @@ try {
 
   setErrors({
     submit:
-      error.response?.data?.message ||
+      error.message ||
       'Login Failed'
   })
 
