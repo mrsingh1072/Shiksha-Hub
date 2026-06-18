@@ -22,7 +22,12 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   }
 
   if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />
+    const roleRedirect = {
+      student: '/student/dashboard',
+      teacher: '/teacher/dashboard',
+      admin: '/admin/dashboard',
+    }
+    return <Navigate to={roleRedirect[user?.role] || '/'} replace />
   }
 
   return children

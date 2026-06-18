@@ -42,10 +42,16 @@ export function AuthProvider({ children }) {
         throw new Error(response.data?.message || 'Login failed. Please try again.')
       }
 
+      // Use the server-authoritative role from the backend response,
+      // falling back to the UI-selected role only if not provided.
+      const serverRole = response.data.role || role
+      const serverName = response.data.name || (email.includes('@') ? email.split('@')[0] : 'User')
+      const serverEmail = response.data.email || email
+
       const userData = {
-        email,
-        role,
-        name: email.includes('@') ? email.split('@')[0] : 'Student',
+        email: serverEmail,
+        role: serverRole,
+        name: serverName,
       }
 
       setUser(userData)

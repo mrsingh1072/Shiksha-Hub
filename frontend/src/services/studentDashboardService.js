@@ -7,15 +7,17 @@ export async function fetchStudentDashboard() {
   const results = await Promise.allSettled([
   read(api.get('/student/dashboard')),
   read(api.get('/profile/')),
-  read(api.get('/teacher/assignments/')),
+  read(api.get('/student/assignments')),
   read(api.get('/submissions/')),
   read(api.get('/history/me')),
   read(api.get('/analytics/dashboard')),
   read(api.get('/ai/tutor/conversations')),
 ])
 
+  // Only treat 401 (token expired / missing) as a fatal auth failure.
+  // 403 (wrong role) from optional endpoints should not crash the dashboard.
   const authFailure = results.find(
-    (result) => result.status === 'rejected' && [401, 403].includes(result.reason?.response?.status)
+    (result) => result.status === 'rejected' && result.reason?.response?.status === 401
   )
 
   if (authFailure) {

@@ -74,3 +74,18 @@ async def student_dashboard(
         "examsGenerated": exams_generated,
         "totalActivities": total_activities
     }
+
+
+@router.get("/assignments")
+async def student_assignments(
+    current_user=Depends(require_role("student"))
+):
+    """List all assignments available to the student."""
+    assignments = []
+    cursor = db.assignments.find().sort("created_at", -1)
+
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        assignments.append(item)
+
+    return assignments

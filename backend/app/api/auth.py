@@ -90,7 +90,10 @@ async def login(user: LoginRequest):
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "role": db_user["role"],
+        "name": db_user.get("name", ""),
+        "email": db_user["email"],
     }
 
 

@@ -17,6 +17,22 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import StudentDashboardLayout from "./components/studentDashboard/StudentDashboardLayout";
 
+// ===== Teacher Module Imports =====
+import TeacherDashboardLayout from "./components/teacherDashboard/TeacherDashboardLayout";
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import TeacherClasses from "./pages/teacher/TeacherClasses";
+import TeacherStudents from "./pages/teacher/TeacherStudents";
+import TeacherAssignments from "./pages/teacher/TeacherAssignments";
+import TeacherExams from "./pages/teacher/TeacherExams";
+import TeacherQuestionBank from "./pages/teacher/TeacherQuestionBank";
+import TeacherAIAssistant from "./pages/teacher/TeacherAIAssistant";
+import TeacherAttendance from "./pages/teacher/TeacherAttendance";
+import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncements";
+import TeacherResources from "./pages/teacher/TeacherResources";
+import TeacherAnalytics from "./pages/teacher/TeacherAnalytics";
+import TeacherProfilePage from "./pages/teacher/TeacherProfile";
+import TeacherSettings from "./pages/teacher/TeacherSettings";
+
 export default function App() {
   return (
     <AuthProvider>
@@ -26,6 +42,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/register" element={<Register />} />
+
+          {/* ===== Student Routes (FROZEN — DO NOT MODIFY) ===== */}
           <Route
             path="/student"
             element={
@@ -45,8 +63,34 @@ export default function App() {
             <Route path="notifications" element={<StudentNotifications />} />
             <Route path="profile" element={<StudentProfile />} />
           </Route>
+
+          {/* ===== Teacher Routes ===== */}
+          <Route
+            path="/teacher"
+            element={
+              <ProtectedRoute requiredRole="teacher">
+                <TeacherDashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/teacher/dashboard" replace />} />
+            <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="classes" element={<TeacherClasses />} />
+            <Route path="students" element={<TeacherStudents />} />
+            <Route path="assignments" element={<TeacherAssignments />} />
+            <Route path="exams" element={<TeacherExams />} />
+            <Route path="question-bank" element={<TeacherQuestionBank />} />
+            <Route path="ai-assistant" element={<TeacherAIAssistant />} />
+            <Route path="attendance" element={<TeacherAttendance />} />
+            <Route path="announcements" element={<TeacherAnnouncements />} />
+            <Route path="resources" element={<TeacherResources />} />
+            <Route path="analytics" element={<TeacherAnalytics />} />
+            <Route path="profile" element={<TeacherProfilePage />} />
+            <Route path="settings" element={<TeacherSettings />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
 }
+

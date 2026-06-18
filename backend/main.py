@@ -19,6 +19,14 @@ from app.api.teacher_assignment import (
     router as teacher_assignment_router
 )
 from app.api.submission import router as submission_router
+from app.api.teacher_classes import router as teacher_classes_router
+from app.api.teacher_students import router as teacher_students_router
+from app.api.teacher_exams import router as teacher_exams_router
+from app.api.teacher_question_bank import router as teacher_qb_router
+from app.api.teacher_attendance import router as teacher_attendance_router
+from app.api.teacher_announcements import router as teacher_announcements_router
+from app.api.teacher_resources import router as teacher_resources_router
+from app.api.teacher_ai import router as teacher_ai_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -125,6 +133,49 @@ app.include_router(
     tags=["Submissions"]
 )
 
+# ===== NEW TEACHER MODULE ROUTERS =====
+app.include_router(
+    teacher_classes_router,
+    prefix="/teacher/classes",
+    tags=["Teacher Classes"]
+)
+app.include_router(
+    teacher_students_router,
+    prefix="/teacher/students",
+    tags=["Teacher Students"]
+)
+app.include_router(
+    teacher_exams_router,
+    prefix="/teacher/exams",
+    tags=["Teacher Exams"]
+)
+app.include_router(
+    teacher_qb_router,
+    prefix="/teacher/question-bank",
+    tags=["Teacher Question Bank"]
+)
+app.include_router(
+    teacher_attendance_router,
+    prefix="/teacher/attendance",
+    tags=["Teacher Attendance"]
+)
+app.include_router(
+    teacher_announcements_router,
+    prefix="/teacher/announcements",
+    tags=["Teacher Announcements"]
+)
+app.include_router(
+    teacher_resources_router,
+    prefix="/teacher/resources",
+    tags=["Teacher Resources"]
+)
+app.include_router(
+    teacher_ai_router,
+    prefix="/teacher/ai",
+    tags=["Teacher AI Assistant"]
+)
+
+
 @app.get("/")
 async def home():
     try:
@@ -138,3 +189,4 @@ async def home():
             "message": "MongoDB Connection Failed",
             "error": str(e)
         }
+

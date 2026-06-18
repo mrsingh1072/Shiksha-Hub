@@ -30,25 +30,13 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-h1 {
-  @apply text-4xl md:text-5xl lg:text-6xl;
-}
-
-h2 {
-  @apply text-3xl md:text-4xl lg:text-5xl;
-}
-
-h3 {
-  @apply text-xl md:text-2xl lg:text-3xl;
-}
-
 p {
   line-height: 1.6;
 }
 
 /* Custom button styles */
 .btn-primary {
-  @apply px-8 py-3 bg-green-primary text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-glow-lg hover:scale-105 active:scale-95;
+  @apply px-8 py-3 bg-green-primary text-white rounded-lg font-semibold transition-colors duration-200 hover:shadow-glow-lg active:scale-95;
 }
 
 .btn-secondary {
@@ -74,7 +62,7 @@ p {
 }
 
 .card:hover {
-  @apply shadow-glow-lg transform hover:-translate-y-1;
+  @apply shadow-glow-lg;
 }
 
 /* Gradient text */
