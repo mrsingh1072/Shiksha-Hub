@@ -4,8 +4,12 @@ import { ArrowLeft } from 'lucide-react'
 import FormInput from '../FormInput'
 import { validateEmail, validatePassword } from '../../../utils/validation'
 import api from '../../../services/api'
+import { useNavigate } from 'react-router-dom'
 
 export default function TeacherRegistration({ onBack }) {
+
+  const navigate = useNavigate()
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -112,9 +116,13 @@ export default function TeacherRegistration({ onBack }) {
   )
 
   console.log('TEACHER REGISTERED')
-  console.log(response.data)
+console.log(response.data)
 
-  alert('Teacher Registration Successful!')
+alert('Teacher Registration Successful!')
+
+setTimeout(() => {
+  navigate('/login')
+}, 1000)
 
 } catch (error) {
   console.log("TEACHER REGISTRATION FAILED")
@@ -125,6 +133,8 @@ export default function TeacherRegistration({ onBack }) {
       error.response?.data?.message ||
       "Registration Failed"
   })
+} finally {
+  setIsLoading(false)
 }
   }
   const containerVariants = {
