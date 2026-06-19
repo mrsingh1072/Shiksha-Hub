@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import FormInput from './FormInput'
@@ -148,6 +148,7 @@ export default function Login() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
+                autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
