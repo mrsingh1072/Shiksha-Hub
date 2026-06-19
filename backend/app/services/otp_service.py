@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 
 from app.database.mongodb import db
+from app.services.email_service import send_otp_email
 
 OTP_EXPIRY_MINUTES = 10
 MAX_OTP_ATTEMPTS = 5
@@ -44,46 +45,96 @@ async def create_otp_request(
         "created_at": now,
     }
 
+    # Save OTP request in MongoDB
     await db.otp_requests.insert_one(document)
 
-    # Dev-friendly delivery hook (replace with email/SMS provider in production)
-    print(f"[EduVerse OTP] purpose={purpose} channel={channel} identifier={identifier} otp={otp}")
+    try:
+        if channel == "email":
+            await send_otp_email(user_email, otp)
+
+            print(
+                f"[EduVerse OTP] Email sent successfully "
+                f"to {user_email}"
+            )
+
+        else:
+            print(
+                f"[EduVerse OTP] Unsupported channel: {channel}"
+            )
+
+    except Exception as e:
+        print(f"[EMAIL ERROR] {str(e)}")
+
+        # Remove OTP record if email sending fails
+        await db.otp_requests.delete_one(
+            {"request_id": request_id}
+        )
+
+        raise Exception(
+            f"Failed to send OTP email: {str(e)}"
+        )
 
     return request_id, otp
 
 
-async def verify_otp_request(request_id: str, otp: str, purpose: str):
+async def verify_otp_request(
+    request_id: str,
+    otp: str,
+    purpose: str
+):
     record = await db.otp_requests.find_one({
         "request_id": request_id,
         "purpose": purpose,
     })
 
     if not record:
-        return {"ok": False, "error": "Invalid or expired OTP request"}
+        return {
+            "ok": False,
+            "error": "Invalid or expired OTP request"
+        }
 
     if record.get("verified"):
-        return {"ok": False, "error": "OTP already used"}
+        return {
+            "ok": False,
+            "error": "OTP already used"
+        }
 
     if datetime.utcnow() > record["expires_at"]:
-        return {"ok": False, "error": "OTP expired"}
+        return {
+            "ok": False,
+            "error": "OTP expired"
+        }
 
     if record.get("attempts", 0) >= MAX_OTP_ATTEMPTS:
-        return {"ok": False, "error": "Too many invalid attempts"}
+        return {
+            "ok": False,
+            "error": "Too many invalid attempts"
+        }
 
     if _hash_otp(otp) != record["otp_hash"]:
         await db.otp_requests.update_one(
             {"request_id": request_id},
             {"$inc": {"attempts": 1}},
         )
-        return {"ok": False, "error": "Invalid OTP"}
+
+        return {
+            "ok": False,
+            "error": "Invalid OTP"
+        }
 
     reset_token = None
-    update_fields = {"verified": True}
+
+    update_fields = {
+        "verified": True
+    }
 
     if purpose == "reset_password":
         reset_token = generate_reset_token()
+
         update_fields["reset_token"] = reset_token
-        update_fields["reset_token_expires_at"] = datetime.utcnow() + timedelta(minutes=15)
+        update_fields["reset_token_expires_at"] = (
+            datetime.utcnow() + timedelta(minutes=15)
+        )
 
     await db.otp_requests.update_one(
         {"request_id": request_id},
@@ -107,12 +158,20 @@ async def consume_reset_token(reset_token: str):
     if not record:
         return None
 
-    if datetime.utcnow() > record.get("reset_token_expires_at", datetime.utcnow()):
+    if datetime.utcnow() > record.get(
+        "reset_token_expires_at",
+        datetime.utcnow()
+    ):
         return None
 
     await db.otp_requests.update_one(
         {"request_id": record["request_id"]},
-        {"$unset": {"reset_token": "", "reset_token_expires_at": ""}},
+        {
+            "$unset": {
+                "reset_token": "",
+                "reset_token_expires_at": ""
+            }
+        },
     )
 
     return record["user_email"]
