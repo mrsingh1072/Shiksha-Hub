@@ -5,8 +5,11 @@ import FormInput from '../FormInput'
 import FormSelect from '../FormSelect'
 import { validateEmail, validatePassword } from '../../../utils/validation'
 import api from '../../../services/api'
+import { useNavigate } from 'react-router-dom'
 
 export default function StudentRegistration({ onBack }) {
+  const navigate = useNavigate()
+  
   const [studentType, setStudentType] = useState('school') // school or college
   const [formData, setFormData] = useState({
     name: '',
@@ -152,7 +155,12 @@ export default function StudentRegistration({ onBack }) {
 console.log(response.data)
 
 alert('Registration Successful!')
-      console.log('Registration successful')
+console.log('Registration successful')
+
+// Redirect to Login Page
+setTimeout(() => {
+  navigate('/login')
+}, 1000)
     } catch (error) {
       setErrors({ submit: error.message })
     } finally {
