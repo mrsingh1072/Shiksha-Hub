@@ -103,15 +103,15 @@ const performancePercentage =
       {/* Welcome Banner */}
       <motion.div
   variants={itemVariants}
-  className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 shadow-2xl shadow-green-primary/20"
+  className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 shadow-2xl shadow-green-primary/20 min-h-[420px]"
   style={{
     background: 'linear-gradient(135deg, #2F5D50 0%, #3d7a6a 50%, #6B8E23 100%)',
   }}
 >
-  <div className="grid gap-6 p-6 lg:grid-cols-[1.4fr_0.9fr] lg:p-8">
+  <div className="grid items-start gap-6 p-6 lg:grid-cols-[1.4fr_0.9fr] lg:p-8">
 
     {/* Left Side */}
-    <div className="relative z-10">
+    <div className="relative z-10 lex flex-col justify-center">
       <p className="text-xs font-bold uppercase tracking-[0.22em] text-yellow-300">
         Teacher Dashboard
       </p>
@@ -124,7 +124,7 @@ const performancePercentage =
         Manage classes, assignments, submissions and student progress from one place.
       </p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
             Teacher ID
@@ -203,34 +203,48 @@ const performancePercentage =
   </div>
 
   <div className="mt-5 grid grid-cols-2 gap-3">
-    <div className="rounded-xl bg-slate-50 p-4">
-      <p className="text-xs text-slate-400">Students</p>
-      <p className="text-2xl font-bold">
-        {dashboard?.totalStudents || 0}
-      </p>
-    </div>
-
-    <div className="rounded-xl bg-slate-50 p-4">
-      <p className="text-xs text-slate-400">Classes</p>
-      <p className="text-2xl font-bold">
-        {dashboard?.totalClasses || 0}
-      </p>
-    </div>
-
-    <div className="rounded-xl bg-slate-50 p-4">
-      <p className="text-xs text-slate-400">Assignments</p>
-      <p className="text-2xl font-bold">
-        {dashboard?.assignmentsCreated || 0}
-      </p>
-    </div>
-
-    <div className="rounded-xl bg-slate-50 p-4">
-      <p className="text-xs text-slate-400">Pending Reviews</p>
-      <p className="text-2xl font-bold">
-        {dashboard?.pendingReviews || 0}
-      </p>
-    </div>
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Students</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.totalStudents || 0}
+    </p>
   </div>
+
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Classes</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.totalClasses || 0}
+    </p>
+  </div>
+
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Assignments</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.assignmentsCreated || 0}
+    </p>
+  </div>
+
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Pending Reviews</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.pendingReviews || 0}
+    </p>
+  </div>
+
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Submissions</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.submissionsReceived || 0}
+    </p>
+  </div>
+
+  <div className="rounded-xl bg-slate-50 p-4">
+    <p className="text-xs text-slate-400">Avg Score</p>
+    <p className="text-2xl font-bold">
+      {dashboard?.averageScore || 0}%
+    </p>
+  </div>
+</div>
 </div>
 
   </div>
