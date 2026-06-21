@@ -122,52 +122,98 @@ export default function TeacherDashboard() {
       {/* Welcome Banner */}
       <motion.div
   variants={itemVariants}
-  className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 p-6 md:p-8 shadow-2xl shadow-green-primary/20"
+  className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 shadow-2xl shadow-green-primary/20"
   style={{
     background: 'linear-gradient(135deg, #2F5D50 0%, #3d7a6a 50%, #6B8E23 100%)',
   }}
 >
-  <div className="relative z-10">
-    <p className="text-xs font-bold uppercase tracking-[0.22em] text-yellow-300">
-      Teacher Dashboard
-    </p>
+  <div className="grid gap-6 p-6 lg:grid-cols-[1.4fr_0.9fr] lg:p-8">
 
-    <h1 className="mt-3 text-3xl md:text-4xl font-bold text-white">
-      Welcome back, {dashboard?.teacherName || 'Teacher'} 👋
-    </h1>
+    {/* Left Side */}
+    <div className="relative z-10">
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-yellow-300">
+        Teacher Dashboard
+      </p>
 
-    <p className="mt-3 text-green-100 text-sm md:text-base max-w-2xl">
-      Manage classes, assignments, submissions and student progress from one place.
-    </p>
+      <h1 className="mt-3 text-3xl md:text-4xl font-bold text-white">
+        Welcome back, {dashboard?.teacherName || 'Teacher'} 👋
+      </h1>
 
-    <div className="mt-6 grid gap-3 sm:grid-cols-3">
-      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
-          Teacher ID
-        </p>
-        <p className="mt-2 text-xl font-bold text-white">
-          {dashboard?.teacherId || 'N/A'}
-        </p>
-      </div>
+      <p className="mt-3 text-green-100 text-sm md:text-base max-w-2xl">
+        Manage classes, assignments, submissions and student progress from one place.
+      </p>
 
-      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
-          Qualification
-        </p>
-        <p className="mt-2 text-xl font-bold text-white">
-          {dashboard?.qualification || 'N/A'}
-        </p>
-      </div>
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+            Teacher ID
+          </p>
+          <p className="mt-2 text-xl font-bold text-white">
+            {dashboard?.teacherId || 'N/A'}
+          </p>
+        </div>
 
-      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
-          Experience
-        </p>
-        <p className="mt-2 text-xl font-bold text-white">
-          {dashboard?.experience || 0} Years
-        </p>
+        <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+            Qualification
+          </p>
+          <p className="mt-2 text-xl font-bold text-white">
+            {dashboard?.qualification?.toUpperCase() || 'N/A'}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+            Experience
+          </p>
+          <p className="mt-2 text-xl font-bold text-white">
+            {dashboard?.experience || 0} Years
+          </p>
+        </div>
       </div>
     </div>
+
+    {/* Right Side */}
+    <div className="rounded-[1.5rem] bg-white p-5 shadow-xl">
+      <h3 className="text-lg font-bold text-slate-800">
+        Teaching Overview
+      </h3>
+
+      <p className="mt-1 text-sm text-slate-500">
+        Based on assignments, classes and reviews.
+      </p>
+
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="text-xs text-slate-400">Students</p>
+          <p className="text-2xl font-bold">
+            {dashboard?.totalStudents || 0}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="text-xs text-slate-400">Classes</p>
+          <p className="text-2xl font-bold">
+            {dashboard?.totalClasses || 0}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="text-xs text-slate-400">Assignments</p>
+          <p className="text-2xl font-bold">
+            {dashboard?.assignmentsCreated || 0}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4">
+          <p className="text-xs text-slate-400">Pending Reviews</p>
+          <p className="text-2xl font-bold">
+            {dashboard?.pendingReviews || 0}
+          </p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
