@@ -121,27 +121,58 @@ export default function TeacherDashboard() {
     >
       {/* Welcome Banner */}
       <motion.div
-        variants={itemVariants}
-        className="relative overflow-hidden rounded-2xl p-6 md:p-8"
-        style={{
-          background: 'linear-gradient(135deg, #2F5D50 0%, #3d7a6a 50%, #6B8E23 100%)',
-        }}
-      >
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            Welcome back, {dashboard?.teacherName || 'Teacher'} 👋
-          </h1>
-          <p className="text-green-100 text-sm md:text-base max-w-2xl">
-            {dashboard?.department && `${dashboard.department} Department • `}
-            {dashboard?.designation && `${dashboard.designation} • `}
-            Here's an overview of your teaching workspace.
-          </p>
-        </div>
-        {/* Decorative circles */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-white/5 rounded-full translate-y-1/2" />
-      </motion.div>
+  variants={itemVariants}
+  className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 p-6 md:p-8 shadow-2xl shadow-green-primary/20"
+  style={{
+    background: 'linear-gradient(135deg, #2F5D50 0%, #3d7a6a 50%, #6B8E23 100%)',
+  }}
+>
+  <div className="relative z-10">
+    <p className="text-xs font-bold uppercase tracking-[0.22em] text-yellow-300">
+      Teacher Dashboard
+    </p>
 
+    <h1 className="mt-3 text-3xl md:text-4xl font-bold text-white">
+      Welcome back, {dashboard?.teacherName || 'Teacher'} 👋
+    </h1>
+
+    <p className="mt-3 text-green-100 text-sm md:text-base max-w-2xl">
+      Manage classes, assignments, submissions and student progress from one place.
+    </p>
+
+    <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+          Teacher ID
+        </p>
+        <p className="mt-2 text-xl font-bold text-white">
+          {dashboard?.teacherId || 'N/A'}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+          Qualification
+        </p>
+        <p className="mt-2 text-xl font-bold text-white">
+          {dashboard?.qualification || 'N/A'}
+        </p>
+      </div>
+
+      <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/60">
+          Experience
+        </p>
+        <p className="mt-2 text-xl font-bold text-white">
+          {dashboard?.experience || 0} Years
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+  <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-white/5 rounded-full translate-y-1/2" />
+</motion.div>
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((stat, index) => {
