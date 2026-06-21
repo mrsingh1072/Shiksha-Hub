@@ -252,28 +252,7 @@ const performancePercentage =
   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
   <div className="absolute bottom-0 left-1/2 w-24 h-24 bg-white/5 rounded-full translate-y-1/2" />
 </motion.div>
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon
-          return (
-            <motion.div
-              key={stat.label}
-              variants={itemVariants}
-              className="teacher-stat-card"
-            >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                style={{ background: stat.bg }}
-              >
-                <Icon className="h-5 w-5" style={{ color: stat.color }} />
-              </div>
-              <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-              <p className="text-xs text-slate-500 mt-1 font-medium">{stat.label}</p>
-            </motion.div>
-          )
-        })}
-      </div>
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
