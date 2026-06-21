@@ -150,7 +150,25 @@ const performancePercentage =
           <p className="mt-2 text-xl font-bold text-white">
             {dashboard?.experience || 0} Years
           </p>
+          
         </div>
+        <div className="rounded-3xl bg-white/10 p-5 backdrop-blur-sm">
+  <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+    Submissions
+  </p>
+  <p className="text-4xl font-black text-white">
+    {dashboard?.submissionsReceived || 0}
+  </p>
+</div>
+
+<div className="rounded-3xl bg-white/10 p-5 backdrop-blur-sm">
+  <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+    Avg Score
+  </p>
+  <p className="text-4xl font-black text-white">
+    {dashboard?.averageScore || 0}%
+  </p>
+</div>
       </div>
     </div>
 
