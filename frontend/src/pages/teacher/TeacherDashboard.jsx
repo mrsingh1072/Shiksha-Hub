@@ -21,50 +21,22 @@ const performancePercentage =
       )
     : 0
 
-  const stats = [
-    {
-      label: 'Total Students',
-      value: dashboard?.totalStudents || 0,
-      icon: Users,
-      color: '#2F5D50',
-      bg: '#f0f5f3',
-    },
-    {
-      label: 'Total Classes',
-      value: dashboard?.totalClasses || 0,
-      icon: GraduationCap,
-      color: '#6B8E23',
-      bg: '#f0f5f0',
-    },
-    {
-      label: 'Total Assignments',
-      value: dashboard?.assignmentsCreated || 0,
-      icon: ClipboardList,
-      color: '#0891b2',
-      bg: '#ecfeff',
-    },
-    {
-      label: 'Total Submissions',
-      value: dashboard?.submissionsReceived || 0,
-      icon: FileText,
-      color: '#059669',
-      bg: '#ecfdf5',
-    },
-    {
-      label: 'Pending Reviews',
-      value: dashboard?.pendingReviews || 0,
-      icon: Clock,
-      color: '#d97706',
-      bg: '#fffbeb',
-    },
-    {
-      label: 'Avg Student Score',
-      value: dashboard?.averageScore ? `${dashboard.averageScore}%` : '0%',
-      icon: TrendingUp,
-      color: '#dc2626',
-      bg: '#fef2f2',
-    },
-  ]
+    const stats = [
+  {
+    label: 'Total Submissions',
+    value: dashboard?.submissionsReceived || 0,
+    icon: FileText,
+    color: '#059669',
+    bg: '#ecfdf5',
+  },
+  {
+    label: 'Avg Student Score',
+    value: dashboard?.averageScore ? `${dashboard.averageScore}%` : '0%',
+    icon: TrendingUp,
+    color: '#dc2626',
+    bg: '#fef2f2',
+  },
+]
 
   const quickActions = [
     { label: 'Create Class', icon: GraduationCap, path: '/teacher/classes', color: '#2F5D50' },
