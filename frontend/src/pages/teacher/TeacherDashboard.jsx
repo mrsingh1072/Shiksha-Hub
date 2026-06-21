@@ -249,19 +249,7 @@ const performancePercentage =
     </p>
   </div>
 
-  <div className="rounded-xl bg-slate-50 p-4">
-    <p className="text-xs text-slate-400">Submissions</p>
-    <p className="text-2xl font-bold">
-      {dashboard?.submissionsReceived || 0}
-    </p>
-  </div>
-
-  <div className="rounded-xl bg-slate-50 p-4">
-    <p className="text-xs text-slate-400">Avg Score</p>
-    <p className="text-2xl font-bold">
-      {dashboard?.averageScore || 0}%
-    </p>
-  </div>
+  
 </div>
 </div>
 
