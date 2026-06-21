@@ -10,7 +10,16 @@ import {
 export default function TeacherDashboard() {
   const { dashboard } = useOutletContext()
 
-  const navigate = useNavigate()
+const navigate = useNavigate()
+
+const performancePercentage =
+  dashboard?.submissionsReceived > 0
+    ? Math.round(
+        ((dashboard.submissionsReceived - dashboard.pendingReviews) /
+          dashboard.submissionsReceived) *
+          100
+      )
+    : 0
 
   const stats = [
     {
@@ -175,44 +184,82 @@ export default function TeacherDashboard() {
 
     {/* Right Side */}
     <div className="rounded-[1.5rem] bg-white p-5 shadow-xl">
+  <div className="grid grid-cols-[1fr_auto] gap-6 items-center">
+    <div>
       <h3 className="text-lg font-bold text-slate-800">
-        Teaching Overview
+        Teaching Performance
       </h3>
 
       <p className="mt-1 text-sm text-slate-500">
-        Based on assignments, classes and reviews.
+        Review completion rate
       </p>
-
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="text-xs text-slate-400">Students</p>
-          <p className="text-2xl font-bold">
-            {dashboard?.totalStudents || 0}
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="text-xs text-slate-400">Classes</p>
-          <p className="text-2xl font-bold">
-            {dashboard?.totalClasses || 0}
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="text-xs text-slate-400">Assignments</p>
-          <p className="text-2xl font-bold">
-            {dashboard?.assignmentsCreated || 0}
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-slate-50 p-4">
-          <p className="text-xs text-slate-400">Pending Reviews</p>
-          <p className="text-2xl font-bold">
-            {dashboard?.pendingReviews || 0}
-          </p>
-        </div>
-      </div>
     </div>
+
+    <div className="relative flex h-36 w-36 items-center justify-center mx-auto">
+      <svg
+        className="absolute inset-0 h-full w-full -rotate-90"
+        viewBox="0 0 120 120"
+      >
+        <circle
+          cx="60"
+          cy="60"
+          r="50"
+          stroke="#E5E7EB"
+          strokeWidth="10"
+          fill="none"
+        />
+
+        <circle
+          cx="60"
+          cy="60"
+          r="50"
+          stroke="#2F5D50"
+          strokeWidth="10"
+          fill="none"
+          strokeDasharray="314"
+          strokeDashoffset={
+            314 - (314 * performancePercentage) / 100
+          }
+          strokeLinecap="round"
+        />
+      </svg>
+
+      <span className="text-4xl font-bold text-green-primary">
+        {performancePercentage}%
+      </span>
+    </div>
+  </div>
+
+  <div className="mt-5 grid grid-cols-2 gap-3">
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-xs text-slate-400">Students</p>
+      <p className="text-2xl font-bold">
+        {dashboard?.totalStudents || 0}
+      </p>
+    </div>
+
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-xs text-slate-400">Classes</p>
+      <p className="text-2xl font-bold">
+        {dashboard?.totalClasses || 0}
+      </p>
+    </div>
+
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-xs text-slate-400">Assignments</p>
+      <p className="text-2xl font-bold">
+        {dashboard?.assignmentsCreated || 0}
+      </p>
+    </div>
+
+    <div className="rounded-xl bg-slate-50 p-4">
+      <p className="text-xs text-slate-400">Pending Reviews</p>
+      <p className="text-2xl font-bold">
+        {dashboard?.pendingReviews || 0}
+      </p>
+    </div>
+  </div>
+</div>
 
   </div>
 
