@@ -105,7 +105,7 @@ const performancePercentage =
   variants={itemVariants}
   className="relative overflow-hidden rounded-[1.75rem] border border-green-primary/10 shadow-2xl shadow-green-primary/20 min-h-[420px]"
   style={{
-    background: 'linear-gradient(135deg, #2F5D50 0%, #3d7a6a 50%, #6B8E23 100%)',
+    background: 'linear-gradient(135deg, #2F5D50 0%, #6B8E23 100%)',
   }}
 >
   <div className="grid items-start gap-6 p-6 lg:grid-cols-[1.4fr_0.9fr] lg:p-8">
