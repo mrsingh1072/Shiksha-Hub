@@ -27,6 +27,8 @@ export default function StudentRegistration({ onBack }) {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [successData, setSuccessData] = useState(null)
 
   const validateForm = () => {
     const newErrors = {}
@@ -154,13 +156,13 @@ export default function StudentRegistration({ onBack }) {
 
 console.log(response.data)
 
-alert('Registration Successful!')
-console.log('Registration successful')
+setSuccessData({
+  role: 'student',
+  studentId: response.data.user_id,
+  email: formData.email
+})
 
-// Redirect to Login Page
-setTimeout(() => {
-  navigate('/login')
-}, 1000)
+setShowSuccessModal(true)
     } catch (error) {
       setErrors({ submit: error.message })
     } finally {
@@ -448,6 +450,56 @@ setTimeout(() => {
             'Create Account'
           )}
         </motion.button>
+        {showSuccessModal && (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4">
+
+      <div className="text-center">
+
+        <div className="w-20 h-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+          <span className="text-4xl">🎉</span>
+        </div>
+
+        <h2 className="text-2xl font-bold text-green-700 mb-2">
+          Registration Successful
+        </h2>
+
+        <p className="text-gray-600 mb-6">
+          Welcome to EduVerse AI
+        </p>
+
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4 text-left">
+          <p className="text-sm text-gray-500">Student ID</p>
+          <p className="font-bold text-xl text-green-700">
+            {successData?.studentId || 'Generating...'}
+          </p>
+        </div>
+
+        <div className="bg-gray-50 border rounded-xl p-4 mb-4 text-left">
+          <p className="text-sm text-gray-500">Email</p>
+          <p className="font-medium">
+            {successData?.email}
+          </p>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-6">
+          <p className="text-sm text-yellow-800">
+            Save your Student ID. You will need it for future logins.
+          </p>
+        </div>
+
+        <button
+          onClick={() => navigate('/login')}
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold"
+        >
+          Proceed to Login
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
       </motion.form>
     </motion.div>
   )

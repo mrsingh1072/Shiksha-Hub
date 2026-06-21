@@ -68,9 +68,11 @@ async def register_user(user: UserRegister):
     await user_collection.insert_one(user_data)
 
     return {
-        "success": True,
-        "message": "User registered successfully"
-    }
+    "success": True,
+    "message": "User registered successfully",
+    "user_id": user_id,
+    "email": user.email
+}
 
 
 @router.get("/me")
