@@ -18,6 +18,8 @@ async def teacher_dashboard(
         {"email": teacher_email}
     )
 
+    teacher_id = user.get("userId", "") if user else ""
+
     # Count assignments created by this teacher
     assignments_created = await db.assignments.count_documents(
         {"teacher_email": teacher_email}
@@ -102,6 +104,7 @@ async def teacher_dashboard(
         })
 
     return {
+        "teacherId": teacher_id,
         "teacherName": user.get("name", "") if user else "",
         "email": user.get("email", "") if user else teacher_email,
         "department": user.get("department", "") if user else "",
