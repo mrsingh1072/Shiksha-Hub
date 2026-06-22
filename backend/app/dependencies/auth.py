@@ -14,7 +14,9 @@ async def get_current_user(
             detail="Token missing"
         )
 
-    token = authorization.split(" ")[1]
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
 
     try:
         payload = jwt.decode(
@@ -23,6 +25,8 @@ async def get_current_user(
             algorithms=[ALGORITHM]
         )
 
+        if not payload.get("email") or payload.get("role") not in {"student", "teacher", "admin"}:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
         return payload
 
     except JWTError:
