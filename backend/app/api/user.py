@@ -1,15 +1,20 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.user import UserRegister
 from app.models.user import user_collection
 from app.utils.security import hash_password
 from app.dependencies.auth import get_current_user
 from app.utils.id_generator import get_next_sequence
+from datetime import datetime
+from app.database.mongodb import db
 
 router = APIRouter()
 
 
 @router.post("/register")
 async def register_user(user: UserRegister):
+
+    if user.role not in {"student", "teacher"}:
+        raise HTTPException(status_code=400, detail="Only student and teacher registration is allowed")
 
     existing_user = await user_collection.find_one(
         {"email": user.email}
@@ -63,9 +68,15 @@ async def register_user(user: UserRegister):
         "subject": user.subject,
         "qualification": user.qualification,
         "experience": user.experience,
+        "status": "pending" if user.role == "teacher" else "active",
+        "created_at": datetime.utcnow(),
     }
 
     await user_collection.insert_one(user_data)
+    await db.system_logs.insert_one({
+        "type": "registration", "actor": user.email, "role": user.role,
+        "message": f"New {user.role} registration", "created_at": datetime.utcnow(),
+    })
 
     return {
     "success": True,
