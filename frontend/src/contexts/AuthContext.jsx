@@ -14,13 +14,17 @@ export function AuthProvider({ children }) {
       try {
         const savedUser = localStorage.getItem('user')
         const savedToken = localStorage.getItem('token')
-        if (savedUser) {
-          setUser(JSON.parse(savedUser))
-        } else if (savedToken) {
-          setUser({ role: 'student' })
+        if (savedToken) {
+          const response = await api.get('/users/me')
+          const cached = savedUser ? JSON.parse(savedUser) : {}
+          const verifiedUser = { ...cached, email: response.data.email, role: response.data.role }
+          setUser(verifiedUser)
+          localStorage.setItem('user', JSON.stringify(verifiedUser))
         }
       } catch (err) {
         console.error('Auth check failed:', err)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
       } finally {
         setIsLoading(false)
       }
@@ -59,7 +63,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('user', JSON.stringify(userData))
       return userData
     } catch (err) {
-      const errorMessage = err.message || 'Login failed. Please try again.'
+      const errorMessage = err.response?.data?.detail || err.response?.data?.message || err.message || 'Login failed. Please try again.'
       setError(errorMessage)
       throw new Error(errorMessage)
     } finally {
