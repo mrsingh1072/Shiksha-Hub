@@ -17,7 +17,13 @@ export function AuthProvider({ children }) {
         if (savedToken) {
           const response = await api.get('/users/me')
           const cached = savedUser ? JSON.parse(savedUser) : {}
-          const verifiedUser = { ...cached, email: response.data.email, role: response.data.role }
+          const verifiedUser = {
+            ...cached,
+            email: response.data.email,
+            role: response.data.role,
+            name: response.data.name || cached.name,
+            status: response.data.status || cached.status,
+          }
           setUser(verifiedUser)
           localStorage.setItem('user', JSON.stringify(verifiedUser))
         }
@@ -56,6 +62,8 @@ export function AuthProvider({ children }) {
         email: serverEmail,
         role: serverRole,
         name: serverName,
+        status: response.data.status,
+        message: response.data.message,
       }
 
       setUser(userData)

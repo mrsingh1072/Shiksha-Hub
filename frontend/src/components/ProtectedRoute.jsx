@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion } from 'framer-motion'
+import TeacherAccountStatus from './Auth/TeacherAccountStatus'
 
 export default function ProtectedRoute({ children, requiredRole = null }) {
   const { isAuthenticated, user, isLoading } = useAuth()
@@ -19,6 +20,14 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
+  }
+
+  if (
+    requiredRole === 'teacher' &&
+    user?.role === 'teacher' &&
+    ['pending', 'rejected'].includes(user?.status)
+  ) {
+    return <TeacherAccountStatus status={user.status} />
   }
 
   if (requiredRole && user?.role !== requiredRole && user?.role !== 'admin') {

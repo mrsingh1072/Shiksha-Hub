@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.database.mongodb import db
 from app.dependencies.roles import require_role
+from app.services.email_service import send_teacher_approval_email
 
 router = APIRouter()
 admin_only = require_role("admin")
@@ -63,6 +64,19 @@ async def dashboard(current_user=Depends(admin_only)):
         await db.tutor_conversations.count_documents({}) +
         await db.teacher_chat_history.count_documents({})
     )
+    counts["pendingTeachers"] = await db.users.count_documents(
+        {"role": "teacher", "status": "pending"}
+    )
+    counts["approvedTeachers"] = await db.users.count_documents({
+        "role": "teacher",
+        "$or": [
+            {"status": {"$in": ["approved", "active"]}},
+            {"status": {"$exists": False}},
+        ],
+    })
+    counts["rejectedTeachers"] = await db.users.count_documents(
+        {"role": "teacher", "status": "rejected"}
+    )
 
     registrations = [
         serialize(item) async for item in
@@ -71,10 +85,15 @@ async def dashboard(current_user=Depends(admin_only)):
     activities = [
         serialize(item) async for item in db.system_logs.find().sort("created_at", -1).limit(8)
     ]
+    recent_approvals = [
+        serialize(item) async for item in
+        db.system_logs.find({"type": "teacher_approval"}).sort("created_at", -1).limit(6)
+    ]
     return {
         **counts,
         "recentRegistrations": registrations,
         "recentActivities": activities,
+        "recentApprovals": recent_approvals,
         "systemHealth": {"api": "operational", "database": "operational", "ai": "operational"},
     }
 
@@ -107,6 +126,81 @@ async def teachers(search: str = "", status: str = "", limit: int = Query(100, l
     return await user_list("teacher", search, status, limit)
 
 
+@router.patch("/teachers/{teacher_id}/approve")
+async def approve_teacher(teacher_id: str, current_user=Depends(admin_only)):
+    teacher = await db.users.find_one(
+        {"_id": object_id(teacher_id), "role": "teacher"},
+        {"password": 0},
+    )
+    if not teacher:
+        raise HTTPException(status_code=404, detail="Teacher application not found")
+
+    now = datetime.utcnow()
+    await db.users.update_one(
+        {"_id": teacher["_id"]},
+        {"$set": {
+            "status": "approved",
+            "approved_at": now,
+            "approved_by": current_user["email"],
+        }},
+    )
+
+    email_sent = True
+    email_error = None
+    try:
+        await send_teacher_approval_email(
+            teacher["email"],
+            teacher.get("name", "Teacher"),
+            teacher.get("userId", ""),
+        )
+        await db.users.update_one(
+            {"_id": teacher["_id"]},
+            {"$set": {"approval_email_sent_at": datetime.utcnow()}, "$unset": {"approval_email_error": ""}},
+        )
+    except Exception as exc:
+        email_sent = False
+        email_error = str(exc)
+        await db.users.update_one(
+            {"_id": teacher["_id"]},
+            {"$set": {"approval_email_error": email_error}},
+        )
+
+    await log_action(
+        "teacher_approval",
+        current_user["email"],
+        f"Teacher approved: {teacher.get('name', teacher['email'])}",
+        {"teacher_id": teacher_id, "teacher_email": teacher["email"], "email_sent": email_sent},
+    )
+    return {
+        "message": "Teacher approved successfully",
+        "status": "approved",
+        "email_sent": email_sent,
+        "email_error": email_error,
+    }
+
+
+@router.patch("/teachers/{teacher_id}/reject")
+async def reject_teacher(teacher_id: str, current_user=Depends(admin_only)):
+    now = datetime.utcnow()
+    result = await db.users.update_one(
+        {"_id": object_id(teacher_id), "role": "teacher"},
+        {"$set": {
+            "status": "rejected",
+            "rejected_at": now,
+            "rejected_by": current_user["email"],
+        }},
+    )
+    if not result.matched_count:
+        raise HTTPException(status_code=404, detail="Teacher application not found")
+    await log_action(
+        "teacher_rejection",
+        current_user["email"],
+        "Teacher application rejected",
+        {"teacher_id": teacher_id},
+    )
+    return {"message": "Teacher application rejected", "status": "rejected"}
+
+
 @router.get("/users/{user_id}")
 async def user_details(user_id: str, current_user=Depends(admin_only)):
     user = await db.users.find_one({"_id": object_id(user_id)}, {"password": 0})
@@ -137,7 +231,7 @@ async def user_details(user_id: str, current_user=Depends(admin_only)):
 
 @router.patch("/users/{user_id}")
 async def update_user(user_id: str, data: dict, current_user=Depends(admin_only)):
-    allowed = {"name", "email", "phone", "subject", "qualification", "experience", "status"}
+    allowed = {"name", "email", "phone", "subject", "qualification", "experience"}
     update = {key: value for key, value in data.items() if key in allowed}
     if not update:
         raise HTTPException(status_code=400, detail="No supported fields supplied")
@@ -150,10 +244,18 @@ async def update_user(user_id: str, data: dict, current_user=Depends(admin_only)
 
 @router.patch("/users/{user_id}/status")
 async def update_user_status(user_id: str, data: dict, current_user=Depends(admin_only)):
+    user = await db.users.find_one({"_id": object_id(user_id)}, {"role": 1})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.get("role") == "teacher":
+        raise HTTPException(
+            status_code=400,
+            detail="Use the teacher approval or rejection endpoint",
+        )
     status = data.get("status")
     if status not in {"active", "suspended", "approved", "rejected"}:
         raise HTTPException(status_code=400, detail="Invalid account status")
-    result = await db.users.update_one({"_id": object_id(user_id)}, {"$set": {"status": status}})
+    result = await db.users.update_one({"_id": user["_id"]}, {"$set": {"status": status}})
     if not result.matched_count:
         raise HTTPException(status_code=404, detail="User not found")
     await log_action("account_status", current_user["email"], f"Account marked {status}", {"user_id": user_id})

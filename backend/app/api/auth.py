@@ -87,7 +87,13 @@ async def login(user: LoginRequest):
             "message": "Invalid Password"
         }
 
-    if db_user.get("status") in {"pending", "suspended", "rejected", "deleted"}:
+    account_status = db_user.get("status")
+    if account_status == "rejected":
+        raise HTTPException(
+            status_code=403,
+            detail="Your application was rejected. Contact administration.",
+        )
+    if account_status in {"suspended", "deleted"}:
         raise HTTPException(status_code=403, detail="Account access is disabled")
 
     now = datetime.utcnow()
@@ -110,6 +116,12 @@ async def login(user: LoginRequest):
         "role": db_user["role"],
         "name": db_user.get("name", ""),
         "email": db_user["email"],
+        "status": account_status or ("approved" if db_user["role"] == "teacher" else "active"),
+        "message": (
+            "Your account is under admin review. You will receive an email once approved."
+            if db_user["role"] == "teacher" and account_status == "pending"
+            else "Login successful"
+        ),
     }
 
 

@@ -45,3 +45,38 @@ EduVerse AI Team
     except Exception as e:
         print(f"[EMAIL ERROR] {str(e)}")
         raise
+
+
+async def send_teacher_approval_email(
+    email: str,
+    teacher_name: str,
+    teacher_id: str,
+):
+    message = MessageSchema(
+        subject="Welcome to EduVerse AI",
+        recipients=[email],
+        body=f"""Hello {teacher_name},
+
+Congratulations!
+
+Your EduVerse AI teacher account has been approved.
+
+Your Details:
+
+Name: {teacher_name}
+User ID: {teacher_id}
+Email: {email}
+
+You are now officially a part of EduVerse AI.
+
+You can login and access your Teacher Workspace.
+
+Thank you,
+EduVerse AI Team
+""",
+        subtype="plain",
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    print(f"[EMAIL SUCCESS] Teacher approval sent to {email}")

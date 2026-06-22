@@ -2,6 +2,22 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+:root {
+  --ev-primary: #2f5d50;
+  --ev-primary-dark: #21443a;
+  --ev-secondary: #6b8e23;
+  --ev-cream: #f8f6f0;
+  --ev-surface: #ffffff;
+  --ev-text: #1f2937;
+  --ev-text-muted: #667085;
+  --ev-border: rgba(47, 93, 80, 0.14);
+  --ev-radius-sm: 0.625rem;
+  --ev-radius-md: 0.875rem;
+  --ev-radius-lg: 1.25rem;
+  --ev-shadow: 0 12px 32px rgba(33, 68, 58, 0.09);
+  --ev-transition: 180ms ease;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -4,6 +4,8 @@ const adminService = {
   dashboard: () => api.get('/admin/dashboard'),
   students: (params = {}) => api.get('/admin/students', { params }),
   teachers: (params = {}) => api.get('/admin/teachers', { params }),
+  approveTeacher: (id) => api.patch(`/admin/teachers/${id}/approve`),
+  rejectTeacher: (id) => api.patch(`/admin/teachers/${id}/reject`),
   user: (id) => api.get(`/admin/users/${id}`),
   updateUser: (id, data) => api.patch(`/admin/users/${id}`, data),
   setUserStatus: (id, status) => api.patch(`/admin/users/${id}/status`, { status }),

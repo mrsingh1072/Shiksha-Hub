@@ -90,4 +90,21 @@ async def register_user(user: UserRegister):
 async def get_me(
     current_user=Depends(get_current_user)
 ):
-    return current_user
+    if current_user.get("role") == "admin":
+        return current_user
+
+    user = await user_collection.find_one(
+        {"email": current_user["email"]},
+        {"password": 0},
+    )
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        **current_user,
+        "name": user.get("name", ""),
+        "status": user.get(
+            "status",
+            "approved" if user.get("role") == "teacher" else "active",
+        ),
+    }
