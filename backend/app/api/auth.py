@@ -16,6 +16,9 @@ from app.services.otp_service import create_otp_request, verify_otp_request, con
 from app.dependencies.auth import get_current_user
 
 import os
+import hmac
+from datetime import datetime
+from app.database.mongodb import db
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,10 +44,10 @@ def _password_error_response(password: str):
 async def login(user: LoginRequest):
 
     # Admin Login
-    if (
-        user.identifier == ADMIN_EMAIL
-        and user.password == ADMIN_PASSWORD
-    ):
+    is_admin = bool(ADMIN_EMAIL and ADMIN_PASSWORD) and hmac.compare_digest(
+        user.identifier.casefold(), ADMIN_EMAIL.casefold()
+    ) and hmac.compare_digest(user.password, ADMIN_PASSWORD)
+    if is_admin:
         token = create_access_token(
             {
                 "email": ADMIN_EMAIL,
@@ -54,7 +57,10 @@ async def login(user: LoginRequest):
 
         return {
             "access_token": token,
-            "token_type": "bearer"
+            "token_type": "bearer",
+            "role": "admin",
+            "name": os.getenv("ADMIN_NAME", "Platform Administrator"),
+            "email": ADMIN_EMAIL,
         }
 
     # Student / Teacher Login
@@ -80,6 +86,16 @@ async def login(user: LoginRequest):
         return {
             "message": "Invalid Password"
         }
+
+    if db_user.get("status") in {"pending", "suspended", "rejected", "deleted"}:
+        raise HTTPException(status_code=403, detail="Account access is disabled")
+
+    now = datetime.utcnow()
+    await user_collection.update_one({"_id": db_user["_id"]}, {"$set": {"last_login": now}})
+    await db.system_logs.insert_one({
+        "type": "login", "actor": db_user["email"], "role": db_user["role"],
+        "message": "User signed in", "created_at": now,
+    })
 
     token = create_access_token(
         {
