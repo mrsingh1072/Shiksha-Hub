@@ -32,6 +32,10 @@ import TeacherResources from "./pages/teacher/TeacherResources";
 import TeacherAnalytics from "./pages/teacher/TeacherAnalytics";
 import TeacherProfilePage from "./pages/teacher/TeacherProfile";
 import TeacherSettings from "./pages/teacher/TeacherSettings";
+import AdminDashboardLayout from "./components/admin/AdminDashboardLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminCollectionPage from "./pages/admin/AdminCollectionPage";
+import { AdminAnnouncements, AdminOperationsPage } from "./pages/admin/AdminOperations";
 
 export default function App() {
   return (
@@ -88,9 +92,33 @@ export default function App() {
             <Route path="profile" element={<TeacherProfilePage />} />
             <Route path="settings" element={<TeacherSettings />} />
           </Route>
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="students" element={<AdminCollectionPage kind="students" users />} />
+            <Route path="teachers" element={<AdminCollectionPage kind="teachers" users />} />
+            <Route path="classes" element={<AdminCollectionPage kind="classes" />} />
+            <Route path="assignments" element={<AdminCollectionPage kind="assignments" />} />
+            <Route path="exams" element={<AdminCollectionPage kind="exams" />} />
+            <Route path="question-bank" element={<AdminCollectionPage kind="questions" />} />
+            <Route path="resources" element={<AdminCollectionPage kind="resources" />} />
+            <Route path="announcements" element={<AdminAnnouncements />} />
+            <Route path="analytics" element={<AdminOperationsPage mode="analytics" />} />
+            <Route path="ai-monitoring" element={<AdminOperationsPage mode="ai" />} />
+            <Route path="logs" element={<AdminOperationsPage mode="logs" />} />
+            <Route path="profile" element={<AdminOperationsPage mode="profile" />} />
+            <Route path="settings" element={<AdminOperationsPage mode="settings" />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
 }
-
