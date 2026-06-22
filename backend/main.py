@@ -27,6 +27,7 @@ from app.api.teacher_attendance import router as teacher_attendance_router
 from app.api.teacher_announcements import router as teacher_announcements_router
 from app.api.teacher_resources import router as teacher_resources_router
 from app.api.teacher_ai import router as teacher_ai_router
+from app.api.admin import router as admin_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -173,6 +174,11 @@ app.include_router(
     teacher_ai_router,
     prefix="/teacher/ai",
     tags=["Teacher AI Assistant"]
+)
+app.include_router(
+    admin_router,
+    prefix="/admin",
+    tags=["Admin"]
 )
 
 
