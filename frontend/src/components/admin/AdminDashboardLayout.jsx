@@ -18,11 +18,25 @@ const nav = [
   ['profile', 'Profile', UserCircle], ['settings', 'Settings', Settings],
 ]
 
+function getInitials(name) {
+  if (!name) return 'AD'
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('') || 'AD'
+}
+
 export default function AdminDashboardLayout() {
   const [open, setOpen] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const signOut = () => { logout(); navigate('/login', { replace: true }) }
+
+  const signOut = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   const sidebar = (
     <>
@@ -39,10 +53,16 @@ export default function AdminDashboardLayout() {
           </NavLink>
         ))}
       </nav>
-      <div className="admin-account">
-        <div className="admin-avatar">{user?.name?.[0]?.toUpperCase() || 'A'}</div>
-        <div><strong>{user?.name || 'Administrator'}</strong><span>{user?.email}</span></div>
-        <button onClick={signOut} title="Sign out"><LogOut size={18} /></button>
+      <div className="admin-account admin-account--footer">
+        <div className="admin-avatar">{getInitials(user?.name)}</div>
+        <div className="admin-account__details">
+          <strong>{user?.name || 'Platform Administrator'}</strong>
+          <span>{user?.email || 'admin@eduverse.ai'}</span>
+        </div>
+        <button className="admin-logout-btn" onClick={signOut} title="Logout">
+          <LogOut size={16} />
+          <span>Logout</span>
+        </button>
       </div>
     </>
   )
@@ -60,4 +80,3 @@ export default function AdminDashboardLayout() {
     </div>
   )
 }
-
