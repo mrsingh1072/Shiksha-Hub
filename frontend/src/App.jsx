@@ -35,7 +35,8 @@ import TeacherSettings from "./pages/teacher/TeacherSettings";
 import AdminDashboardLayout from "./components/admin/AdminDashboardLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCollectionPage from "./pages/admin/AdminCollectionPage";
-import { AdminAnnouncements, AdminOperationsPage } from "./pages/admin/AdminOperations";
+import { AdminOperationsPage } from "./pages/admin/AdminOperations";
+import AdminAnnouncements from "./pages/admin/admin-announcements";
 
 export default function App() {
   return (
