@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import AvatarTeacherPlaceholder from '../../components/voiceLearning/AvatarTeacherPlaceholder'
+//import AvatarTeacherPlaceholder from '../../components/voiceLearning/AvatarTeacherPlaceholder'
 import MarkdownMessage from '../../components/studentDashboard/MarkdownMessage'
 import VoiceTeacher from '../../components/studentDashboard/VoiceTeacher'
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder'
