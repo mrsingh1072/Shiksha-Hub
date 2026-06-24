@@ -205,58 +205,74 @@ export default function StudentVoiceLearning() {
 
         {/* Virtual teacher */}
         <section className="space-y-4">
-          <div className="min-h-[20rem] rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
-            <AvatarTeacherPlaceholder
-              status={
-                loading ? 'thinking' : mapVoiceStatusToAvatar(avatarStatus)
-              }
-            />
-          </div>
 
-          <VoiceTeacher
-            text={displayLesson}
-            onStatusChange={(status) => setAvatarStatus(status)}
-          />
+  <TeacherStage
+    status={
+      loading
+        ? 'thinking'
+        : mapVoiceStatusToAvatar(avatarStatus)
+    }
+    lessonTitle={lessonTitle}
+    lessonContent={displayLesson}
+  />
 
-          <div className="rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
-            <p className="text-sm font-bold text-text">Ask with voice or text</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                onClick={handleRecordToggle}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${
-                  isRecording
-                    ? 'bg-red-100 text-red-700'
-                    : 'border border-green-primary/15 text-green-primary'
-                }`}
-                type="button"
-              >
-                {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                {isRecording ? 'Stop recording' : 'Record audio'}
-              </button>
-            </div>
+  <VoiceTeacher
+    text={displayLesson}
+    onStatusChange={(status) => setAvatarStatus(status)}
+  />
 
-            <div className="mt-3 flex gap-2">
-              <input
-                value={voiceQuestion}
-                onChange={(event) => setVoiceQuestion(event.target.value)}
-                placeholder="Or type a follow-up question..."
-                className="flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
-              />
-              <button
-                onClick={handleVoiceQuestion}
-                disabled={loading || !voiceQuestion.trim()}
-                className="rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
-                type="button"
-              >
-                Ask
-              </button>
-            </div>
+  <div className="rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
+    <p className="text-sm font-bold text-text">
+      Ask with voice or text
+    </p>
 
-            {(notice || recorderError) && (
-              <p className="mt-3 text-sm text-gray-600">{notice || recorderError}</p>
-            )}
-          </div>
-        </section>
+    <div className="mt-3 flex flex-wrap gap-2">
+      <button
+        onClick={handleRecordToggle}
+        className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${
+          isRecording
+            ? 'bg-red-100 text-red-700'
+            : 'border border-green-primary/15 text-green-primary'
+        }`}
+        type="button"
+      >
+        {isRecording
+          ? <MicOff className="h-4 w-4" />
+          : <Mic className="h-4 w-4" />
+        }
+
+        {isRecording
+          ? 'Stop recording'
+          : 'Record audio'}
+      </button>
+    </div>
+
+    <div className="mt-3 flex gap-2">
+      <input
+        value={voiceQuestion}
+        onChange={(event) => setVoiceQuestion(event.target.value)}
+        placeholder="Or type a follow-up question..."
+        className="flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
+      />
+
+      <button
+        onClick={handleVoiceQuestion}
+        disabled={loading || !voiceQuestion.trim()}
+        className="rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+        type="button"
+      >
+        Ask
+      </button>
+    </div>
+
+    {(notice || recorderError) && (
+      <p className="mt-3 text-sm text-gray-600">
+        {notice || recorderError}
+      </p>
+    )}
+  </div>
+
+</section>
       </div>
     </div>
   )
