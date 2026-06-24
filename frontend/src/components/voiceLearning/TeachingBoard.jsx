@@ -3,15 +3,22 @@ export default function TeachingBoard({
   content,
 }) {
   return (
-    <div className="rounded-2xl border border-green-primary/10 bg-slate-900 p-6 shadow-sm text-white min-h-[500px]">
-      
-      <h2 className="text-2xl font-bold border-b border-white/20 pb-3">
-        {title || 'Teaching Board'}
+    <div className="h-full rounded-2xl border-4 border-amber-700 bg-[#1b4332] p-8 text-white shadow-inner">
+
+      <h2 className="border-b border-white/20 pb-4 text-3xl font-bold">
+        {title || 'Welcome to Your Lesson'}
       </h2>
 
-      <div className="mt-5 whitespace-pre-wrap leading-8">
-        {content || 'Lesson content will appear here...'}
+      <div className="mt-6 whitespace-pre-wrap text-lg leading-9 text-green-50">
+        {content || `
+Today's lesson will appear here.
+
+The AI teacher will explain concepts,
+show examples,
+and guide you step by step.
+`}
       </div>
+
     </div>
   )
 }
