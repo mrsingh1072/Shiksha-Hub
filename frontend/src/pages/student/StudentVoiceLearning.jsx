@@ -19,6 +19,7 @@ import {
   startVoiceLesson,
   submitVoiceQuestion,
 } from '../../services/voiceLearningService'
+import TeacherStage from '../../components/voiceLearning/TeacherStage'
 
 export default function StudentVoiceLearning() {
   const navigate = useNavigate()
