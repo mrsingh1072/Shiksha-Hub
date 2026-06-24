@@ -5,6 +5,7 @@ import {
   Sparkles,
   Volume2,
 } from 'lucide-react'
+
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 //import AvatarTeacherPlaceholder from '../../components/voiceLearning/AvatarTeacherPlaceholder'
@@ -169,7 +170,7 @@ export default function StudentVoiceLearning() {
         </form>
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="space-y-5">
         {/* Course content */}
         {/*
         <section className="rounded-2xl border border-green-primary/10 bg-white shadow-sm">

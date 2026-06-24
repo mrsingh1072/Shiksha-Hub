@@ -21,20 +21,18 @@ export default function TeacherStage({
       </div>
 
       {/* Classroom */}
-      <div className="grid min-h-[550px] lg:grid-cols-[280px_1fr]">
+      <div className="grid items-center grid-cols-[140px_1fr] gap-6 p-6">
 
-        {/* Teacher Side */}
-        <div className="flex items-end justify-center bg-gradient-to-b from-cream/40 to-white p-6">
+        {/* Teacher */}
+        <div className="flex justify-center">
           <AvatarTeacherPlaceholder status={status} />
         </div>
 
-        {/* Blackboard Side */}
-        <div className="bg-[#0f172a] p-6">
-          <TeachingBoard
-            title={lessonTitle}
-            content={lessonContent}
-          />
-        </div>
+        {/* Blackboard */}
+        <TeachingBoard
+          title={lessonTitle}
+          content={lessonContent}
+        />
 
       </div>
 
