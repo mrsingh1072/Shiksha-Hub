@@ -1,45 +1,45 @@
-/**
- * Future-ready avatar shell for lip-sync / video / bitmoji integration.
- * Replace `renderAvatar` when real avatar SDK is connected.
- */
 export default function AvatarTeacherPlaceholder({ status = 'idle' }) {
-  const statusLabel = {
-    idle: 'Ready to teach',
-    thinking: 'Thinking',
-    speaking: 'Speaking',
-    listening: 'Listening',
-    loading: 'Preparing lesson',
-  }[status] || 'Ready'
-
   const pulse = status === 'speaking' || status === 'thinking'
 
   return (
-  <div className="flex h-full flex-col justify-end items-center">
+    <div className="flex h-full items-end justify-center">
+      <div
+        className={`relative transition-all duration-500 ${
+          pulse ? 'scale-105' : ''
+        }`}
+      >
+        <img
+          src="/images/teacher.png"
+          alt="AI Teacher"
+          className={`w-auto object-contain transition-all duration-500 ${
+            status === 'speaking'
+              ? 'max-h-[280px]'
+              : 'max-h-[260px]'
+          }`}
+        />
 
-    <div
-      className={`relative transition-all duration-500 ${
-        pulse ? 'scale-105' : ''
-      }`}
-    >
-      <img
-        src="/images/teacher.png"
-        alt="AI Teacher"
-        className="max-h-[220px] w-auto object-contain"
-      />
+        {/* Speaking Status */}
+        {status === 'speaking' && (
+          <div className="absolute -top-2 right-0 rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-lg animate-pulse">
+            🎙 Speaking...
+          </div>
+        )}
 
-      {status === 'speaking' && (
-        <div className="absolute top-6 right-0 rounded-full bg-green-primary px-3 py-1 text-sm font-bold text-white shadow">
-          Speaking
-        </div>
-      )}
+        {/* Thinking Status */}
+        {status === 'thinking' && (
+          <div className="absolute -top-2 right-0 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white shadow-lg animate-pulse">
+            🤔 Thinking...
+          </div>
+        )}
 
-      {status === 'thinking' && (
-        <div className="absolute top-6 right-0 rounded-full bg-yellow-500 px-3 py-1 text-sm font-bold text-white shadow">
-          Thinking
-        </div>
-      )}
+        {/* Sound Waves */}
+        {status === 'speaking' && (
+          <>
+            <span className="absolute left-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-green-400 animate-ping" />
+            <span className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-green-400 animate-ping" />
+          </>
+        )}
+      </div>
     </div>
-
-  </div>
-)
+  )
 }

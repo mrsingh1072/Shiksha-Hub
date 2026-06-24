@@ -21,10 +21,10 @@ export default function TeacherStage({
       </div>
 
       {/* Classroom */}
-      <div className="grid items-center grid-cols-[140px_1fr] gap-6 p-6">
+      <div className="grid items-center grid-cols-[180px_1fr] gap-4 p-4">
 
         {/* Teacher */}
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center">
           <AvatarTeacherPlaceholder status={status} />
         </div>
 
