@@ -3,44 +3,43 @@ import {
   Mic,
   MicOff,
   Sparkles,
-  Volume2,
 } from 'lucide-react'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-//import AvatarTeacherPlaceholder from '../../components/voiceLearning/AvatarTeacherPlaceholder'
-import MarkdownMessage from '../../components/studentDashboard/MarkdownMessage'
 import VoiceTeacher from '../../components/studentDashboard/VoiceTeacher'
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder'
 import { useStudentWorkspace } from '../../components/studentDashboard/StudentDashboardLayout'
+import useTeacherState from '../../hooks/useTeacherState'
 import { parseDisplayContent } from '../../utils/contentParser'
 import { getConversation } from '../../services/tutorService'
 import {
-  createVoiceLesson,
   startVoiceLesson,
+  askFollowUp,
+  generateQuiz,
   submitVoiceQuestion,
 } from '../../services/voiceLearningService'
 import TeacherStage from '../../components/voiceLearning/TeacherStage'
+import QuizPanel from '../../components/voiceLearning/QuizPanel'
 
 export default function StudentVoiceLearning() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { refetch } = useStudentWorkspace()
   const { isRecording, error: recorderError, startRecording, stopRecording } = useVoiceRecorder()
+  const teacher = useTeacherState()
 
   const [topic, setTopic] = useState('')
   const [lessonTitle, setLessonTitle] = useState('')
   const [lessonContent, setLessonContent] = useState('')
+  const [lessonData, setLessonData] = useState(null)
+  const [voiceText, setVoiceText] = useState('')
   const [conversationId, setConversationId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [voiceQuestion, setVoiceQuestion] = useState('')
-  const [avatarStatus, setAvatarStatus] = useState('idle')
   const [notice, setNotice] = useState('')
-
-  const displayLesson = useMemo(
-    () => parseDisplayContent(lessonContent),
-    [lessonContent]
-  )
+  const [quizQuestions, setQuizQuestions] = useState([])
+  const [autoPlayVoice, setAutoPlayVoice] = useState(false)
 
   const loadLesson = async (id) => {
     const conversation = await getConversation(id)
@@ -51,9 +50,9 @@ export default function StudentVoiceLearning() {
     const lastAssistant = [...(conversation.messages || [])]
       .reverse()
       .find((message) => message.role === 'assistant')
-    setLessonContent(
-      parseDisplayContent(lastAssistant?.documentation || lastAssistant?.content || '')
-    )
+    if (lastAssistant) {
+      setLessonContent(lastAssistant.documentation || lastAssistant.content || '')
+    }
   }
 
   useEffect(() => {
@@ -68,19 +67,33 @@ export default function StudentVoiceLearning() {
 
     setLoading(true)
     setNotice('')
-    setAvatarStatus('thinking')
+    setQuizQuestions([])
+    teacher.setThinking('Generating lesson...')
 
     try {
       const response = await startVoiceLesson(trimmed, conversationId)
       setConversationId(response.conversation_id)
       setLessonTitle(response.conversation?.title || trimmed)
-      setLessonContent(parseDisplayContent(response.documentation || response.answer || ''))
-      setAvatarStatus('idle')
+
+      // Parse content ONCE
+      const doc = response.documentation || response.answer || ''
+      setLessonContent(parseDisplayContent(doc))
+      setLessonData(response.lesson || null)
+      setVoiceText(response.voiceText || response.answer || '')
+
+      // State flow: thinking → writing → (auto-play voice → speaking)
+      teacher.setWriting('Writing on board...')
+      setTimeout(() => {
+        teacher.setIdle()
+        setAutoPlayVoice(true) // triggers voice auto-play
+      }, 1500)
+
       await refetch({ silent: true })
     } catch (err) {
       console.error(err)
       setNotice('Unable to generate lesson. Please try again.')
-      setAvatarStatus('idle')
+      teacher.setError('Lesson generation failed')
+      setTimeout(() => teacher.setIdle(), 3000)
     } finally {
       setLoading(false)
     }
@@ -88,20 +101,30 @@ export default function StudentVoiceLearning() {
 
   const handleVoiceQuestion = async () => {
     const trimmed = voiceQuestion.trim()
-    if (!trimmed) return
+    if (!trimmed || loading) return
 
     setLoading(true)
-    setAvatarStatus('thinking')
+    teacher.setThinking('Processing your question...')
     try {
-      const response = await startVoiceLesson(trimmed, conversationId)
+      const response = await askFollowUp(trimmed, conversationId)
       setConversationId(response.conversation_id)
-      setLessonContent(parseDisplayContent(response.documentation || response.answer || ''))
+
+      const doc = response.documentation || response.answer || ''
+      setLessonContent(parseDisplayContent(doc))
+      setLessonData(response.lesson || null)
+      setVoiceText(response.voiceText || response.answer || '')
       setVoiceQuestion('')
-      setAvatarStatus('idle')
+
+      teacher.setWriting('Updating board...')
+      setTimeout(() => {
+        teacher.setIdle()
+        setAutoPlayVoice(true)
+      }, 1000)
     } catch (err) {
       console.error(err)
-      setNotice('Unable to answer voice question.')
-      setAvatarStatus('idle')
+      setNotice('Unable to answer question.')
+      teacher.setError('Failed to answer question')
+      setTimeout(() => teacher.setIdle(), 3000)
     } finally {
       setLoading(false)
     }
@@ -119,36 +142,48 @@ export default function StudentVoiceLearning() {
     await startRecording()
   }
 
-  const handleGenerateQuiz = () => {
-    if (!displayLesson) {
+  const handleGenerateQuiz = async () => {
+    if (!lessonContent) {
       alert('Generate a lesson first.')
       return
     }
-
-    navigate('/student/exams', {
-      state: {
-        fromLesson: true,
-        lessonText: displayLesson,
-        conversationContext: displayLesson,
-        subject: lessonTitle || topic || 'Lesson Quiz',
-      },
-    })
+    teacher.transition('generating_quiz', 'Generating quiz...')
+    try {
+      const result = await generateQuiz(lessonTitle || topic, lessonContent)
+      setQuizQuestions(result.questions || [])
+      teacher.setIdle()
+    } catch (err) {
+      console.error(err)
+      setNotice('Quiz generation failed.')
+      teacher.setIdle()
+    }
   }
 
-  const mapVoiceStatusToAvatar = (status) => {
-    if (status === 'loading') return 'thinking'
-    if (status === 'playing') return 'speaking'
-    if (status === 'paused' || status === 'stopped') return 'idle'
-    return 'idle'
-  }
+  const handleVoiceStatusChange = useCallback(
+    (voiceStatus) => {
+      if (voiceStatus === 'playing') {
+        teacher.setSpeaking()
+      } else if (voiceStatus === 'stopped' || voiceStatus === 'paused') {
+        // Only go idle if we're currently speaking
+        if (teacher.status === 'speaking') {
+          teacher.setIdle()
+        }
+      }
+    },
+    [teacher]
+  )
 
   return (
     <div className="space-y-5">
+      {/* Topic Input Section */}
       <section className="rounded-2xl border border-green-primary/10 bg-white p-5 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Voice Learning</p>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">
+          Voice Learning
+        </p>
         <h1 className="mt-1 text-3xl font-bold text-text">Learn with your AI teacher</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-          Enter a topic to generate structured course notes and a spoken lesson — like Khan Academy with voice.
+          Enter a topic to generate structured course notes and a spoken lesson — like having a real
+          teacher.
         </p>
 
         <form onSubmit={handleStartLesson} className="mt-5 flex flex-wrap gap-3">
@@ -170,113 +205,87 @@ export default function StudentVoiceLearning() {
         </form>
       </section>
 
+      {/* Teacher Stage + Voice + Quiz */}
       <div className="space-y-5">
-        {/* Course content */}
-        {/*
-        <section className="rounded-2xl border border-green-primary/10 bg-white shadow-sm">
-          <div className="border-b border-green-primary/10 px-6 py-5">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Course content</p>
-            <h2 className="mt-1 text-2xl font-bold text-text">{lessonTitle || 'Your lesson notes'}</h2>
-          </div>
+        {/* Virtual teacher classroom */}
+        <TeacherStage
+          status={teacher.status}
+          lessonTitle={lessonTitle}
+          lessonContent={lessonContent}
+          lesson={lessonData}
+        />
 
-          <div className="max-h-[calc(100vh-22rem)] overflow-y-auto px-6 py-6">
-            {displayLesson ? (
-              <MarkdownMessage content={displayLesson} variant="document" />
-            ) : (
-              <div className="rounded-2xl border border-dashed border-green-primary/20 bg-cream/40 px-6 py-16 text-center">
-                <Volume2 className="mx-auto h-10 w-10 text-green-primary" />
-                <p className="mt-4 text-lg font-bold text-text">Lesson notes will appear here</p>
-                <p className="mt-2 text-sm text-gray-500">Overview, concepts, examples, code, and practice questions.</p>
-              </div>
-            )}
-          </div>
+        {/* Voice Player */}
+        <VoiceTeacher
+          text={lessonContent}
+          voiceText={voiceText}
+          autoPlay={autoPlayVoice}
+          onStatusChange={handleVoiceStatusChange}
+        />
 
-          {displayLesson && (
-            <div className="border-t border-green-primary/10 px-6 py-5">
+        {/* Interaction Panel */}
+        <div className="rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
+          <p className="text-sm font-bold text-text">Ask with voice or text</p>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              onClick={handleRecordToggle}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${
+                isRecording
+                  ? 'bg-red-100 text-red-700'
+                  : 'border border-green-primary/15 text-green-primary'
+              }`}
+              type="button"
+            >
+              {isRecording ? (
+                <MicOff className="h-4 w-4" />
+              ) : (
+                <Mic className="h-4 w-4" />
+              )}
+              {isRecording ? 'Stop recording' : 'Record audio'}
+            </button>
+
+            {lessonContent && (
               <button
                 onClick={handleGenerateQuiz}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-primary px-4 py-3 text-sm font-bold text-white"
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-xl border border-green-primary/15 px-4 py-2 text-sm font-bold text-green-primary disabled:opacity-50"
                 type="button"
               >
                 <BookOpenCheck className="h-4 w-4" />
-                Generate Quiz From This Lesson
+                Generate Quiz
               </button>
-            </div>
+            )}
+          </div>
+
+          <div className="mt-3 flex gap-2">
+            <input
+              value={voiceQuestion}
+              onChange={(event) => setVoiceQuestion(event.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleVoiceQuestion()}
+              placeholder="Or type a follow-up question..."
+              className="flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
+            />
+            <button
+              onClick={handleVoiceQuestion}
+              disabled={loading || !voiceQuestion.trim()}
+              className="rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+              type="button"
+            >
+              Ask
+            </button>
+          </div>
+
+          {(notice || recorderError) && (
+            <p className="mt-3 text-sm text-gray-600">{notice || recorderError}</p>
           )}
-        </section>
-        */}
+        </div>
 
-        {/* Virtual teacher */}
-        <section className="space-y-4">
-
-  <TeacherStage
-    status={
-      loading
-        ? 'thinking'
-        : mapVoiceStatusToAvatar(avatarStatus)
-    }
-    lessonTitle={lessonTitle}
-    lessonContent={displayLesson}
-  />
-
-  <VoiceTeacher
-    text={displayLesson}
-    onStatusChange={(status) => setAvatarStatus(status)}
-  />
-
-  <div className="rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
-    <p className="text-sm font-bold text-text">
-      Ask with voice or text
-    </p>
-
-    <div className="mt-3 flex flex-wrap gap-2">
-      <button
-        onClick={handleRecordToggle}
-        className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${
-          isRecording
-            ? 'bg-red-100 text-red-700'
-            : 'border border-green-primary/15 text-green-primary'
-        }`}
-        type="button"
-      >
-        {isRecording
-          ? <MicOff className="h-4 w-4" />
-          : <Mic className="h-4 w-4" />
-        }
-
-        {isRecording
-          ? 'Stop recording'
-          : 'Record audio'}
-      </button>
-    </div>
-
-    <div className="mt-3 flex gap-2">
-      <input
-        value={voiceQuestion}
-        onChange={(event) => setVoiceQuestion(event.target.value)}
-        placeholder="Or type a follow-up question..."
-        className="flex-1 rounded-xl border px-3 py-2 text-sm outline-none"
-      />
-
-      <button
-        onClick={handleVoiceQuestion}
-        disabled={loading || !voiceQuestion.trim()}
-        className="rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
-        type="button"
-      >
-        Ask
-      </button>
-    </div>
-
-    {(notice || recorderError) && (
-      <p className="mt-3 text-sm text-gray-600">
-        {notice || recorderError}
-      </p>
-    )}
-  </div>
-
-</section>
-      </div>
+        {/* Quiz Panel */}
+        {quizQuestions.length > 0 && (
+          <QuizPanel questions={quizQuestions} topic={lessonTitle || topic} />
+        )}
+z      </div>
     </div>
   )
 }
