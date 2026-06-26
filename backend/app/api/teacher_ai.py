@@ -27,7 +27,7 @@ async def teacher_ai_chat(data: dict, current_user=Depends(require_role("teacher
     system_prompt = SYSTEM_PROMPTS.get(chat_type, "You are an AI teaching assistant. Help the teacher with their request professionally and thoroughly.")
     full_prompt = f"{system_prompt}\n\nTeacher's request: {message}"
 
-    ai_response = ask_ai(full_prompt)
+    ai_response = await ask_ai(full_prompt)
 
     # Save to teacher chat history
     history_doc = {
