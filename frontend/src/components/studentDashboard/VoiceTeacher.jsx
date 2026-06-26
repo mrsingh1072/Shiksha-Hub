@@ -21,8 +21,10 @@ function formatTime(seconds) {
 
 export default function VoiceTeacher({
   text = '',
+  voiceText = '',
   label = 'Voice Teacher',
   onStatusChange,
+  autoPlay = false,
 }) {
   const audioRef = useRef(null)
   const blobUrlRef = useRef('')
@@ -33,6 +35,9 @@ export default function VoiceTeacher({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [ready, setReady] = useState(false)
+  const autoPlayTriggeredRef = useRef('')
+
+  const speechSource = voiceText || text
 
   const setVoiceStatus = useCallback(
     (next) => {
@@ -61,7 +66,7 @@ export default function VoiceTeacher({
       audioRef.current.removeAttribute('src')
       audioRef.current.load()
     }
-  }, [text, cleanupBlob, setVoiceStatus])
+  }, [speechSource, cleanupBlob, setVoiceStatus])
 
   useEffect(() => {
     if (audioRef.current) {
@@ -107,12 +112,12 @@ export default function VoiceTeacher({
   useEffect(() => () => cleanupBlob(), [cleanupBlob])
 
   const prepareAudio = async () => {
-    if (!text?.trim()) throw new Error('No lesson content to read aloud.')
+    if (!speechSource?.trim()) throw new Error('No lesson content to read aloud.')
 
     setVoiceStatus('loading')
     setError('')
 
-    const voiceResponse = await createTutorVoice(text)
+    const voiceResponse = await createTutorVoice(speechSource)
     const blob = await fetchVoiceAudio(voiceResponse.file)
     cleanupBlob()
 
@@ -143,7 +148,7 @@ export default function VoiceTeacher({
     })
   }
 
-  const handlePlay = async () => {
+  const handlePlay = useCallback(async () => {
     try {
       const audio = audioRef.current
       if (!audio) return
@@ -154,7 +159,19 @@ export default function VoiceTeacher({
       setError(err.message || 'Unable to play voice.')
       setVoiceStatus('idle')
     }
-  }
+  }, [ready, speechSource, speed, cleanupBlob, setVoiceStatus])
+
+  // Auto-play when autoPlay is true and speech source changes
+  useEffect(() => {
+    if (autoPlay && speechSource?.trim() && autoPlayTriggeredRef.current !== speechSource) {
+      autoPlayTriggeredRef.current = speechSource
+      // Small delay to let UI settle after content update
+      const timer = setTimeout(() => {
+        handlePlay()
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [autoPlay, speechSource, handlePlay])
 
   const handlePause = () => audioRef.current?.pause()
 
@@ -168,7 +185,7 @@ export default function VoiceTeacher({
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
-  const disabled = !text?.trim() || status === 'loading'
+  const disabled = !speechSource?.trim() || status === 'loading'
 
   return (
     <div className="rounded-2xl border border-green-primary/10 bg-white p-4 shadow-sm">
@@ -213,15 +230,30 @@ export default function VoiceTeacher({
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <button onClick={handlePlay} disabled={disabled} className="inline-flex items-center gap-2 rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-50" type="button">
+        <button
+          onClick={handlePlay}
+          disabled={disabled}
+          className="inline-flex items-center gap-2 rounded-xl bg-green-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+          type="button"
+        >
           <Play className="h-4 w-4" />
           {status === 'loading' ? 'Loading...' : ready && status === 'paused' ? 'Resume' : 'Play'}
         </button>
-        <button onClick={handlePause} disabled={!ready || status === 'loading'} className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-50" type="button">
+        <button
+          onClick={handlePause}
+          disabled={!ready || status === 'loading'}
+          className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-50"
+          type="button"
+        >
           <Pause className="h-4 w-4" />
           Pause
         </button>
-        <button onClick={handleStop} disabled={!ready || status === 'loading'} className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-50" type="button">
+        <button
+          onClick={handleStop}
+          disabled={!ready || status === 'loading'}
+          className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold disabled:opacity-50"
+          type="button"
+        >
           <Square className="h-4 w-4" />
           Stop
         </button>
@@ -233,7 +265,9 @@ export default function VoiceTeacher({
             key={value}
             onClick={() => setSpeed(value)}
             className={`rounded-lg px-3 py-1.5 text-xs font-bold ${
-              speed === value ? 'bg-green-primary text-white' : 'border border-green-primary/15 text-green-primary'
+              speed === value
+                ? 'bg-green-primary text-white'
+                : 'border border-green-primary/15 text-green-primary'
             }`}
             type="button"
           >
@@ -243,7 +277,7 @@ export default function VoiceTeacher({
       </div>
 
       {error && <p className="mt-3 text-sm font-semibold text-red-600">{error}</p>}
-      <audio ref={audioRef} className="hidden" preload="auto" />
+      <audio ref={audioRef} className="hidden" preload="none" />
     </div>
   )
 }
