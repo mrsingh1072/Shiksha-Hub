@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
-from app.services.tutor_service import tutor_response
+from app.services.teaching_engine import generate_lesson
 from app.services.conversation_service import (
     list_conversations,
     get_conversation,
@@ -117,7 +117,7 @@ async def ai_tutor(
         content=data.question,
     )
 
-    result = tutor_response(data.question, history)
+    result = await generate_lesson(data.question, history)
 
     documentation = result.get("documentation", "")
     reply = result.get("reply", "")
@@ -137,5 +137,6 @@ async def ai_tutor(
         "conversation_id": conversation_id,
         "documentation": documentation,
         "answer": reply,
+        "voiceText": result.get("voiceText", reply),
         "conversation": updated,
     }
