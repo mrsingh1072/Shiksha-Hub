@@ -1,0 +1,319 @@
+/* ============================================================
+   AnimatedTeacher – CSS Keyframe Animations
+   ============================================================
+   Layered animations that bring the static teacher PNG to life.
+   All transforms are GPU-accelerated (transform, opacity).
+   ============================================================ */
+
+/* ---------- Breathing (idle body movement) ---------- */
+
+@keyframes teacher-breathe {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.006);
+  }
+}
+
+.at-breathe {
+  animation: teacher-breathe 4s ease-in-out infinite;
+}
+
+/* ---------- Idle sway (very subtle weight shift) ---------- */
+
+@keyframes teacher-sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(0.3deg);
+  }
+  75% {
+    transform: rotate(-0.3deg);
+  }
+}
+
+.at-sway {
+  animation: teacher-sway 6s ease-in-out infinite;
+}
+
+/* ---------- Blinking ---------- */
+
+@keyframes teacher-blink {
+  0%, 92%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  95% {
+    transform: scaleY(0.05);
+    opacity: 0.6;
+  }
+  97% {
+    transform: scaleY(0.05);
+    opacity: 0.6;
+  }
+}
+
+.at-blink-left,
+.at-blink-right {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f5dbc4 40%, #e8c9a8 100%);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.at-blink-left {
+  animation: teacher-blink 4.2s ease-in-out infinite;
+}
+
+.at-blink-right {
+  animation: teacher-blink 4.2s ease-in-out infinite 0.05s;
+}
+
+/* ---------- Speaking body energy ---------- */
+
+@keyframes teacher-speak-body {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  15% {
+    transform: translateY(-2px) scale(1.008);
+  }
+  35% {
+    transform: translateY(1px) scale(1.003);
+  }
+  55% {
+    transform: translateY(-3px) scale(1.01);
+  }
+  75% {
+    transform: translateY(0px) scale(1.005);
+  }
+}
+
+.at-speaking-body {
+  animation: teacher-speak-body 2.2s ease-in-out infinite;
+}
+
+/* ---------- Pointer / hand gesture while speaking ---------- */
+
+@keyframes teacher-pointer {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  20% {
+    transform: rotate(-3deg) translateY(-4px);
+  }
+  40% {
+    transform: rotate(2deg) translateY(-2px);
+  }
+  60% {
+    transform: rotate(-2deg) translateY(-5px);
+  }
+  80% {
+    transform: rotate(1deg) translateY(-1px);
+  }
+}
+
+.at-pointer-gesture {
+  transform-origin: 75% 30%;
+  animation: teacher-pointer 3s ease-in-out infinite;
+}
+
+/* ---------- Thinking head tilt ---------- */
+
+@keyframes teacher-think {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+  60% {
+    transform: translateY(-1px) rotate(0.5deg);
+  }
+}
+
+.at-thinking-body {
+  animation: teacher-think 3.5s ease-in-out infinite;
+}
+
+/* ---------- Shadow / glow pulse under teacher ---------- */
+
+@keyframes teacher-shadow {
+  0%, 100% {
+    transform: scaleX(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scaleX(1.06);
+    opacity: 0.22;
+  }
+}
+
+.at-shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.25), transparent 70%);
+  border-radius: 50%;
+  animation: teacher-shadow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Speech wave rings ---------- */
+
+@keyframes speech-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.at-speech-ring {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(74, 222, 128, 0.6);
+  animation: speech-ring 1.6s ease-out infinite;
+  pointer-events: none;
+}
+
+.at-speech-ring:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.at-speech-ring:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+/* ---------- Speech bar equalizer ---------- */
+
+@keyframes speech-bar {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: var(--bar-max, 14px);
+  }
+}
+
+.at-speech-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to top, #4ade80, #22c55e);
+  animation: speech-bar 0.5s ease-in-out infinite;
+}
+
+/* ---------- Thought floating bubbles ---------- */
+
+@keyframes thought-float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.4);
+    opacity: 0;
+  }
+}
+
+.at-thought-bubble {
+  position: absolute;
+  border-radius: 50%;
+  animation: thought-float 3s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Status badge entrance ---------- */
+
+@keyframes badge-enter {
+  from {
+    transform: translateY(-8px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.at-badge {
+  animation: badge-enter 0.3s ease-out forwards;
+}
+
+/* ---------- Glow ring on speaking ---------- */
+
+@keyframes glow-ring {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px rgba(74, 222, 128, 0.15);
+  }
+}
+
+.at-glow-speaking {
+  animation: glow-ring 2s ease-in-out infinite;
+  border-radius: 50%;
+}
+
+/* ---------- Global wrapper ---------- */
+
+.at-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.at-body {
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.at-image {
+  display: block;
+  width: auto;
+  max-height: 280px;
+  object-fit: contain;
+  transition: max-height 0.5s ease, filter 0.3s ease;
+  will-change: max-height, filter;
+}
+
+/* State-specific image height */
+.at-image--idle     { max-height: 260px; }
+.at-image--thinking { max-height: 265px; filter: brightness(0.97); }
+.at-image--speaking { max-height: 280px; }
+.at-image--loading  { max-height: 260px; filter: brightness(0.94) saturate(0.8); }
+.at-image--error    { max-height: 250px; filter: grayscale(0.3); }
+
+/* ---------- Overlays container ---------- */
+
+.at-overlays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
