@@ -1,17 +1,17 @@
 import edge_tts
-import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 async def generate_voice(
     text: str,
-    output_file: str
+    output_file: str,
+    voice: str = "en-US-AriaNeural",
 ):
-
-    communicate = edge_tts.Communicate(
-        text,
-        "en-US-AriaNeural"
-    )
-
-    await communicate.save(
-        output_file
-    )
+    try:
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(output_file)
+    except Exception as e:
+        logger.error("Voice generation failed: %s", e)
+        raise

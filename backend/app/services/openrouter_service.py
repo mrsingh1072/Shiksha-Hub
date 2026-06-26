@@ -1,37 +1,12 @@
-import requests
-import os
-from dotenv import load_dotenv
+"""
+OpenRouter service – backward-compatible wrapper.
 
-load_dotenv()
+This module now delegates to the unified async ai_client.
+Kept for backward compatibility with modules that import from here.
+"""
 
-OPENROUTER_API_KEY = os.getenv(
-    "OPENROUTER_API_KEY"
-)
+from __future__ import annotations
 
-def generate_response(message: str):
+from app.services.ai_client import generate_response  # noqa: F401
 
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "openai/gpt-oss-20b:free",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": message
-                }
-            ]
-        }
-    )
-
-    result = response.json()
-
-    print(result)
-
-    if "choices" in result:
-        return result["choices"][0]["message"]["content"]
-
-    return str(result)
+__all__ = ["generate_response"]
