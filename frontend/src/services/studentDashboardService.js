@@ -67,3 +67,35 @@ export async function removeProfilePhoto() {
   const response = await api.delete('/profile/photo')
   return response.data
 }
+
+export async function uploadAssignmentFile(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await api.post('/assignment-upload/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return response.data
+}
+
+export async function submitAssignment({ assignment_id, submission_text = '', file }) {
+  const formData = new FormData()
+  formData.append('assignment_id', assignment_id)
+  formData.append('submission_text', submission_text)
+  if (file) {
+    formData.append('file', file)
+  }
+  const response = await api.post('/submissions/submit', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return response.data
+}
+
+export async function getStudentNotifications() {
+  const response = await api.get('/student/notifications')
+  return response.data
+}
+
+export async function markNotificationRead(notificationId) {
+  const response = await api.put(`/student/notifications/${notificationId}/read`)
+  return response.data
+}
