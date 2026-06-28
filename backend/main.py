@@ -27,6 +27,7 @@ from app.api.teacher_attendance import router as teacher_attendance_router
 from app.api.teacher_announcements import router as teacher_announcements_router
 from app.api.teacher_resources import router as teacher_resources_router
 from app.api.teacher_ai import router as teacher_ai_router
+from app.api.evaluation import router as evaluation_router
 from app.api.admin import router as admin_router
 from app.api.voice_learning import router as voice_learning_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -185,6 +186,11 @@ app.include_router(
     voice_learning_router,
     prefix="/voice-learning",
     tags=["Voice Learning"]
+)
+app.include_router(
+    evaluation_router,
+    prefix="/evaluation",
+    tags=["Evaluation"]
 )
 
 
