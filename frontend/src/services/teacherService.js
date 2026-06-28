@@ -24,6 +24,13 @@ const teacherService = {
   deleteAssignment: (id) => api.delete(`/teacher/assignments/${id}`),
   addFeedback: (id, data) => api.post(`/teacher/assignments/${id}/feedback`, data),
 
+  // Assignment Submissions & Evaluation
+  getSubmissions: (assignmentId) => api.get(`/submissions/assignment/${assignmentId}`),
+  aiEvaluate: (submissionId) => api.post(`/evaluation/ai/${submissionId}`),
+  manualEvaluate: (submissionId, data) => api.post(`/evaluation/manual/${submissionId}`, data),
+  publishMarks: (submissionId) => api.post(`/evaluation/publish/${submissionId}`),
+  getEvaluation: (submissionId) => api.get(`/evaluation/${submissionId}`),
+
   // Exams
   getExams: () => api.get('/teacher/exams/'),
   createExam: (data) => api.post('/teacher/exams/', data),
