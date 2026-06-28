@@ -12,8 +12,13 @@ async def create_assignment(
     data: dict,
     current_user=Depends(require_role("teacher"))
 ):
+    # Look up teacher name from users collection
+    teacher_user = await db.users.find_one({"email": current_user["email"]})
+    teacher_name = teacher_user.get("name", "") if teacher_user else ""
+
     assignment = {
         "teacher_email": current_user["email"],
+        "teacher_name": teacher_name,
         "title": data.get("title", ""),
         "subject": data.get("subject", ""),
         "description": data.get("description", ""),
@@ -25,10 +30,28 @@ async def create_assignment(
     }
 
     result = await db.assignments.insert_one(assignment)
+    assignment_id = str(result.inserted_id)
+
+    # Notify all students about the new assignment
+    now = datetime.utcnow()
+    student_cursor = db.users.find({"role": "student"}, {"email": 1})
+    notifications = []
+    async for student in student_cursor:
+        notifications.append({
+            "user_email": student["email"],
+            "type": "assignment_created",
+            "title": "New Assignment",
+            "message": f"{teacher_name or current_user['email']} posted a new assignment: '{data.get('title', 'Assignment')}'.",
+            "assignment_id": assignment_id,
+            "read": False,
+            "created_at": now,
+        })
+    if notifications:
+        await db.notifications.insert_many(notifications)
 
     return {
         "message": "Assignment created successfully",
-        "assignment_id": str(result.inserted_id)
+        "assignment_id": assignment_id
     }
 
 
@@ -77,13 +100,18 @@ async def get_assignment(
 
     assignment["_id"] = str(assignment["_id"])
 
-    # Get submissions for this assignment
+    # Get submissions for this assignment, enriched with student info
     submissions = []
     cursor = db.submissions.find(
         {"assignment_id": assignment_id}
-    )
+    ).sort("submitted_at", -1)
     async for sub in cursor:
         sub["_id"] = str(sub["_id"])
+        # Serialize datetime fields
+        for field in ("submitted_at", "published_at", "evaluated_at"):
+            val = sub.get(field)
+            if val and hasattr(val, "isoformat"):
+                sub[field] = val.isoformat()
         submissions.append(sub)
 
     assignment["submissions"] = submissions
