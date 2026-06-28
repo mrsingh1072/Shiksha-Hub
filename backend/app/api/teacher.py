@@ -29,12 +29,30 @@ async def teacher_dashboard(
     if assignments_created == 0:
         assignments_created = await db.assignments.count_documents({})
 
-    # Count submissions for teacher's assignments
-    teacher_assignments = []
+    # Collect this teacher's assignment IDs
+    teacher_assignment_ids = []
     async for a in db.assignments.find({"teacher_email": teacher_email}):
-        teacher_assignments.append(str(a["_id"]))
+        teacher_assignment_ids.append(str(a["_id"]))
 
-    submissions_received = await db.submissions.count_documents({})
+    # Count submissions scoped to teacher's assignments
+    if teacher_assignment_ids:
+        sub_filter = {"assignment_id": {"$in": teacher_assignment_ids}}
+    else:
+        sub_filter = {}
+
+    submissions_received = await db.submissions.count_documents(sub_filter)
+
+    pending_evaluations = await db.submissions.count_documents(
+        {**sub_filter, "teacher_marks": None}
+    ) if teacher_assignment_ids else 0
+
+    evaluated_count = await db.submissions.count_documents(
+        {**sub_filter, "teacher_marks": {"$ne": None}}
+    ) if teacher_assignment_ids else 0
+
+    published_count = await db.submissions.count_documents(
+        {**sub_filter, "published": True}
+    ) if teacher_assignment_ids else 0
 
     # Count classes
     total_classes = await db.classes.count_documents(
@@ -53,10 +71,8 @@ async def teacher_dashboard(
             {"role": "student"}
         )
 
-    # Pending reviews (submissions without grade/feedback)
-    pending_reviews = await db.submissions.count_documents(
-        {"reviewed": {"$ne": True}}
-    )
+    # Pending reviews (legacy field — kept for backward compatibility)
+    pending_reviews = pending_evaluations
 
     # Average student score
     pipeline = [
@@ -118,6 +134,9 @@ async def teacher_dashboard(
         "totalStudents": total_students,
         "totalClasses": total_classes,
         "pendingReviews": pending_reviews,
+        "pendingEvaluations": pending_evaluations,
+        "evaluatedAssignments": evaluated_count,
+        "publishedResults": published_count,
         "averageScore": avg_score,
         "recentActivity": recent_activity[:10],
         "upcomingDeadlines": upcoming_deadlines
