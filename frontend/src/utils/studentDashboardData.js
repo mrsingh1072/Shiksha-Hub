@@ -65,15 +65,42 @@ const normalizeAssignments = (assignments = [], submissions = [], studentEmail =
   return assignments.map((assignment) => {
     const submission = studentSubmissions.find((item) => item.assignment_id === assignment._id)
 
+    // Determine evaluation status
+    let evaluationStatus = 'Not submitted'
+    if (submission) {
+      if (submission.published) evaluationStatus = 'Published'
+      else if (submission.teacher_marks !== null && submission.teacher_marks !== undefined) evaluationStatus = 'Evaluated'
+      else if (submission.evaluation_status === 'ai_evaluated') evaluationStatus = 'Under Review'
+      else evaluationStatus = 'Submitted'
+    }
+
     return {
       id: assignment._id,
       title: assignment.title || 'Untitled assignment',
       subject: assignment.subject || 'General',
       description: assignment.description || '',
       dueDate: assignment.due_date || '',
+      teacherName: assignment.teacher_name || '',
+      teacherEmail: assignment.teacher_email || '',
+      totalMarks: assignment.total_marks || 100,
       status: submission ? 'Submitted' : 'Pending',
-      evaluationStatus: submission?.evaluation ? 'Evaluated' : submission ? 'Submitted' : 'Not submitted',
+      evaluationStatus,
       evaluation: submission?.evaluation || '',
+      // Submission details
+      submissionId: submission?._id || null,
+      submittedAt: submission?.submitted_at || '',
+      filePath: submission?.file_path || '',
+      originalFilename: submission?.original_filename || '',
+      submissionText: submission?.submission_text || '',
+      // Marks — only visible if published
+      published: submission?.published || false,
+      publishedAt: submission?.published_at || '',
+      finalMarks: submission?.published ? (submission?.final_marks ?? submission?.teacher_marks) : null,
+      teacherFeedback: submission?.published ? (submission?.final_feedback ?? submission?.teacher_feedback ?? '') : '',
+      aiFeedback: submission?.published ? (submission?.ai_feedback ?? '') : '',
+      aiStrengths: submission?.published ? (submission?.ai_strengths ?? []) : [],
+      aiWeaknesses: submission?.published ? (submission?.ai_weaknesses ?? []) : [],
+      aiImprovements: submission?.published ? (submission?.ai_improvements ?? []) : [],
     }
   })
 }
