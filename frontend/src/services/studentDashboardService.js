@@ -12,6 +12,7 @@ export async function fetchStudentDashboard() {
   read(api.get('/history/me')),
   read(api.get('/analytics/dashboard')),
   read(api.get('/ai/tutor/conversations')),
+  read(api.get('/student/notifications')),
 ])
 
   // Only treat 401 (token expired / missing) as a fatal auth failure.
