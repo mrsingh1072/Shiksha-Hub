@@ -238,6 +238,7 @@ export const buildStudentWorkspace = ({
   history = [],
   stats = {},
   conversations = [],
+  notifications = [],
 }) => {
   const student = normalizeStudent(dashboard, profile)
   const normalizedAssignments = normalizeAssignments(assignments, submissions, student.email)
@@ -329,24 +330,18 @@ export const buildStudentWorkspace = ({
         { label: 'Notes', value: stats.notesCount ?? dashboard.notesGenerated ?? 0 },
       ],
     },
-    notifications: [
-      ...pendingAssignments.slice(0, 3).map((assignment) => ({
-        id: `assignment-${assignment.id}`,
-        type: 'deadline',
-        title: `${assignment.title} is pending`,
-        time: assignment.dueDate ? `Due ${assignment.dueDate}` : 'No due date set',
-      })),
-      ...normalizedHistory.slice(0, 2).map((activity) => ({
-        id: `activity-${activity.id}`,
-        type: activity.type,
-        title: activity.title,
-        time: activity.createdAt || 'Recent activity',
-      })),
-    ].slice(0, 5),
+    notifications: notifications.map((item) => ({
+  id: item._id,
+  type: item.type,
+  title: item.title,
+  message: item.message,
+  time: item.created_at,
+  read: item.read,
+})),
   }
 }
 
-export const workspaceFromSettled = ([dashboard, profile, assignments, submissions, history, stats, conversations]) =>
+export const workspaceFromSettled = ([dashboard, profile, assignments, submissions, history, stats, conversations,notifications]) =>
   buildStudentWorkspace({
     dashboard: getValue(dashboard, {}),
     profile: getValue(profile, {}),
@@ -355,4 +350,5 @@ export const workspaceFromSettled = ([dashboard, profile, assignments, submissio
     history: getValue(history, []),
     stats: getValue(stats, {}),
     conversations: getValue(conversations, []),
+    notifications: getValue(notifications, []),
   })
