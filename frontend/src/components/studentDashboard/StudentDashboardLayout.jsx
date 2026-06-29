@@ -42,7 +42,7 @@ function Brand() {
   )
 }
 
-function NavItem({ item, compact = false }) {
+function NavItem({ item, compact = false, unreadCount = 0 }) {
   const Icon = item.icon
 
   return (
@@ -55,8 +55,19 @@ function NavItem({ item, compact = false }) {
         } ${isActive ? 'bg-green-primary text-white shadow-glow' : 'text-gray-600 hover:bg-cream hover:text-green-primary'}`
       }
     >
-      <Icon className="h-5 w-5 shrink-0" />
-      {item.label}
+      <div className="flex items-center gap-3">
+  <div className="relative">
+    <Icon className="h-5 w-5 shrink-0" />
+
+    {item.label === "Notifications" && unreadCount > 0 && (
+      <span className="absolute -top-2 -right-2 flex h-5 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+        {unreadCount > 99 ? "99+" : unreadCount}
+      </span>
+    )}
+  </div>
+
+  <span>{item.label}</span>
+</div>
     </NavLink>
   )
 }
@@ -67,6 +78,13 @@ export function useStudentWorkspace() {
 
 export default function StudentDashboardLayout() {
   const { dashboard, isLoading, error, refetch } = useStudentDashboard()
+  console.log("Dashboard:", dashboard)
+  console.log("Notifications:", dashboard?.notifications)
+  const notifications = dashboard?.notifications ?? []
+
+const unreadCount = notifications.filter(
+  (notification) => !notification.read
+).length
   const { logout } = useAuth()
 
   if (isLoading) return <LoadingSkeleton />
@@ -94,8 +112,12 @@ export default function StudentDashboardLayout() {
         </div>
         <nav className="mt-3 flex gap-2 overflow-x-auto pb-1">
           {navItems.map((item) => (
-            <NavItem key={item.to} item={item} compact />
-          ))}
+  <NavItem
+    key={item.to}
+    item={item}
+    unreadCount={unreadCount}
+  />
+))}
         </nav>
       </header>
 
@@ -107,10 +129,14 @@ export default function StudentDashboardLayout() {
           </div>
 
           <nav className="flex-1 space-y-1 overflow-hidden px-3 py-4">
-            {navItems.map((item) => (
-              <NavItem key={item.to} item={item} />
-            ))}
-          </nav>
+  {navItems.map((item) => (
+    <NavItem
+      key={item.to}
+      item={item}
+      unreadCount={unreadCount}
+    />
+  ))}
+</nav>
 
           <div className="shrink-0 space-y-2 border-t border-green-primary/10 p-4">
             <NavLink
