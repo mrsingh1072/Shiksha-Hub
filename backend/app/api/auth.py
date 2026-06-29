@@ -48,6 +48,11 @@ async def login(user: LoginRequest):
         user.identifier.casefold(), ADMIN_EMAIL.casefold()
     ) and hmac.compare_digest(user.password, ADMIN_PASSWORD)
     if is_admin:
+        if user.role != "admin":
+            raise HTTPException(
+                status_code=403,
+                detail="Please login from the Admin portal."
+            )
         token = create_access_token(
             {
                 "email": ADMIN_EMAIL,
@@ -86,6 +91,12 @@ async def login(user: LoginRequest):
         return {
             "message": "Invalid Password"
         }
+    #Role validation
+    if db_user["role"] != user.role:
+        raise HTTPException(
+        status_code=403,
+        detail=f"This account belongs to the {db_user['role'].capitalize()} portal. Please login from the correct portal."
+        )
 
     account_status = db_user.get("status")
     if account_status == "rejected":
