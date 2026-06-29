@@ -46,6 +46,7 @@ export function AuthProvider({ children }) {
       const response = await api.post('/auth/login', {
         identifier: email,
         password,
+        role,
       })
 
       if (!response.data?.access_token) {
