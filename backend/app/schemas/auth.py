@@ -7,6 +7,7 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 class LoginRequest(BaseModel):
     identifier: str
     password: str
+    role: Literal["student", "teacher", "admin"]
 
 
 class ForgotPasswordRequest(BaseModel):
