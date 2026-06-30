@@ -37,6 +37,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCollectionPage from "./pages/admin/AdminCollectionPage";
 import { AdminOperationsPage } from "./pages/admin/AdminOperations";
 import AdminAnnouncements from "./pages/admin/admin-announcements";
+import StudentResources from "./pages/student/StudentResources";
 
 export default function App() {
   return (
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="exams" element={<StudentExams />} />
             <Route path="tutor" element={<StudentTutor />} />
             <Route path="voice-learning" element={<StudentVoiceLearning />} />
+            <Route path="resources" element={<StudentResources />} />
             <Route path="history" element={<StudentHistory />} />
             <Route path="analytics" element={<StudentAnalytics />} />
             <Route path="notifications" element={<StudentNotifications />} />
