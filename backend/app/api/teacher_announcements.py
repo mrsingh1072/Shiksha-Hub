@@ -8,9 +8,17 @@ router = APIRouter()
 
 
 @router.post("/")
-async def create_announcement(data: dict, current_user=Depends(require_role("teacher"))):
+async def create_announcement(
+    data: dict,
+    current_user=Depends(require_role("teacher"))
+):
+    # Get teacher name
+    teacher = await db.users.find_one({"email": current_user["email"]})
+    teacher_name = teacher.get("name", current_user["email"]) if teacher else current_user["email"]
+
     announcement = {
         "teacher_email": current_user["email"],
+        "teacher_name": teacher_name,
         "title": data.get("title", ""),
         "content": data.get("content", ""),
         "class_id": data.get("class_id", ""),
@@ -18,8 +26,36 @@ async def create_announcement(data: dict, current_user=Depends(require_role("tea
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
+
     result = await db.announcements.insert_one(announcement)
-    return {"message": "Announcement created successfully", "announcement_id": str(result.inserted_id)}
+    announcement_id = str(result.inserted_id)
+
+    # -----------------------------
+    # Notify all students
+    # -----------------------------
+    students = db.users.find({"role": "student"}, {"email": 1})
+
+    notifications = []
+    now = datetime.utcnow()
+
+    async for student in students:
+        notifications.append({
+            "user_email": student["email"],
+            "type": "announcement",
+            "title": "New Announcement",
+            "message": f"{teacher_name} posted: {announcement['title']}",
+            "announcement_id": announcement_id,
+            "read": False,
+            "created_at": now
+        })
+
+    if notifications:
+        await db.notifications.insert_many(notifications)
+
+    return {
+        "message": "Announcement created successfully",
+        "announcement_id": announcement_id
+    }
 
 
 @router.get("/")
