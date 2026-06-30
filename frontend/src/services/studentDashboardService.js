@@ -5,20 +5,20 @@ const read = (request) => request.then((response) => response.data)
 
 export async function fetchStudentDashboard() {
   const results = await Promise.allSettled([
-  read(api.get('/student/dashboard')),
-  read(api.get('/profile/')),
-  read(api.get('/student/assignments')),
-  read(api.get('/submissions/')),
-  read(api.get('/history/me')),
-  read(api.get('/analytics/dashboard')),
-  read(api.get('/ai/tutor/conversations')),
-  read(api.get('/student/notifications')),
-])
+    read(api.get('/student/dashboard')),
+    read(api.get('/profile/')),
+    read(api.get('/student/assignments')),
+    read(api.get('/submissions/')),
+    read(api.get('/history/me')),
+    read(api.get('/analytics/dashboard')),
+    read(api.get('/ai/tutor/conversations')),
+    read(api.get('/student/notifications')),
+  ])
 
-  // Only treat 401 (token expired / missing) as a fatal auth failure.
-  // 403 (wrong role) from optional endpoints should not crash the dashboard.
   const authFailure = results.find(
-    (result) => result.status === 'rejected' && result.reason?.response?.status === 401
+    (result) =>
+      result.status === 'rejected' &&
+      result.reason?.response?.status === 401
   )
 
   if (authFailure) {
@@ -26,6 +26,11 @@ export async function fetchStudentDashboard() {
   }
 
   return workspaceFromSettled(results)
+}
+
+export async function getStudentResources() {
+  const response = await api.get('/student/resources')
+  return response.data
 }
 
 export async function updateStudentProfile(profile) {
@@ -58,9 +63,13 @@ export async function updateStudentProfile(profile) {
 export async function uploadProfilePhoto(file) {
   const formData = new FormData()
   formData.append('file', file)
+
   const response = await api.post('/profile/photo', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
+
   return response.data
 }
 
@@ -72,22 +81,36 @@ export async function removeProfilePhoto() {
 export async function uploadAssignmentFile(file) {
   const formData = new FormData()
   formData.append('file', file)
+
   const response = await api.post('/assignment-upload/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
+
   return response.data
 }
 
-export async function submitAssignment({ assignment_id, submission_text = '', file }) {
+export async function submitAssignment({
+  assignment_id,
+  submission_text = '',
+  file,
+}) {
   const formData = new FormData()
+
   formData.append('assignment_id', assignment_id)
   formData.append('submission_text', submission_text)
+
   if (file) {
     formData.append('file', file)
   }
+
   const response = await api.post('/submissions/submit', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
+
   return response.data
 }
 
@@ -97,6 +120,8 @@ export async function getStudentNotifications() {
 }
 
 export async function markNotificationRead(notificationId) {
-  const response = await api.put(`/student/notifications/${notificationId}/read`)
+  const response = await api.put(
+    `/student/notifications/${notificationId}/read`
+  )
   return response.data
 }
