@@ -129,6 +129,39 @@ async def student_notifications(
 
 
 @router.put("/notifications/{notification_id}/read")
+@router.get("/resources")
+async def student_resources(
+    current_user=Depends(require_role("student"))
+):
+    """
+    Get all learning resources uploaded by teachers.
+    """
+
+    resources = []
+
+    cursor = db.resources.find().sort("created_at", -1)
+
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+
+        # Show teacher name
+        teacher = await db.users.find_one(
+            {"email": item.get("teacher_email")}
+        )
+
+        item["teacher_name"] = (
+            teacher.get("name", "")
+            if teacher
+            else ""
+        )
+
+        # Convert datetime
+        if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
+            item["created_at"] = item["created_at"].isoformat()
+
+        resources.append(item)
+
+    return resources
 async def mark_notification_read(
     notification_id: str,
     current_user=Depends(require_role("student"))
