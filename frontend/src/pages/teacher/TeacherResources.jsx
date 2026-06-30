@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FolderOpen, Plus, Trash2, X, Upload, Download, FileText, Image, File } from 'lucide-react'
+import { FolderOpen, Plus, Trash2, X, Upload, Download, FileText, Image, File, Video } from 'lucide-react'
 import teacherService from '../../services/teacherService'
+const BASE_URL = "http://127.0.0.1:8000"
 
-const typeIcon = { PDF: FileText, PPT: FileText, PPTX: FileText, DOC: FileText, DOCX: FileText, PNG: Image, JPG: Image, JPEG: Image }
-const typeColor = { PDF: '#dc2626', PPT: '#ea580c', PPTX: '#ea580c', DOC: '#2563eb', DOCX: '#2563eb', PNG: '#059669', JPG: '#059669', JPEG: '#059669' }
+const typeIcon = { PDF: FileText, PPT: FileText, PPTX: FileText, DOC: FileText, DOCX: FileText, PNG: Image, JPG: Image, JPEG: Image, VIDEO: Video }
+const typeColor = { PDF: '#dc2626', PPT: '#ea580c', PPTX: '#ea580c', DOC: '#2563eb', DOCX: '#2563eb', PNG: '#059669', JPG: '#059669', JPEG: '#059669', VIDEO: '#7c3aed', }
 
 export default function TeacherResources() {
   const [resources, setResources] = useState([])
@@ -90,12 +91,25 @@ export default function TeacherResources() {
               <motion.div key={r._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
                 className="teacher-card group">
                 <div className="p-5">
+                  {r.file_type === "VIDEO" && (
+                  <video
+                  controls
+                  preload="metadata"
+                  className="w-full h-44 rounded-lg mb-3 object-cover bg-black"
+                  >
+                  <source
+                  src={`${BASE_URL}/teacher/resources/file/${r.stored_name}`}
+                  type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                 </video>
+                  )}
                   <div className="flex items-start justify-between mb-3">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: color + '15' }}>
                       <Icon className="h-6 w-6" style={{ color }} />
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <a href={`http://127.0.0.1:8000/teacher/resources/file/${r.stored_name}`} target="_blank" rel="noreferrer"
+                      <a href={`${BASE_URL}/teacher/resources/file/${r.stored_name}`} target="_blank" rel="noreferrer"
                         className="p-1.5 rounded-lg text-slate-400 hover:text-green-primary hover:bg-green-primary/10"><Download className="h-4 w-4" /></a>
                       <button onClick={() => handleDelete(r._id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
                     </div>
@@ -131,9 +145,9 @@ export default function TeacherResources() {
                     <Upload className="h-10 w-10 text-slate-300 mx-auto mb-2" />
                     {file ? <p className="text-sm font-semibold text-green-primary">{file.name}</p> : (
                       <><p className="text-sm font-medium text-slate-500">Drag & drop file here or click to browse</p>
-                      <p className="text-xs text-slate-400 mt-1">PDF, PPT, DOCX, PNG, JPG (max 50MB)</p></>
+                      <p className="text-xs text-slate-400 mt-1">PDF, PPT, DOCX, PNG, JPG, MP4 (max 50MB)</p></>
                     )}
-                    <input ref={fileRef} type="file" className="hidden" accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.jpeg"
+                    <input ref={fileRef} type="file" className="hidden" accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.jpeg,.mp4"
                       onChange={e => e.target.files[0] && setFile(e.target.files[0])} />
                   </div>
                   <div><label className="teacher-label">Title</label><input className="teacher-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="Resource title (optional)" /></div>
