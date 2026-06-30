@@ -21,6 +21,7 @@ ALLOWED_TYPES = {
     "image/png": "PNG",
     "image/jpeg": "JPG",
     "image/jpg": "JPG",
+    "video/mp4": "VIDEO",
 }
 
 
