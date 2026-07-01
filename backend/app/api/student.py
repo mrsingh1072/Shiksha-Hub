@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends
-from fastapi import HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies.roles import require_role
 from app.database.mongodb import db
 from bson import ObjectId
@@ -9,11 +8,8 @@ router = APIRouter()
 
 @router.get("/dashboard")
 async def student_dashboard(
-    current_user=Depends(
-        require_role("student")
-    )
+    current_user=Depends(require_role("student"))
 ):
-
     user = await db.users.find_one(
         {
             "email": current_user["email"]
@@ -54,13 +50,20 @@ async def student_dashboard(
         }
     )
 
-    # Assignment module stats
     total_assignments = await db.assignments.count_documents({})
+
     evaluated_count = await db.submissions.count_documents(
-        {"student_email": email, "teacher_marks": {"$ne": None}}
+        {
+            "student_email": email,
+            "teacher_marks": {"$ne": None}
+        }
     )
+
     published_count = await db.submissions.count_documents(
-        {"student_email": email, "published": True}
+        {
+            "student_email": email,
+            "published": True
+        }
     )
 
     return {
@@ -69,7 +72,6 @@ async def student_dashboard(
         "studentType": user.get("studentType", ""),
         "studentName": user.get("name", ""),
         "email": user.get("email", ""),
-
         "schoolName": user.get("schoolName", ""),
         "studentClass": user.get("studentClass", ""),
         "collegeName": user.get("collegeName", ""),
@@ -78,7 +80,6 @@ async def student_dashboard(
         "yearSemester": user.get("yearSemester", ""),
         "branch": user.get("branch", ""),
         "semester": user.get("semester", ""),
-
         "assignmentsSubmitted": assignments_submitted,
         "notesGenerated": notes_generated,
         "examsGenerated": exams_generated,
@@ -94,16 +95,22 @@ async def student_dashboard(
 async def student_assignments(
     current_user=Depends(require_role("student"))
 ):
-    """List all assignments available to the student, including teacher name."""
     assignments = []
+
     cursor = db.assignments.find().sort("created_at", -1)
 
     async for item in cursor:
         item["_id"] = str(item["_id"])
-        # Ensure teacher_name is present
+
         if not item.get("teacher_name") and item.get("teacher_email"):
-            teacher_user = await db.users.find_one({"email": item["teacher_email"]})
-            item["teacher_name"] = teacher_user.get("name", "") if teacher_user else ""
+            teacher = await db.users.find_one(
+                {
+                    "email": item["teacher_email"]
+                }
+            )
+
+            item["teacher_name"] = teacher.get("name", "") if teacher else ""
+
         assignments.append(item)
 
     return assignments
@@ -113,30 +120,29 @@ async def student_assignments(
 async def student_notifications(
     current_user=Depends(require_role("student"))
 ):
-    """Get notifications for this student, sorted newest first."""
     notifications = []
+
     cursor = db.notifications.find(
-        {"user_email": current_user["email"]}
+        {
+            "user_email": current_user["email"]
+        }
     ).sort("created_at", -1).limit(50)
 
-    async for n in cursor:
-        n["_id"] = str(n["_id"])
-        if n.get("created_at") and hasattr(n["created_at"], "isoformat"):
-            n["created_at"] = n["created_at"].isoformat()
-        notifications.append(n)
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+
+        if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
+            item["created_at"] = item["created_at"].isoformat()
+
+        notifications.append(item)
 
     return notifications
 
 
-@router.put("/notifications/{notification_id}/read")
 @router.get("/resources")
 async def student_resources(
     current_user=Depends(require_role("student"))
 ):
-    """
-    Get all learning resources uploaded by teachers.
-    """
-
     resources = []
 
     cursor = db.resources.find().sort("created_at", -1)
@@ -144,38 +150,51 @@ async def student_resources(
     async for item in cursor:
         item["_id"] = str(item["_id"])
 
-        # Show teacher name
         teacher = await db.users.find_one(
-            {"email": item.get("teacher_email")}
+            {
+                "email": item.get("teacher_email")
+            }
         )
 
-        item["teacher_name"] = (
-            teacher.get("name", "")
-            if teacher
-            else ""
-        )
+        item["teacher_name"] = teacher.get("name", "") if teacher else ""
 
-        # Convert datetime
         if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
             item["created_at"] = item["created_at"].isoformat()
 
         resources.append(item)
 
     return resources
+
+
+@router.put("/notifications/{notification_id}/read")
 async def mark_notification_read(
     notification_id: str,
     current_user=Depends(require_role("student"))
 ):
-    """Mark a notification as read."""
     try:
         result = await db.notifications.update_one(
-            {"_id": ObjectId(notification_id), "user_email": current_user["email"]},
-            {"$set": {"read": True}}
+            {
+                "_id": ObjectId(notification_id),
+                "user_email": current_user["email"]
+            },
+            {
+                "$set": {
+                    "read": True
+                }
+            }
         )
     except Exception:
-        raise HTTPException(status_code=400, detail="Invalid notification ID")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid notification id"
+        )
 
-    if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Notification not found")
+    if result.matched_count == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Notification not found"
+        )
 
-    return {"message": "Notification marked as read"}
+    return {
+        "message": "Notification marked as read"
+    }

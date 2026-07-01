@@ -47,6 +47,44 @@ async def get_classes(current_user=Depends(require_role("teacher"))):
         item["student_count"] = len(item.get("students", []))
         classes.append(item)
     return classes
+@router.get("/available")
+async def available_classes(
+    current_user=Depends(require_role("student"))
+):
+    classes = []
+
+    cursor = db.classes.find()
+
+    async for cls in cursor:
+
+        status = "available"
+
+        # Student already joined
+        if current_user["email"] in cls.get("students", []):
+            status = "joined"
+
+        else:
+            request = await db.class_requests.find_one({
+                "class_id": str(cls["_id"]),
+                "student_email": current_user["email"]
+            })
+
+            if request:
+                status = request["status"]
+
+        classes.append({
+            "_id": str(cls["_id"]),
+            "class_name": cls.get("class_name"),
+            "subject": cls.get("subject"),
+            "semester": cls.get("semester"),
+            "section": cls.get("section"),
+            "description": cls.get("description"),
+            "teacher_email": cls.get("teacher_email"),
+            "class_code": cls.get("class_code"),
+            "status": status
+        })
+
+    return classes
 
 
 @router.get("/{class_id}")
@@ -103,3 +141,178 @@ async def join_class(data: dict):
         {"$addToSet": {"students": student_email}}
     )
     return {"message": "Joined class successfully", "class_name": cls["class_name"]}
+@router.post("/request")
+async def request_join_class(
+    data: dict,
+    current_user=Depends(require_role("student"))
+):
+    class_code = data.get("class_code", "").upper()
+
+    cls = await db.classes.find_one({"class_code": class_code})
+
+    if not cls:
+        raise HTTPException(status_code=404, detail="Invalid class code")
+
+    existing = await db.class_requests.find_one({
+        "class_id": str(cls["_id"]),
+        "student_email": current_user["email"],
+        "status": {
+            "$in": ["pending", "approved"]
+        }
+    })
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Request already exists"
+        )
+
+    request = {
+        "class_id": str(cls["_id"]),
+        "teacher_email": cls["teacher_email"],
+        "student_email": current_user["email"],
+        "status": "pending",
+        "created_at": datetime.utcnow()
+    }
+
+    await db.class_requests.insert_one(request)
+
+    return {
+        "message": "Join request sent successfully"
+    }
+@router.get("/{class_id}/requests")
+async def get_pending_requests(
+    class_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    requests = []
+
+    cursor = db.class_requests.find({
+        "class_id": class_id,
+        "teacher_email": current_user["email"],
+        "status": "pending"
+    })
+
+    async for req in cursor:
+        user = await db.users.find_one({
+            "email": req["student_email"]
+        })
+
+        requests.append({
+            "request_id": str(req["_id"]),
+            "name": user.get("name", ""),
+            "email": user.get("email", ""),
+            "course": user.get("course", ""),
+            "semester": user.get("yearSemester", "")
+        })
+
+    return requests
+@router.post("/{class_id}/approve/{request_id}")
+async def approve_request(
+    class_id: str,
+    request_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    request = await db.class_requests.find_one({
+        "_id": ObjectId(request_id),
+        "teacher_email": current_user["email"]
+    })
+
+    if not request:
+        raise HTTPException(
+            status_code=404,
+            detail="Request not found"
+        )
+
+    await db.classes.update_one(
+        {
+            "_id": ObjectId(class_id),
+            "teacher_email": current_user["email"]
+        },
+        {
+            "$addToSet": {
+                "students": request["student_email"]
+            }
+        }
+    )
+
+    await db.class_requests.update_one(
+        {"_id": ObjectId(request_id)},
+        {
+            "$set": {
+                "status": "approved"
+            }
+        }
+    )
+    cls = await db.classes.find_one({
+    "_id": ObjectId(class_id),
+    "teacher_email": current_user["email"]
+    })
+    await db.notifications.insert_one({
+        "user_email": request["student_email"],
+        "title": "🎉 Class Join Request Approved",
+        "message": (
+            f'Congratulations! Your request to join "{cls["class_name"]}" '
+            f'has been approved.\n\n'
+            f'Class Code: {cls["class_code"]}\n'
+            f'Use this code to join your classroom.'
+        ),
+        "type": "class_approval",
+        "class_id": class_id,
+        "class_name": cls["class_name"],
+        "class_code": cls["class_code"],
+        "teacher_email": current_user["email"],
+        "read": False,
+        "created_at": datetime.utcnow()
+    })
+    return {
+        "message": "Student approved successfully"
+    }
+@router.post("/{class_id}/reject/{request_id}")
+async def reject_request(
+    class_id: str,
+    request_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    request = await db.class_requests.find_one({
+        "_id": ObjectId(request_id),
+        "teacher_email": current_user["email"]
+    })
+
+    if not request:
+        raise HTTPException(
+            status_code=404,
+            detail="Request not found"
+        )
+
+    await db.class_requests.update_one(
+        {
+            "_id": ObjectId(request_id),
+            "teacher_email": current_user["email"]
+        },
+        {
+            "$set": {
+                "status": "rejected"
+            }
+        }
+    )
+
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+
+    await db.notifications.insert_one({
+        "user_email": request["student_email"],
+        "title": "Class Join Request Rejected",
+        "message": f'Your request to join "{cls["class_name"]}" has been rejected.',
+        "type": "class_rejected",
+        "class_id": class_id,
+        "teacher_email": current_user["email"],
+        "read": False,
+        "created_at": datetime.utcnow()
+    })
+
+    return {
+        "message": "Request rejected"
+    }

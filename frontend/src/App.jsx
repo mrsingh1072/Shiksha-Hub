@@ -38,6 +38,8 @@ import AdminCollectionPage from "./pages/admin/AdminCollectionPage";
 import { AdminOperationsPage } from "./pages/admin/AdminOperations";
 import AdminAnnouncements from "./pages/admin/admin-announcements";
 import StudentResources from "./pages/student/StudentResources";
+import TeacherClassWorkspace from "./pages/teacher/TeacherClassWorkspace"
+import StudentClasses from "./pages/student/StudentClasses";
 
 export default function App() {
   return (
@@ -65,6 +67,7 @@ export default function App() {
             <Route path="tutor" element={<StudentTutor />} />
             <Route path="voice-learning" element={<StudentVoiceLearning />} />
             <Route path="resources" element={<StudentResources />} />
+            <Route path="classes" element={<StudentClasses />} />
             <Route path="history" element={<StudentHistory />} />
             <Route path="analytics" element={<StudentAnalytics />} />
             <Route path="notifications" element={<StudentNotifications />} />
@@ -94,6 +97,8 @@ export default function App() {
             <Route path="analytics" element={<TeacherAnalytics />} />
             <Route path="profile" element={<TeacherProfilePage />} />
             <Route path="settings" element={<TeacherSettings />} />
+            <Route path="classes/:classId"element={<TeacherClassWorkspace />}/>
+            
           </Route>
 
           <Route

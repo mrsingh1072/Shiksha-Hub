@@ -8,6 +8,14 @@ const teacherService = {
   getClasses: () => api.get('/teacher/classes/'),
   createClass: (data) => api.post('/teacher/classes/', data),
   getClass: (id) => api.get(`/teacher/classes/${id}`),
+  getPendingRequests: (classId) =>
+    api.get(`/teacher/classes/${classId}/requests`),
+
+  approveStudent: (classId, requestId) =>
+    api.post(`/teacher/classes/${classId}/approve/${requestId}`),
+
+  rejectStudent: (classId, requestId) =>
+    api.post(`/teacher/classes/${classId}/reject/${requestId}`),
   updateClass: (id, data) => api.put(`/teacher/classes/${id}`, data),
   deleteClass: (id) => api.delete(`/teacher/classes/${id}`),
 

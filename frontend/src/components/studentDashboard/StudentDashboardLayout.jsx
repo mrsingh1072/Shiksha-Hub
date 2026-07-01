@@ -12,6 +12,7 @@ import {
   Target,
   UserRound,
   Volume2,
+  Users,
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useStudentDashboard } from '../../hooks/useStudentDashboard'
@@ -25,6 +26,7 @@ const navItems = [
   { to: '/student/voice-learning', label: 'Voice Learning', icon: Volume2 },
   { to: '/student/history', label: 'History', icon: History },
   { to: '/student/resources', label: 'Resources', icon: FolderOpen },
+  { to: '/student/classes', label: 'Classes', icon: Users, },
   { to: '/student/analytics', label: 'Analytics', icon: Target },
   { to: '/student/notifications', label: 'Notifications', icon: Bell },
   { to: '/student/profile', label: 'Profile', icon: UserRound },

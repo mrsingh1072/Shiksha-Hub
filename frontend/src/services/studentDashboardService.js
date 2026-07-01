@@ -125,3 +125,15 @@ export async function markNotificationRead(notificationId) {
   )
   return response.data
 }
+export async function getAvailableClasses() {
+  const response = await api.get("/teacher/classes/available");
+  return response.data;
+}
+
+export async function requestClass(classCode) {
+  const response = await api.post("/teacher/classes/request", {
+    class_code: classCode,
+  });
+
+  return response.data;
+}

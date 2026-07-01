@@ -6,7 +6,7 @@ import { DashboardCard, EmptyState, SectionHeader } from '../../components/stude
 
 export default function StudentNotifications() {
   const { dashboard , refetch } = useStudentWorkspace()
-  const { notifications } = dashboard
+  const notifications = dashboard?.notifications || []
 
   useEffect(() => {
   const unread = notifications.filter((n) => !n.read)
@@ -24,7 +24,7 @@ export default function StudentNotifications() {
   }
 
   markAll()
-}, [notifications, refetch])
+}, [])
 
   return (
     <div className="space-y-5">

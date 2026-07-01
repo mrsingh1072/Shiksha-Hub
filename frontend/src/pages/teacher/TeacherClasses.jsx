@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from 'framer-motion'
 import { GraduationCap, Plus, Copy, Users, Trash2, Edit3, X, Check, BookOpen } from 'lucide-react'
 import teacherService from '../../services/teacherService'
 
 export default function TeacherClasses() {
+  const navigate = useNavigate()
   const [classes, setClasses] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -81,7 +83,7 @@ export default function TeacherClasses() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {classes.map((cls, i) => (
             <motion.div key={cls._id} variants={itemVariants} initial="hidden" animate="visible" transition={{ delay: i * 0.05 }}
-              className="teacher-card">
+              className="teacher-card cursor-pointer" onClick={() => navigate(`/teacher/classes/${cls._id}`)}>
               <div className="h-2 bg-gradient-to-r from-green-primary to-green-secondary" />
               <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
@@ -90,7 +92,12 @@ export default function TeacherClasses() {
                     <span className="teacher-badge teacher-badge-info mt-1">{cls.subject}</span>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleDelete(cls._id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                    <button onClick={(e) =>{ 
+                      e.stopPropagation()
+                       handleDelete(cls._id)
+                       }} 
+                       className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>

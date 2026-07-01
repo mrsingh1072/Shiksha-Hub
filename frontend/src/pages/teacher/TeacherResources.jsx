@@ -7,15 +7,15 @@ const BASE_URL = "http://127.0.0.1:8000"
 const typeIcon = { PDF: FileText, PPT: FileText, PPTX: FileText, DOC: FileText, DOCX: FileText, PNG: Image, JPG: Image, JPEG: Image, VIDEO: Video }
 const typeColor = { PDF: '#dc2626', PPT: '#ea580c', PPTX: '#ea580c', DOC: '#2563eb', DOCX: '#2563eb', PNG: '#059669', JPG: '#059669', JPEG: '#059669', VIDEO: '#7c3aed', }
 
-export default function TeacherResources() {
+export default function TeacherResources({ classId }) {
   const [resources, setResources] = useState([])
   const [classes, setClasses] = useState([])
   const [loading, setLoading] = useState(true)
   const [showUpload, setShowUpload] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [filterClass, setFilterClass] = useState('')
+  const [filterClass, setFilterClass] = useState(classId || '')
   const [title, setTitle] = useState('')
-  const [classId, setClassId] = useState('')
+  const [selectedClassId, setSelectedClassId] = useState('')
   const [description, setDescription] = useState('')
   const [file, setFile] = useState(null)
   const [dragOver, setDragOver] = useState(false)
@@ -26,7 +26,18 @@ export default function TeacherResources() {
     catch (err) { console.error(err) }
     finally { setLoading(false) }
   }
-  useEffect(() => { fetch(); teacherService.getClasses().then(r => setClasses(r.data)).catch(() => {}) }, [filterClass])
+  useEffect(() => {
+  if (classId) {
+    setFilterClass(classId)
+  }
+
+  fetch()
+
+  teacherService
+    .getClasses()
+    .then(r => setClasses(r.data))
+    .catch(() => {})
+}, [classId, filterClass])
 
   const handleUpload = async (e) => {
     e.preventDefault()
@@ -36,10 +47,10 @@ export default function TeacherResources() {
       const fd = new FormData()
       fd.append('file', file)
       fd.append('title', title || file.name)
-      fd.append('class_id', classId)
+      fd.append('class_id', selectedClassId || classId)
       fd.append('description', description)
       await teacherService.uploadResource(fd)
-      setShowUpload(false); setFile(null); setTitle(''); setClassId(''); setDescription(''); fetch()
+      setShowUpload(false); setFile(null); setTitle(''); setSelectedClassId(''); setDescription(''); fetch()
     } catch (err) { console.error(err) }
     finally { setUploading(false) }
   }
@@ -152,7 +163,7 @@ export default function TeacherResources() {
                   </div>
                   <div><label className="teacher-label">Title</label><input className="teacher-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="Resource title (optional)" /></div>
                   <div><label className="teacher-label">Class (optional)</label>
-                    <select className="teacher-select" value={classId} onChange={e => setClassId(e.target.value)}>
+                    <select className="teacher-select" value={selectedClassId} onChange={(e) => setSelectedClassId(e.target.value)}>
                       <option value="">No class</option>
                       {classes.map(c => <option key={c._id} value={c._id}>{c.class_name}</option>)}
                     </select>
