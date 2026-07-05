@@ -27,7 +27,6 @@ import TeacherExams from "./pages/teacher/TeacherExams";
 import TeacherQuestionBank from "./pages/teacher/TeacherQuestionBank";
 import TeacherAIAssistant from "./pages/teacher/TeacherAIAssistant";
 import TeacherAttendance from "./pages/teacher/TeacherAttendance";
-import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncements";
 import TeacherResources from "./pages/teacher/TeacherResources";
 import TeacherAnalytics from "./pages/teacher/TeacherAnalytics";
 import TeacherProfilePage from "./pages/teacher/TeacherProfile";
@@ -40,6 +39,7 @@ import AdminAnnouncements from "./pages/admin/admin-announcements";
 import StudentResources from "./pages/student/StudentResources";
 import TeacherClassWorkspace from "./pages/teacher/TeacherClassWorkspace"
 import StudentClasses from "./pages/student/StudentClasses";
+import StudentClassWorkspace from "./pages/student/StudentClassWorkspace";
 
 export default function App() {
   return (
@@ -68,6 +68,7 @@ export default function App() {
             <Route path="voice-learning" element={<StudentVoiceLearning />} />
             <Route path="resources" element={<StudentResources />} />
             <Route path="classes" element={<StudentClasses />} />
+            <Route path="classes/:classId" element={<StudentClassWorkspace />} />
             <Route path="history" element={<StudentHistory />} />
             <Route path="analytics" element={<StudentAnalytics />} />
             <Route path="notifications" element={<StudentNotifications />} />
@@ -92,7 +93,6 @@ export default function App() {
             <Route path="question-bank" element={<TeacherQuestionBank />} />
             <Route path="ai-assistant" element={<TeacherAIAssistant />} />
             <Route path="attendance" element={<TeacherAttendance />} />
-            <Route path="announcements" element={<TeacherAnnouncements />} />
             <Route path="resources" element={<TeacherResources />} />
             <Route path="analytics" element={<TeacherAnalytics />} />
             <Route path="profile" element={<TeacherProfilePage />} />

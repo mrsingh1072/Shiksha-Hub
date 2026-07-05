@@ -19,7 +19,6 @@ const navItems = [
   { to: '/teacher/question-bank', label: 'Question Bank', icon: Database },
   { to: '/teacher/ai-assistant', label: 'AI Assistant', icon: Bot },
   { to: '/teacher/attendance', label: 'Attendance', icon: CalendarCheck },
-  { to: '/teacher/announcements', label: 'Announcements', icon: Megaphone },
   { to: '/teacher/resources', label: 'Resources', icon: FolderOpen },
   { to: '/teacher/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/teacher/profile', label: 'Profile', icon: UserCircle },

@@ -3,8 +3,11 @@ import {
   getAvailableClasses,
   requestClass,
 } from "../../services/studentDashboardService";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentClasses() {
+  const navigate = useNavigate();
+  
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -105,10 +108,10 @@ export default function StudentClasses() {
 
 {cls.status === "joined" && (
   <button
-    disabled
+    onClick={() => navigate(`/student/classes/${cls._id}`)}
     className="bg-blue-600 text-white px-5 py-2 rounded-lg"
   >
-    Joined
+    Open Classroom
   </button>
 )}
 

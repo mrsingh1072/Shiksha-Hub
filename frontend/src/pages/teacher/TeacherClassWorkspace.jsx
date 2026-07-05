@@ -7,10 +7,15 @@ import {
   Megaphone,
   FileText,
   Video,
+  Mic,
+  AlertTriangle,
+  Monitor,
+  Shield,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import teacherService from "../../services/teacherService";
 import TeacherResources from "./TeacherResources";
+import TeacherExamsTab from "./TeacherExamsTab";
 
 export default function TeacherClassWorkspace() {
   const { classId } = useParams();
@@ -19,6 +24,13 @@ export default function TeacherClassWorkspace() {
   const [classData, setClassData] = useState(null);
 
   const [pendingRequests, setPendingRequests] = useState([]);
+
+  // ===== EXAM STATE =====
+  const [exams, setExams] = useState([]);
+  const [examMode, setExamMode] = useState("list"); // list | create-manual | create-ai | preview | submissions
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [examSubmissions, setExamSubmissions] = useState(null);
+  const [examForm, setExamForm] = useState(null);
 
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -362,9 +374,7 @@ const rejectStudent = async (requestId) => {
     )}
 
     {activeTab === "exams" && (
-      <h2 className="text-xl font-semibold">
-        Exams
-      </h2>
+      <TeacherExamsTab classId={classId} />
     )}
 
     {activeTab === "live" && (

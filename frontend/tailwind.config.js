@@ -9,9 +9,9 @@ export default {
       colors: {
         'cream': '#F8F6F0',
         'white': '#FFFFFF',
-        'green-primary': '#2F5D50',
-        'green-secondary': '#6B8E23',
-        'gold': '#D4A017',
+        'green-primary': '#2F6B4F',
+        'green-secondary': '#1F4D3A',
+        'green-accent': '#A7F3D0',
         'text': '#1F2937',
         'dark': '#222222',
       },

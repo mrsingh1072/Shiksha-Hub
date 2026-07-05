@@ -198,3 +198,96 @@ async def mark_notification_read(
     return {
         "message": "Notification marked as read"
     }
+@router.get("/classes/{class_id}")
+async def get_student_class(
+    class_id: str,
+    current_user=Depends(require_role("student"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id)
+    })
+
+    if not cls:
+        raise HTTPException(
+            status_code=404,
+            detail="Class not found"
+        )
+
+    if current_user["email"] not in cls.get("students", []):
+        raise HTTPException(
+            status_code=403,
+            detail="You are not enrolled in this class"
+        )
+
+    teacher = await db.users.find_one({
+        "email": cls["teacher_email"]
+    })
+
+    student_details = []
+
+    for email in cls.get("students", []):
+        student = await db.users.find_one({"email": email})
+
+        if student:
+            student_details.append({
+                "name": student.get("name", ""),
+                "email": student.get("email", ""),
+                "course": student.get("course", ""),
+                "semester": student.get("semester", "")
+            })
+
+    return {
+        "id": str(cls["_id"]),
+        "class_name": cls.get("class_name", ""),
+        "subject": cls.get("subject", ""),
+        "semester": cls.get("semester", ""),
+        "section": cls.get("section", ""),
+        "class_code": cls.get("class_code", ""),
+        "description": cls.get("description", ""),
+        "teacher_name": teacher.get("name", "") if teacher else "",
+        "teacher_email": cls.get("teacher_email", ""),
+        "student_count": len(cls.get("students", [])),
+        "student_details": student_details
+    }
+@router.get("/classes/{class_id}/announcements")
+async def get_class_announcements(
+    class_id: str,
+    current_user=Depends(require_role("student"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id)
+    })
+
+    if not cls:
+        raise HTTPException(
+            status_code=404,
+            detail="Class not found"
+        )
+
+    if current_user["email"] not in cls.get("students", []):
+        raise HTTPException(
+            status_code=403,
+            detail="You are not enrolled in this class"
+        )
+
+    announcements = []
+
+    # Use class_announcements collection (matches teacher POST endpoint)
+    # Filter: show class-wide OR personal announcements targeted to this student
+    cursor = db.class_announcements.find({
+        "class_id": class_id,
+        "$or": [
+            {"type": "class"},
+            {"type": "personal", "student_email": current_user["email"]}
+        ]
+    }).sort("created_at", -1)
+
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+
+        if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
+            item["created_at"] = item["created_at"].isoformat()
+
+        announcements.append(item)
+
+    return announcements

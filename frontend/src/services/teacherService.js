@@ -71,11 +71,49 @@ const teacherService = {
   },
   getAttendanceReport: (classId) => api.get(`/teacher/attendance/report?class_id=${classId}`),
 
-  // Announcements
-  getAnnouncements: (classId) => api.get(`/teacher/announcements/${classId ? `?class_id=${classId}` : ''}`),
-  createAnnouncement: (data) => api.post('/teacher/announcements/', data),
-  updateAnnouncement: (id, data) => api.put(`/teacher/announcements/${id}`, data),
-  deleteAnnouncement: (id) => api.delete(`/teacher/announcements/${id}`),
+  // Classroom Announcements
+  getClassAnnouncements: (classId) =>
+    api.get(`/teacher/classes/${classId}/teacher-announcements`),
+
+  getTeacherClassAnnouncements: (classId) =>
+    api.get(`/teacher/classes/${classId}/teacher-announcements`),
+
+  createClassAnnouncement: (classId, data) =>
+    api.post(`/teacher/classes/${classId}/announcements`, data),
+
+  updateClassAnnouncement: (classId, announcementId, data) =>
+    api.put(`/teacher/classes/${classId}/announcements/${announcementId}`, data),
+
+  deleteClassAnnouncement: (classId, announcementId) =>
+    api.delete(`/teacher/classes/${classId}/announcements/${announcementId}`),
+
+  // Class Exams (per-class)
+  getClassExams: (classId) =>
+    api.get(`/teacher/classes/${classId}/exams`),
+
+  getClassExam: (classId, examId) =>
+    api.get(`/teacher/classes/${classId}/exams/${examId}`),
+
+  createClassExamManual: (classId, data) =>
+    api.post(`/teacher/classes/${classId}/exams/manual`, data),
+
+  generateClassExamAI: (classId, data) =>
+    api.post(`/teacher/classes/${classId}/exams/ai`, data),
+
+  updateClassExam: (classId, examId, data) =>
+    api.put(`/teacher/classes/${classId}/exams/${examId}`, data),
+
+  startClassExam: (classId, examId) =>
+    api.post(`/teacher/classes/${classId}/exams/${examId}/start`),
+
+  deleteClassExam: (classId, examId) =>
+    api.delete(`/teacher/classes/${classId}/exams/${examId}`),
+
+  getExamSubmissions: (classId, examId) =>
+    api.get(`/teacher/classes/${classId}/exams/${examId}/submissions`),
+
+  publishExamResults: (classId, examId) =>
+    api.post(`/teacher/classes/${classId}/exams/${examId}/publish`),
 
   // Resources
   getResources: (classId) => api.get(`/teacher/resources/${classId ? `?class_id=${classId}` : ''}`),
@@ -94,3 +132,4 @@ const teacherService = {
 }
 
 export default teacherService
+

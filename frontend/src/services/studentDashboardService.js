@@ -137,3 +137,36 @@ export async function requestClass(classCode) {
 
   return response.data;
 }
+export async function getStudentClass(classId) {
+  const response = await api.get(`/student/classes/${classId}`);
+  return response.data;
+}
+export const getClassAnnouncements = async (classId) => {
+  const res = await api.get(`/student/classes/${classId}/announcements`);
+  return res.data;
+};
+
+// ===== Student Exam Services =====
+export const getStudentClassExams = async (classId) => {
+  const res = await api.get(`/student/classes/${classId}/exams`);
+  return res.data;
+};
+
+export const startStudentExam = async (examId) => {
+  const res = await api.post(`/student/exams/${examId}/start`);
+  return res.data;
+};
+
+export const saveExamAnswer = async (examId, data) => {
+  const res = await api.post(`/student/exams/${examId}/save-answer`, data);
+  return res.data;
+};
+
+export const submitStudentExam = async (examId, data = {}) => {
+  const res = await api.post(`/student/exams/${examId}/submit`, data);
+  return res.data;
+};
+export const getStudentExamResults = async (classId) => {
+  const res = await api.get(`/student/classes/${classId}/exam-results`);
+  return res.data;
+};
