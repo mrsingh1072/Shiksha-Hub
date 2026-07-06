@@ -106,6 +106,12 @@ const teacherService = {
   startClassExam: (classId, examId) =>
     api.post(`/teacher/classes/${classId}/exams/${examId}/start`),
 
+  publishClassExam: (classId, examId) =>
+    api.post(`/teacher/classes/${classId}/exams/${examId}/publish`),
+
+  publishExamResults: (classId, examId) =>
+    api.post(`/teacher/classes/${classId}/exams/${examId}/publish-results`),
+
   deleteClassExam: (classId, examId) =>
     api.delete(`/teacher/classes/${classId}/exams/${examId}`),
 

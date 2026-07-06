@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Sparkles, Trash2, Eye, Clock, CheckCircle, HelpCircle, FileText, Play, Edit3, Save, X, AlertTriangle, User, Monitor, Mic, Video } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import teacherService from "../../services/teacherService";
+
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TeacherExamsTab({ classId }) {
   const [exams, setExams] = useState([]);
@@ -8,6 +11,12 @@ export default function TeacherExamsTab({ classId }) {
   const [selectedExam, setSelectedExam] = useState(null);
   const [examSubmissions, setExamSubmissions] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // Create Exam State
+  const [showCreate, setShowCreate] = useState(false);
+  const [formData, setFormData] = useState({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [] });
+  const [newQ, setNewQ] = useState({ question_text: '', type: 'mcq', options: ['', '', '', ''], correct_answer: '', marks: 1 });
 
   useEffect(() => {
     loadExams();
@@ -30,6 +39,68 @@ export default function TeacherExamsTab({ classId }) {
     } catch (err) {
       alert("Failed to delete exam.");
     }
+  };
+
+  const handlePublishExam = async (examId) => {
+    if (!window.confirm("Publish this exam? It will become visible to all students.")) return;
+    try {
+      await teacherService.publishClassExam(classId, examId);
+      loadExams();
+      setExamMode("list");
+    } catch (err) {
+      alert("Failed to publish exam.");
+    }
+  };
+
+  const handlePublishResults = async (examId) => {
+    if (!window.confirm("Publish results to students? They will be able to see their scores.")) return;
+    try {
+      await teacherService.publishExamResults(classId, examId);
+      loadExams();
+      alert("Results published successfully.");
+      const updatedExam = { ...selectedExam, results_published: true };
+      setSelectedExam(updatedExam);
+    } catch (err) {
+      alert("Failed to publish results.");
+    }
+  };
+
+  const handleCreate = async (e, status = "draft") => {
+    if (e) e.preventDefault();
+    
+    let finalQuestions = [...formData.questions];
+    if (newQ.question_text.trim()) {
+      finalQuestions.push({ ...newQ });
+    }
+
+    if (finalQuestions.length === 0) {
+      alert("Please add at least one question to the exam.");
+      return;
+    }
+
+    try {
+      const payload = { ...formData, questions: finalQuestions, status };
+      await teacherService.createClassExamManual(classId, payload);
+      setFormData({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [] });
+      setNewQ({ question_text: '', type: 'mcq', options: ['', '', '', ''], correct_answer: '', marks: 1 });
+      setShowCreate(false);
+      loadExams();
+      alert(`Exam successfully ${status === 'published' ? 'published' : 'saved as draft'}.`);
+    } catch (err) {
+      alert("Failed to create exam.");
+      console.error(err);
+    }
+  };
+
+  const addQuestion = () => {
+    if (!newQ.question_text.trim()) return;
+    setFormData({ ...formData, questions: [...formData.questions, { ...newQ }] });
+    setNewQ({ question_text: '', type: 'mcq', options: ['', '', '', ''], correct_answer: '', marks: 1 });
+  };
+
+  const removeQuestion = (idx) => {
+    const updated = formData.questions.filter((_, i) => i !== idx);
+    setFormData({ ...formData, questions: updated });
   };
 
 
@@ -55,6 +126,9 @@ export default function TeacherExamsTab({ classId }) {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Class Exams</h2>
+            <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-green-primary hover:bg-green-secondary text-white rounded-lg transition font-semibold">
+              <Plus size={18} /> Create Exam
+            </button>
           </div>
 
           {exams.length === 0 ? (
@@ -68,8 +142,10 @@ export default function TeacherExamsTab({ classId }) {
                   <div>
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-bold text-lg text-gray-800">{exam.title}</h3>
-                      <span className="text-xs px-2 py-1 rounded-full font-bold bg-blue-100 text-blue-700">
-                        PUBLISHED
+                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                        exam.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {exam.status === 'published' ? 'PUBLISHED' : 'DRAFT'}
                       </span>
                     </div>
                     <div className="flex gap-4 mb-4">
@@ -79,7 +155,7 @@ export default function TeacherExamsTab({ classId }) {
                     </div>
                   </div>
                   <div className="flex justify-between items-center border-t pt-3 mt-2">
-                    <button onClick={() => loadSubmissions(exam)} className="text-blue-600 font-semibold text-sm hover:underline">
+                    <button onClick={() => loadSubmissions(exam)} className="text-green-primary font-semibold text-sm hover:underline">
                       View Submissions
                     </button>
                     <div className="flex gap-2">
@@ -111,8 +187,8 @@ export default function TeacherExamsTab({ classId }) {
                 Back
               </button>
               {selectedExam.status !== "published" && (
-                <button onClick={() => handlePublishExam(selectedExam._id)} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-blue-700">
-                  <CheckCircle size={16} /> Publish Results
+                <button onClick={() => handlePublishExam(selectedExam._id)} className="px-4 py-2 bg-green-primary text-white rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-secondary">
+                  <CheckCircle size={16} /> Publish Exam
                 </button>
               )}
             </div>
@@ -158,6 +234,11 @@ export default function TeacherExamsTab({ classId }) {
               <button onClick={() => setExamMode("list")} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200">
                 Back to Exams
               </button>
+              {!selectedExam.results_published && (
+                <button onClick={() => handlePublishResults(selectedExam._id)} className="px-4 py-2 bg-green-primary text-white rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-secondary">
+                  <CheckCircle size={16} /> Publish Results
+                </button>
+              )}
             </div>
           </div>
 
@@ -199,6 +280,84 @@ export default function TeacherExamsTab({ classId }) {
           )}
         </div>
       )}
+
+      {/* CREATE EXAM MODAL */}
+      <AnimatePresence>
+        {showCreate && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowCreate(false)}>
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-bold text-gray-800">Create Class Exam</h2>
+                <button onClick={() => setShowCreate(false)} className="p-2 hover:bg-gray-100 rounded-xl transition text-gray-500"><X size={20} /></button>
+              </div>
+              <form onSubmit={handleCreate} className="p-6 space-y-6">
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Title *</label>
+                    <input className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary focus:border-green-primary outline-none" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Subject *</label>
+                    <input className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary focus:border-green-primary outline-none" value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} required />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Duration (min)</label>
+                    <input className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary focus:border-green-primary outline-none" type="number" value={formData.duration_minutes} onChange={e => setFormData({...formData, duration_minutes: Number(e.target.value)})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Total Marks</label>
+                    <input className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary focus:border-green-primary outline-none" type="number" value={formData.total_marks} onChange={e => setFormData({...formData, total_marks: Number(e.target.value)})} />
+                  </div>
+                </div>
+
+                {/* Add Question Section */}
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-bold text-gray-800 mb-3">Questions ({formData.questions.length})</h3>
+                  
+                  {formData.questions.map((q, i) => (
+                    <div key={i} className="p-4 bg-gray-50 rounded-xl mb-3 flex justify-between items-start border">
+                      <div>
+                        <span className="font-bold text-green-primary mr-2">Q{i + 1}.</span> 
+                        <span className="text-gray-800">{q.question_text}</span>
+                      </div>
+                      <button type="button" onClick={() => removeQuestion(i)} className="text-red-400 hover:text-red-600"><Trash2 size={16} /></button>
+                    </div>
+                  ))}
+
+                  <div className="p-4 bg-green-50 rounded-xl space-y-3 border border-green-200">
+                    <input className="w-full px-4 py-2 border rounded-xl outline-none" placeholder="Question text" value={newQ.question_text} onChange={e => setNewQ({...newQ, question_text: e.target.value})} />
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      {newQ.options.map((opt, oi) => (
+                        <input key={oi} className="w-full px-4 py-2 border rounded-xl outline-none" placeholder={`Option ${oi + 1}`} value={opt}
+                          onChange={e => { const opts = [...newQ.options]; opts[oi] = e.target.value; setNewQ({...newQ, options: opts}) }} />
+                      ))}
+                    </div>
+                    <div className="flex gap-3">
+                      <input className="w-2/3 px-4 py-2 border rounded-xl outline-none" placeholder="Exact Correct Answer" value={newQ.correct_answer} onChange={e => setNewQ({...newQ, correct_answer: e.target.value})} />
+                      <input className="w-1/3 px-4 py-2 border rounded-xl outline-none" type="number" placeholder="Marks" value={newQ.marks} onChange={e => setNewQ({...newQ, marks: Number(e.target.value)})} />
+                    </div>
+                    
+                    <button type="button" onClick={addQuestion} className="px-4 py-2 bg-white text-green-primary border border-green-primary rounded-xl font-semibold hover:bg-green-50 w-full transition">
+                      + Add Question
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white">
+                  <button type="button" onClick={() => setShowCreate(false)} className="px-6 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition">Cancel</button>
+                  <button type="button" onClick={(e) => handleCreate(e, "draft")} className="px-6 py-2 bg-yellow-50 text-yellow-700 border border-yellow-200 font-semibold rounded-xl hover:bg-yellow-100 transition">Save Draft</button>
+                  <button type="button" onClick={(e) => handleCreate(e, "published")} className="px-6 py-2 bg-green-primary text-white font-semibold rounded-xl hover:bg-green-secondary transition">Publish Exam</button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

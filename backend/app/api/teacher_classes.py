@@ -541,7 +541,7 @@ async def create_manual_exam(
         "duration_minutes": data.get("duration_minutes", 30),
         "total_marks": total_marks,
         "questions": questions,
-        "status": "published",
+        "status": data.get("status", "draft"),
         "created_at": datetime.utcnow().isoformat()
     }
 
@@ -653,7 +653,7 @@ Return ONLY the JSON array, no markdown, no explanation."""
         "duration_minutes": data.get("duration_minutes", max(num_questions * 3, 15)),
         "total_marks": total_marks,
         "questions": validated,
-        "status": "published",
+        "status": "draft",
         "created_at": datetime.utcnow().isoformat()
     }
 
@@ -693,6 +693,62 @@ async def get_class_exams(
         exams.append(item)
 
     return exams
+
+
+@router.post("/{class_id}/exams/{exam_id}/publish")
+async def publish_class_exam(
+    class_id: str,
+    exam_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+    if not cls:
+        raise HTTPException(status_code=404, detail="Class not found")
+
+    result = await db.class_exams.update_one(
+        {
+            "_id": ObjectId(exam_id),
+            "class_id": class_id,
+            "teacher_email": current_user["email"]
+        },
+        {"$set": {"status": "published"}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Exam not found")
+
+    return {"message": "Exam published successfully"}
+
+
+@router.post("/{class_id}/exams/{exam_id}/publish-results")
+async def publish_exam_results(
+    class_id: str,
+    exam_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+    if not cls:
+        raise HTTPException(status_code=404, detail="Class not found")
+
+    result = await db.class_exams.update_one(
+        {
+            "_id": ObjectId(exam_id),
+            "class_id": class_id,
+            "teacher_email": current_user["email"]
+        },
+        {"$set": {"results_published": True}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Exam not found")
+
+    return {"message": "Exam results published successfully"}
 
 
 @router.get("/{class_id}/exams/{exam_id}")

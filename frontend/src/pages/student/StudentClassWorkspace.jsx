@@ -63,13 +63,34 @@ export default function StudentClassWorkspace() {
     loadClass();
   }, []);
 
+  const [preflightExamId, setPreflightExamId] = useState(null);
+
   useEffect(() => {
     if (activeTab === "exams") {
       loadExams();
     }
   }, [activeTab]);
 
+  // ===== PROCTORING ENFORCEMENT =====
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (examView === "attempt" && document.hidden) {
+        setTabSwitchCount(prev => {
+          const next = prev + 1;
+          if (next >= 5) {
+            alert("You have switched tabs too many times. Your exam is being automatically submitted.");
+            handleSubmitExam(true); // force submit
+          } else {
+            setProctorWarning(`Warning: You switched tabs! (${next}/5 allowed)`);
+          }
+          return next;
+        });
+      }
+    };
 
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [examView]);
   // ===== TIMER =====
   useEffect(() => {
     if (examView === "attempt" && timeLeft > 0) {
@@ -174,6 +195,32 @@ const handleStartExam = async (examId) => {
   }
 };
 
+const handleRequestPermissionsAndStart = async () => {
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    mediaStreamRef.current = mediaStream;
+    setCameraOk(true);
+    setMicOk(true);
+
+    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: "monitor" } });
+    screenStreamRef.current = screenStream;
+    setScreenOk(true);
+    
+    // Listen for user stopping screen share manually
+    screenStream.getVideoTracks()[0].onended = () => {
+      if (examView === "attempt") {
+        alert("Screen sharing was stopped. Your exam is being automatically submitted.");
+        handleSubmitExam(true);
+      }
+    };
+
+    handleStartExam(preflightExamId);
+    setPreflightExamId(null);
+  } catch (err) {
+    alert("You must allow Camera, Microphone, and Full Screen Share to take this exam.");
+  }
+};
+
 const handleSaveAnswer = async (questionId, answer, selectedOption) => {
   const examId = currentExam?.attempt?.exam_id || currentExam?.examId;
   if (!examId) return;
@@ -194,8 +241,8 @@ const handleSaveAnswer = async (questionId, answer, selectedOption) => {
   }
 };
 
-const handleSubmitExam = async () => {
-  if (!window.confirm("Are you sure you want to submit this exam? You cannot change answers after submission.")) return;
+const handleSubmitExam = async (force = false) => {
+  if (!force && !window.confirm("Are you sure you want to submit this exam? You cannot change answers after submission.")) return;
   setExamSubmitting(true);
   const examId = currentExam?.attempt?.exam_id || currentExam?.examId;
   try {
@@ -764,14 +811,20 @@ const filteredStudents =
                   </button>
                 ) : (
                   <button
-                    onClick={() => handleStartExam(exam._id)}
+                    onClick={() => setPreflightExamId(exam._id)}
                     disabled={examStarting}
                     className="flex items-center gap-2 bg-green-primary text-white px-4 py-2 rounded-lg hover:bg-green-secondary transition disabled:opacity-50"
                   >
                     {examStarting ? (
-                      <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Starting...</>
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Starting...</span>
+                      </span>
                     ) : (
-                      <><Play size={16} /> Start Exam</>
+                      <span className="flex items-center gap-2">
+                        <Play size={16} />
+                        <span>Start Exam</span>
+                      </span>
                     )}
                   </button>
                 )}
@@ -779,6 +832,28 @@ const filteredStudents =
             </div>
           </div>
         ))}
+      </div>
+    )}
+
+    {/* PREFLIGHT HARDWARE CHECK MODAL */}
+    {preflightExamId && (
+      <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl text-center">
+          <Shield size={50} className="mx-auto text-blue-500 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800">Proctored Exam Requirements</h2>
+          <p className="text-gray-600 mt-2">
+            This exam requires your microphone, camera, and a full screen share to be active during the entire duration. Switching tabs more than 5 times will result in automatic submission.
+          </p>
+          <div className="bg-blue-50 rounded-lg p-4 mt-4 text-sm text-blue-800 font-semibold flex flex-col gap-2 items-start">
+            <span className="flex items-center gap-2"><Mic size={16} /> Microphone Access Required</span>
+            <span className="flex items-center gap-2"><Video size={16} /> Camera Access Required</span>
+            <span className="flex items-center gap-2"><Monitor size={16} /> Screen Share (Entire Screen) Required</span>
+          </div>
+          <div className="flex gap-3 mt-6">
+            <button onClick={() => setPreflightExamId(null)} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200">Cancel</button>
+            <button onClick={handleRequestPermissionsAndStart} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Allow & Start</button>
+          </div>
+        </div>
       </div>
     )}
 </div>
@@ -789,11 +864,24 @@ const filteredStudents =
   <div className="space-y-4">
 
     {/* Top Bar: Timer + Submit */}
-    <div className="flex items-center justify-between bg-white rounded-xl border p-4 shadow-sm sticky top-0 z-10">
-      <div>
-        <h2 className="text-lg font-bold text-gray-800">{currentExam.title}</h2>
-        <p className="text-xs text-gray-400">{currentExam.questions?.length} questions • {currentExam.total_marks} marks</p>
-      </div>
+    <div className="flex flex-col gap-3 sticky top-0 z-10 bg-gray-50 pb-4">
+      
+      {/* Proctoring Warning Bar */}
+      {proctorWarning && (
+        <div className="bg-red-500 text-white text-sm font-bold p-3 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={18} />
+            {proctorWarning}
+          </div>
+          <button onClick={() => setProctorWarning("")} className="bg-white/20 px-3 py-1 rounded hover:bg-white/30">Dismiss</button>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between bg-white rounded-xl border p-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-gray-800">{currentExam.title}</h2>
+          <p className="text-xs text-gray-400">{currentExam.questions?.length} questions • {currentExam.total_marks} marks</p>
+        </div>
 
       {/* Timer */}
       <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-mono text-lg font-bold ${
@@ -816,6 +904,7 @@ const filteredStudents =
         )}
       </button>
     </div>
+  </div>
 
     {/* Main Exam Layout: Question Nav (left) + Answer Panel (right) */}
     <div className="flex gap-4" style={{ minHeight: "60vh" }}>

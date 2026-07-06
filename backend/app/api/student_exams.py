@@ -71,7 +71,7 @@ async def get_student_class_exams(
             "attempt_status": attempt.get("status") if attempt else None,
             "attempt_id": str(attempt["_id"]) if attempt else None,
             "submitted_at": submitted_at,
-            "result_visible": item.get("status") == "published" and bool(attempt),
+            "result_visible": bool(item.get("results_published")) and bool(attempt),
         })
 
     print("EXAMS FETCHED:", len(exams))
@@ -89,7 +89,7 @@ async def start_exam(
     if not exam:
         raise HTTPException(status_code=404, detail="Exam not found")
 
-    if exam.get("status") != "active":
+    if exam.get("status") not in ["active", "published"]:
         raise HTTPException(status_code=400, detail="This exam is not active")
 
     cls = await db.classes.find_one({"_id": ObjectId(exam.get("class_id", ""))})
