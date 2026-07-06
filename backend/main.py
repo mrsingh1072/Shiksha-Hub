@@ -31,6 +31,7 @@ from app.api.evaluation import router as evaluation_router
 from app.api.admin import router as admin_router
 from app.api.voice_learning import router as voice_learning_router
 from app.api.student_exams import router as student_exams_router
+from app.api.live_ws import router as live_ws_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -197,6 +198,13 @@ app.include_router(
     evaluation_router,
     prefix="/evaluation",
     tags=["Evaluation"]
+)
+
+# ===== WEBSOCKET SIGNALING =====
+app.include_router(
+    live_ws_router,
+    prefix="/live",
+    tags=["Live WebSockets"]
 )
 
 

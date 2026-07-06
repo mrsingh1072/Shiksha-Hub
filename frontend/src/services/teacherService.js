@@ -109,6 +109,13 @@ const teacherService = {
   publishClassExam: (classId, examId) =>
     api.post(`/teacher/classes/${classId}/exams/${examId}/publish`),
 
+  // --- DEPRECATED: Manual start/stop controls replaced by Scheduled Exam Windows ---
+  // startExamForAll: (classId, examId) =>
+  //   api.post(`/teacher/classes/${classId}/exams/${examId}/start-all`),
+  //
+  // endExamForAll: (classId, examId) =>
+  //   api.post(`/teacher/classes/${classId}/exams/${examId}/end-all`),
+
   publishExamResults: (classId, examId) =>
     api.post(`/teacher/classes/${classId}/exams/${examId}/publish-results`),
 
@@ -127,6 +134,11 @@ const teacherService = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteResource: (id) => api.delete(`/teacher/resources/${id}`),
+
+  // Live Class
+  startLiveClass: (classId) => api.post(`/teacher/classes/${classId}/live/start`),
+  getLiveClassStatus: (classId) => api.get(`/teacher/classes/${classId}/live`),
+  endLiveClass: (classId) => api.post(`/teacher/classes/${classId}/live/end`),
 
   // Profile
   getProfile: () => api.get('/profile/'),

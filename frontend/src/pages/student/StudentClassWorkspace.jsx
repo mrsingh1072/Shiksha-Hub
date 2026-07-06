@@ -26,6 +26,7 @@ import {
   saveExamAnswer,
   submitStudentExam,
 } from "../../services/studentDashboardService";
+import StudentLiveClassTab from "./StudentLiveClassTab";
 
 export default function StudentClassWorkspace() {
   const { classId } = useParams();
@@ -1039,34 +1040,7 @@ const filteredStudents =
   </div>
 )}
 {activeTab === "live" && (
-  <div className="space-y-6">
-
-    <div>
-      <h2 className="text-2xl font-bold">
-        Live Class
-      </h2>
-
-      <p className="text-gray-500 mt-1">
-        Join live sessions conducted by your teacher.
-      </p>
-    </div>
-
-    <div className="rounded-xl border bg-slate-50 p-10 text-center">
-      <Video
-        size={50}
-        className="mx-auto text-gray-400 mb-4"
-      />
-
-      <h3 className="text-lg font-semibold">
-        No Live Class Scheduled
-      </h3>
-
-      <p className="text-gray-500 mt-2">
-        You'll see meeting links here whenever your teacher schedules a live class.
-      </p>
-    </div>
-
-  </div>
+  <StudentLiveClassTab classId={classId} />
 )}
 
   </div>

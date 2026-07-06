@@ -55,6 +55,34 @@ async def get_student_class_exams(
         if created_at and hasattr(created_at, "isoformat"):
             created_at = created_at.isoformat()
 
+        now = datetime.utcnow()
+        start_time_str = item.get("start_time")
+        end_time_str = item.get("end_time")
+
+        start_time = None
+        if start_time_str:
+            try:
+                start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00"))
+            except ValueError:
+                pass
+        
+        end_time = None
+        if end_time_str:
+            try:
+                end_time = datetime.fromisoformat(end_time_str.replace("Z", "+00:00"))
+            except ValueError:
+                pass
+
+        attempt_status = attempt.get("status") if attempt else None
+        
+        access_status = "active"
+        if attempt_status == "submitted":
+            access_status = "submitted"
+        elif start_time and now < start_time.replace(tzinfo=None):
+            access_status = "locked"
+        elif end_time and now > end_time.replace(tzinfo=None):
+            access_status = "expired" if not attempt_status else "submitted"
+
         exams.append({
             "_id": exam_id,
             "title": item.get("title", ""),
@@ -68,7 +96,10 @@ async def get_student_class_exams(
             "exam_type": item.get("exam_type", "manual"),
             "status": item.get("status", "draft"),
             "created_at": created_at,
-            "attempt_status": attempt.get("status") if attempt else None,
+            "start_time": start_time_str,
+            "end_time": end_time_str,
+            "access_status": access_status,
+            "attempt_status": attempt_status,
             "attempt_id": str(attempt["_id"]) if attempt else None,
             "submitted_at": submitted_at,
             "result_visible": bool(item.get("results_published")) and bool(attempt),
@@ -91,6 +122,26 @@ async def start_exam(
 
     if exam.get("status") not in ["active", "published"]:
         raise HTTPException(status_code=400, detail="This exam is not active")
+
+    now = datetime.utcnow()
+    start_time_str = exam.get("start_time")
+    end_time_str = exam.get("end_time")
+
+    if start_time_str:
+        try:
+            start_time = datetime.fromisoformat(start_time_str.replace("Z", "+00:00")).replace(tzinfo=None)
+            if now < start_time:
+                raise HTTPException(status_code=400, detail="Exam has not started yet")
+        except ValueError:
+            pass
+
+    if end_time_str:
+        try:
+            end_time = datetime.fromisoformat(end_time_str.replace("Z", "+00:00")).replace(tzinfo=None)
+            if now > end_time:
+                raise HTTPException(status_code=400, detail="Exam window has expired")
+        except ValueError:
+            pass
 
     cls = await db.classes.find_one({"_id": ObjectId(exam.get("class_id", ""))})
     if not cls or student_email not in cls.get("students", []):

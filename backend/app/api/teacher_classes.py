@@ -2,14 +2,25 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies.roles import require_role
 from app.database.mongodb import db
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 import json
+import uuid
 from app.services.ai_client import ask_ai
 
 router = APIRouter()
 
+def convert_ist_to_utc(ist_string):
+    if not ist_string:
+        return None
+    try:
+        ist_string = ist_string.split("+")[0].replace("Z", "")
+        dt = datetime.fromisoformat(ist_string)
+        utc_dt = dt - timedelta(hours=5, minutes=30)
+        return utc_dt.isoformat() + "Z"
+    except Exception:
+        return None
 
 def generate_class_code(length=6):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
@@ -542,6 +553,8 @@ async def create_manual_exam(
         "total_marks": total_marks,
         "questions": questions,
         "status": data.get("status", "draft"),
+        "start_time": convert_ist_to_utc(data.get("start_time")),
+        "end_time": convert_ist_to_utc(data.get("end_time")),
         "created_at": datetime.utcnow().isoformat()
     }
 
@@ -654,6 +667,8 @@ Return ONLY the JSON array, no markdown, no explanation."""
         "total_marks": total_marks,
         "questions": validated,
         "status": "draft",
+        "start_time": convert_ist_to_utc(data.get("start_time")),
+        "end_time": convert_ist_to_utc(data.get("end_time")),
         "created_at": datetime.utcnow().isoformat()
     }
 
@@ -721,6 +736,63 @@ async def publish_class_exam(
         raise HTTPException(status_code=404, detail="Exam not found")
 
     return {"message": "Exam published successfully"}
+
+
+# --- DEPRECATED: Manual start/stop functionality has been replaced by scheduled windows ---
+# @router.post("/{class_id}/exams/{exam_id}/start-all")
+# async def start_exam_for_all(
+#     class_id: str,
+#     exam_id: str,
+#     current_user=Depends(require_role("teacher"))
+# ):
+#     cls = await db.classes.find_one({
+#         "_id": ObjectId(class_id),
+#         "teacher_email": current_user["email"]
+#     })
+#     if not cls:
+#         raise HTTPException(status_code=404, detail="Class not found")
+#
+#     result = await db.class_exams.update_one(
+#         {
+#             "_id": ObjectId(exam_id),
+#             "class_id": class_id,
+#             "teacher_email": current_user["email"]
+#         },
+#         {"$set": {"start_time": datetime.utcnow().isoformat(), "status": "published"}}
+#     )
+#
+#     if result.matched_count == 0:
+#         raise HTTPException(status_code=404, detail="Exam not found")
+#
+#     return {"message": "Exam started for all students"}
+#
+#
+# @router.post("/{class_id}/exams/{exam_id}/end-all")
+# async def end_exam_for_all(
+#     class_id: str,
+#     exam_id: str,
+#     current_user=Depends(require_role("teacher"))
+# ):
+#     cls = await db.classes.find_one({
+#         "_id": ObjectId(class_id),
+#         "teacher_email": current_user["email"]
+#     })
+#     if not cls:
+#         raise HTTPException(status_code=404, detail="Class not found")
+#
+#     result = await db.class_exams.update_one(
+#         {
+#             "_id": ObjectId(exam_id),
+#             "class_id": class_id,
+#             "teacher_email": current_user["email"]
+#         },
+#         {"$set": {"end_time": datetime.utcnow().isoformat()}}
+#     )
+#
+#     if result.matched_count == 0:
+#         raise HTTPException(status_code=404, detail="Exam not found")
+#
+#     return {"message": "Exam ended for all students"}
 
 
 @router.post("/{class_id}/exams/{exam_id}/publish-results")
@@ -803,6 +875,11 @@ async def update_class_exam(
                 "questions"]:
         if key in data:
             update_data[key] = data[key]
+    
+    if "start_time" in data:
+        update_data["start_time"] = convert_ist_to_utc(data["start_time"])
+    if "end_time" in data:
+        update_data["end_time"] = convert_ist_to_utc(data["end_time"])
 
     if "questions" in update_data:
         update_data["total_marks"] = sum(
@@ -933,3 +1010,90 @@ async def get_exam_submissions(
         })
 
     return submissions
+
+# ===== LIVE CLASS (PHASE 1) =====
+
+@router.post("/{class_id}/live/start")
+async def start_live_class(
+    class_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+    if not cls:
+        raise HTTPException(status_code=404, detail="Class not found")
+        
+    teacher = await db.users.find_one({"email": current_user["email"], "role": "teacher"})
+    teacher_id = str(teacher["_id"])
+    
+    await db.live_sessions.update_many(
+        {"class_id": class_id, "status": "live"},
+        {"$set": {"status": "ended", "end_time": datetime.utcnow().isoformat()}}
+    )
+    
+    session_doc = {
+        "class_id": class_id,
+        "teacher_id": teacher_id,
+        "room_id": str(uuid.uuid4()),
+        "status": "live",
+        "start_time": datetime.utcnow().isoformat(),
+        "end_time": None,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    
+    result = await db.live_sessions.insert_one(session_doc)
+    session_doc["_id"] = str(result.inserted_id)
+    
+    return {"message": "Live session started", "session": session_doc}
+
+
+@router.get("/{class_id}/live")
+async def get_live_class(
+    class_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+    if not cls:
+        raise HTTPException(status_code=404, detail="Class not found")
+        
+    session = await db.live_sessions.find_one({
+        "class_id": class_id,
+        "status": "live"
+    })
+    
+    if not session:
+        return {"session": None}
+        
+    session["_id"] = str(session["_id"])
+    return {"session": session}
+
+
+@router.post("/{class_id}/live/end")
+async def end_live_class(
+    class_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    cls = await db.classes.find_one({
+        "_id": ObjectId(class_id),
+        "teacher_email": current_user["email"]
+    })
+    if not cls:
+        raise HTTPException(status_code=404, detail="Class not found")
+        
+    teacher = await db.users.find_one({"email": current_user["email"], "role": "teacher"})
+    teacher_id = str(teacher["_id"])
+    
+    result = await db.live_sessions.update_many(
+        {"class_id": class_id, "teacher_id": teacher_id, "status": "live"},
+        {"$set": {"status": "ended", "end_time": datetime.utcnow().isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="No active live session found")
+        
+    return {"message": "Live session ended successfully"}

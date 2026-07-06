@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import teacherService from "../../services/teacherService";
 import TeacherResources from "./TeacherResources";
 import TeacherExamsTab from "./TeacherExamsTab";
+import TeacherLiveClassTab from "./TeacherLiveClassTab";
 
 export default function TeacherClassWorkspace() {
   const { classId } = useParams();
@@ -378,9 +379,7 @@ const rejectStudent = async (requestId) => {
     )}
 
     {activeTab === "live" && (
-      <h2 className="text-xl font-semibold">
-        Live Class
-      </h2>
+      <TeacherLiveClassTab classId={classId} />
     )}
 
   </div>

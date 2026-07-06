@@ -15,7 +15,7 @@ export default function TeacherExamsTab({ classId }) {
 
   // Create Exam State
   const [showCreate, setShowCreate] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [] });
+  const [formData, setFormData] = useState({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [], start_time: '', end_time: '' });
   const [newQ, setNewQ] = useState({ question_text: '', type: 'mcq', options: ['', '', '', ''], correct_answer: '', marks: 1 });
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function TeacherExamsTab({ classId }) {
     try {
       const payload = { ...formData, questions: finalQuestions, status };
       await teacherService.createClassExamManual(classId, payload);
-      setFormData({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [] });
+      setFormData({ title: '', description: '', subject: '', duration_minutes: 30, total_marks: 10, questions: [], start_time: '', end_time: '' });
       setNewQ({ question_text: '', type: 'mcq', options: ['', '', '', ''], correct_answer: '', marks: 1 });
       setShowCreate(false);
       loadExams();
@@ -142,11 +142,26 @@ export default function TeacherExamsTab({ classId }) {
                   <div>
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-bold text-lg text-gray-800">{exam.title}</h3>
-                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${
-                        exam.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {exam.status === 'published' ? 'PUBLISHED' : 'DRAFT'}
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                          exam.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {exam.status === 'published' ? 'PUBLISHED' : 'DRAFT'}
+                        </span>
+                        {exam.status === 'published' && (() => {
+                          if (!exam.start_time || !exam.end_time) return (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-600">
+                              ALWAYS ACTIVE
+                            </span>
+                          );
+                          const now = new Date();
+                          const start = new Date(exam.start_time);
+                          const end = new Date(exam.end_time);
+                          if (now < start) return <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-gray-100 text-gray-600">NOT STARTED</span>;
+                          if (now > end) return <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-red-100 text-red-600">ENDED</span>;
+                          return <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-green-100 text-green-700 animate-pulse">ACTIVE NOW</span>;
+                        })()}
+                      </div>
                     </div>
                     <div className="flex gap-4 mb-4">
                       <span className="flex items-center gap-1 text-xs text-gray-500"><HelpCircle size={12}/> {exam.questions?.length || 0} Qs</span>
@@ -154,17 +169,25 @@ export default function TeacherExamsTab({ classId }) {
                       <span className="flex items-center gap-1 text-xs text-gray-500"><CheckCircle size={12}/> {exam.total_marks} marks</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center border-t pt-3 mt-2">
-                    <button onClick={() => loadSubmissions(exam)} className="text-green-primary font-semibold text-sm hover:underline">
-                      View Submissions
-                    </button>
-                    <div className="flex gap-2">
-                      <button onClick={() => { setSelectedExam(exam); setExamMode("preview"); }} className="p-2 text-gray-500 hover:text-gray-800 rounded-lg hover:bg-gray-100" title="Preview">
-                        <Eye size={16} />
+                  <div className="flex flex-col gap-2 mt-2 pt-2 border-t text-xs text-gray-600">
+                    {exam.start_time && exam.end_time && (
+                      <div className="flex justify-between">
+                        <span><strong>Start:</strong> {new Date(exam.start_time).toLocaleString()}</span>
+                        <span><strong>End:</strong> {new Date(exam.end_time).toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center mt-2">
+                      <button onClick={() => loadSubmissions(exam)} className="text-green-primary font-semibold text-sm hover:underline">
+                        View Submissions
                       </button>
-                      <button onClick={() => handleDeleteExam(exam._id)} className="p-2 text-red-500 hover:text-red-700 rounded-lg hover:bg-red-50" title="Delete">
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => { setSelectedExam(exam); setExamMode("preview"); }} className="p-2 text-gray-500 hover:text-gray-800 rounded-lg hover:bg-gray-100" title="Preview">
+                          <Eye size={16} />
+                        </button>
+                        <button onClick={() => handleDeleteExam(exam._id)} className="p-2 text-red-500 hover:text-red-700 rounded-lg hover:bg-red-50" title="Delete">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -311,6 +334,22 @@ export default function TeacherExamsTab({ classId }) {
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Total Marks</label>
                     <input className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary focus:border-green-primary outline-none" type="number" value={formData.total_marks} onChange={e => setFormData({...formData, total_marks: Number(e.target.value)})} />
+                  </div>
+                </div>
+
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                  <p className="text-xs text-blue-700 mb-3 font-semibold flex items-center gap-1">
+                    <Clock size={14} /> Exam will automatically open and close based on schedule. All times are in IST (India).
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Start Time (IST)</label>
+                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">End Time (IST)</label>
+                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} />
+                    </div>
                   </div>
                 </div>
 
