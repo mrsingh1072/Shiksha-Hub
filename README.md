@@ -73,7 +73,7 @@
 
 | Analytics | Admin Panel |
 | :---: | :---: |
-| ![Analytics](https://placehold.co/500x300/f8fafc/0f172a?text=Analytics) | ![Admin Panel](screenshots/admin-dashboard.png) |
+| ![Analytics](screenshots/analytics.png) | ![Admin Panel](screenshots/admin-dashboard.png) |
 
 ---
 
