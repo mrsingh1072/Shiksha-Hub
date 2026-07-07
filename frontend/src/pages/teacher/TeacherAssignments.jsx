@@ -288,7 +288,7 @@ export default function TeacherAssignments({ classId }) {
                               <span>Submitted: {formatTime(sub.submitted_at)}</span>
                               {sub.file_path && (
                                 <a
-                                  href={`http://127.0.0.1:8000${sub.file_path}`}
+                                  href={`${import.meta.env.VITE_API_URL}${sub.file_path}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-1 text-green-primary hover:underline"

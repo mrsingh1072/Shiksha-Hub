@@ -172,7 +172,7 @@ export default function StudentAssignments() {
                               <p className="flex items-center gap-1">
                                 <strong>File:</strong>
                                 <a
-                                  href={`http://127.0.0.1:8000${assignment.filePath}`}
+                                  href={`${import.meta.env.VITE_API_URL}${assignment.filePath}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-green-primary hover:underline flex items-center gap-1"

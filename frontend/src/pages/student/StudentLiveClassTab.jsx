@@ -51,7 +51,8 @@ export default function StudentLiveClassTab({ classId }) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const studentEmail = user.email || `student_${Math.random().toString(36).substr(2, 6)}`;
     
-    const wsUrl = `ws://localhost:8000/live/ws/${classId}/student/${studentEmail}`;
+    const wsBaseUrl = import.meta.env.VITE_API_URL.replace(/^http/, 'ws');
+    const wsUrl = `${wsBaseUrl}/live/ws/${classId}/student/${studentEmail}`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FolderOpen, Plus, Trash2, X, Upload, Download, FileText, Image, File, Video } from 'lucide-react'
 import teacherService from '../../services/teacherService'
-const BASE_URL = "http://127.0.0.1:8000"
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const typeIcon = { PDF: FileText, PPT: FileText, PPTX: FileText, DOC: FileText, DOCX: FileText, PNG: Image, JPG: Image, JPEG: Image, VIDEO: Video }
 const typeColor = { PDF: '#dc2626', PPT: '#ea580c', PPTX: '#ea580c', DOC: '#2563eb', DOCX: '#2563eb', PNG: '#059669', JPG: '#059669', JPEG: '#059669', VIDEO: '#7c3aed', }

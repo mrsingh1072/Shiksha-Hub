@@ -5,7 +5,7 @@ import api from '../../services/api'
 function resolvePhotoUrl(path) {
   if (!path) return ''
   if (path.startsWith('http') || path.startsWith('blob:')) return path
-  return `http://127.0.0.1:8000${path}`
+  return `${import.meta.env.VITE_API_URL}${path}`
 }
 
 async function fetchAuthenticatedPhoto(path) {

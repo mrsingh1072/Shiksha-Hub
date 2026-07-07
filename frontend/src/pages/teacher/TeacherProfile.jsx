@@ -65,7 +65,7 @@ export default function TeacherProfile() {
 
   if (loading) return <div className="flex items-center justify-center py-20"><div className="w-10 h-10 border-4 border-green-primary border-t-transparent rounded-full animate-spin" /></div>
 
-  const photoUrl = profile?.profilePhoto ? `http://127.0.0.1:8000/profile/photo/${profile.profilePhoto}` : null
+  const photoUrl = profile?.profilePhoto ? `${import.meta.env.VITE_API_URL}/profile/photo/${profile.profilePhoto}` : null
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 max-w-3xl mx-auto">
