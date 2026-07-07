@@ -208,6 +208,47 @@ app.include_router(
 )
 
 
+from app.database.mongodb import db
+
+@app.get("/api/public/stats")
+async def get_public_stats():
+    try:
+        users_count = await db.users.count_documents({})
+        exams_count = await db.exams.count_documents({})
+        submissions_count = await db.submissions.count_documents({})
+        
+        # Platform Overview counts
+        ai_tutor = await db.chat_history.count_documents({"type": "tutor"})
+        notes = await db.chat_history.count_documents({"type": "notes"})
+        practice_exams = await db.chat_history.count_documents({"type": "exam"})
+        assignments_reviewed = await db.chat_history.count_documents({"type": "assignment"})
+        
+        return {
+            "users": users_count,
+            "exams": exams_count,
+            "submissions": submissions_count,
+            "success_rate": 92,
+            "overview": {
+                "ai_tutor": ai_tutor,
+                "notes": notes,
+                "practice_exams": practice_exams,
+                "assignments_reviewed": assignments_reviewed
+            }
+        }
+    except Exception as e:
+        return {
+            "users": 0,
+            "exams": 0,
+            "submissions": 0,
+            "success_rate": 0,
+            "overview": {
+                "ai_tutor": 0,
+                "notes": 0,
+                "practice_exams": 0,
+                "assignments_reviewed": 0
+            }
+        }
+
 @app.get("/")
 async def home():
     try:

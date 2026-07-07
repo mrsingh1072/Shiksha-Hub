@@ -12,6 +12,7 @@ export default {
         'green-primary': '#2F6B4F',
         'green-secondary': '#1F4D3A',
         'green-accent': '#A7F3D0',
+        'gold': '#F4D03F',
         'text': '#1F2937',
         'dark': '#222222',
       },

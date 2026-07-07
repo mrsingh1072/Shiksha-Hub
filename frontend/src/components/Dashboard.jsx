@@ -1,6 +1,27 @@
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import api from '../services/api'
 
 export default function Dashboard() {
+  const [stats, setStats] = useState({
+    users: 0,
+    exams: 0,
+    submissions: 0,
+    success_rate: 92,
+    overview: {
+      ai_tutor: 0,
+      notes: 0,
+      practice_exams: 0,
+      assignments_reviewed: 0
+    }
+  });
+
+  useEffect(() => {
+    api.get('/api/public/stats')
+      .then(res => setStats(res.data))
+      .catch(err => console.error(err));
+  }, []);
+
   return (
     <section className="section bg-gradient-to-br from-green-primary via-green-primary to-green-secondary text-white">
       <div className="section-container">
@@ -11,7 +32,7 @@ export default function Dashboard() {
           className="text-center mb-8"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Unified <span className="gradient-text">Learning Dashboard</span>
+            Unified <span className="text-green-accent">Learning Dashboard</span>
           </h2>
           <p className="text-white/80 text-base max-w-2xl mx-auto">
             Monitor learning progress, assessments, assignments, and classroom insights from one intelligent dashboard.
@@ -26,10 +47,10 @@ export default function Dashboard() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
             {[
-              { label: 'Active Learners', value: '12.5K+' },
-              { label: 'Tests Generated', value: '50K+' },
-              { label: 'Assignments Evaluated', value: '30K+' },
-              { label: 'Success Rate', value: '92%' },
+              { label: 'Active Learners', value: `${stats.users}+` },
+              { label: 'Tests Generated', value: `${stats.exams}+` },
+              { label: 'Assignments Evaluated', value: `${stats.submissions}+` },
+              { label: 'Success Rate', value: `${stats.success_rate}%` },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -58,10 +79,10 @@ export default function Dashboard() {
 
   <div className="grid grid-cols-2 gap-4">
     {[
-      { label: 'AI Tutor Sessions', value: '18K+' },
-      { label: 'Notes Generated', value: '40K+' },
-      { label: 'Assignments Reviewed', value: '30K+' },
-      { label: 'Practice Exams', value: '50K+' },
+      { label: 'AI Tutor Sessions', value: stats.overview.ai_tutor },
+      { label: 'Notes Generated', value: stats.overview.notes },
+      { label: 'Assignments Reviewed', value: stats.overview.assignments_reviewed },
+      { label: 'Practice Exams', value: stats.overview.practice_exams },
     ].map((item, i) => (
       <motion.div
         key={i}
