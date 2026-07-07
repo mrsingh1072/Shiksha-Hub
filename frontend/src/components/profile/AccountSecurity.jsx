@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Eye, EyeOff, Link as LinkIcon, Lock, Mail, Phone, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import OtpInput, { OtpResendPanel, useOtpCountdown } from '../auth/OtpInput'
-import PasswordStrength, { validateStrongPassword } from '../auth/PasswordStrength'
+import OtpInput, { OtpResendPanel, useOtpCountdown } from '../Auth/OtpInput'
+import PasswordStrength, { validateStrongPassword } from '../Auth/PasswordStrength'
 import {
   changePassword,
   sendVerification,
