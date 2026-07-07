@@ -61,19 +61,19 @@
 
 | Landing Page | Student Dashboard |
 | :---: | :---: |
-| ![Landing Page](https://placehold.co/500x300/f8fafc/0f172a?text=Landing+Page) | ![Student Dashboard](https://placehold.co/500x300/f8fafc/0f172a?text=Student+Dashboard) |
+| ![Landing Page](screenshots/landing.png) | ![Student Dashboard](screenshots/student-dashboard.png) |
 
 | Teacher Dashboard | AI Tutor |
 | :---: | :---: |
-| ![Teacher Dashboard](https://placehold.co/500x300/f8fafc/0f172a?text=Teacher+Dashboard) | ![AI Tutor](https://placehold.co/500x300/f8fafc/0f172a?text=AI+Tutor) |
+| ![Teacher Dashboard](screenshots/teacher-dashboard.png) | ![AI Tutor](screenshots/ai-tutor.png) |
 
 | Practice Exam | Voice Tutor |
 | :---: | :---: |
-| ![Practice Exam](https://placehold.co/500x300/f8fafc/0f172a?text=Practice+Exam) | ![Voice Tutor](https://placehold.co/500x300/f8fafc/0f172a?text=Voice+Tutor) |
+| ![Practice Exam](screenshots/practice-exam.png) | ![Voice Tutor](screenshots/voice-tutor.png) |
 
 | Analytics | Admin Panel |
 | :---: | :---: |
-| ![Analytics](https://placehold.co/500x300/f8fafc/0f172a?text=Analytics) | ![Admin Panel](https://placehold.co/500x300/f8fafc/0f172a?text=Admin+Panel) |
+| ![Analytics](https://placehold.co/500x300/f8fafc/0f172a?text=Analytics) | ![Admin Panel](screenshots/admin-dashboard.png) |
 
 ---
 
