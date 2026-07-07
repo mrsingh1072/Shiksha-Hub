@@ -280,6 +280,55 @@ COLLECTIONS = {
 }
 
 
+@router.get("/all-exams")
+async def get_all_exams(search: str = "", limit: int = Query(500, le=1000), current_user=Depends(admin_only)):
+    class_exams = await db.class_exams.find().sort("created_at", -1).limit(limit).to_list(limit)
+    draft_exams = await db.exams.find({"status": "draft"}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    all_exams = class_exams + draft_exams
+    
+    teachers = await db.users.find({"role": "teacher"}).to_list(None)
+    teacher_map = {t.get("email"): t.get("name", "Unknown Teacher") for t in teachers}
+    
+    classes = await db.classes.find().to_list(None)
+    class_map = {str(c["_id"]): c for c in classes}
+    
+    results = []
+    for ex in all_exams:
+        ex_dict = serialize(ex)
+        
+        teacher_email = ex_dict.get("teacher_email")
+        ex_dict["teacher_name"] = teacher_map.get(teacher_email, "Unknown")
+        
+        class_id = ex_dict.get("class_id")
+        if class_id and class_id in class_map:
+            cls = class_map[class_id]
+            ex_dict["class_name"] = cls.get("class_name", "")
+            ex_dict["semester"] = cls.get("semester", "")
+            ex_dict["section"] = cls.get("section", "")
+        else:
+            ex_dict["class_name"] = "N/A"
+            ex_dict["semester"] = "N/A"
+            ex_dict["section"] = "N/A"
+            
+        ex_dict["total_questions"] = len(ex_dict.get("questions", []))
+        if "duration_minutes" in ex_dict:
+            ex_dict["duration"] = ex_dict["duration_minutes"]
+        
+        results.append(ex_dict)
+        
+    if search:
+        search_lower = search.lower()
+        results = [r for r in results if 
+                   search_lower in r.get("title", "").lower() or 
+                   search_lower in r.get("teacher_name", "").lower() or
+                   search_lower in r.get("class_name", "").lower()
+                   ]
+                   
+    results.sort(key=lambda x: str(x.get("created_at", "")), reverse=True)
+    return results[:limit]
+
+
 @router.get("/content/{kind}")
 async def list_content(kind: str, search: str = "", limit: int = Query(100, le=500),
                        current_user=Depends(admin_only)):
@@ -315,6 +364,16 @@ async def approve_question(item_id: str, current_user=Depends(admin_only)):
     return {"message": "Question approved"}
 
 
+@router.delete("/all-exams/{item_id}")
+async def delete_all_exams_item(item_id: str, current_user=Depends(admin_only)):
+    result = await db.class_exams.delete_one({"_id": object_id(item_id)})
+    if not result.deleted_count:
+        result = await db.exams.delete_one({"_id": object_id(item_id)})
+    if not result.deleted_count:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    await log_action("content_delete", current_user["email"], "Exam deleted", {"item_id": item_id})
+    return {"message": "Exam deleted"}
+
 @router.delete("/content/{kind}/{item_id}")
 async def delete_content(kind: str, item_id: str, current_user=Depends(admin_only)):
     collection = COLLECTIONS.get(kind)
@@ -348,8 +407,36 @@ async def create_announcement(data: dict, current_user=Depends(admin_only)):
     if not document["title"] or not document["content"]:
         raise HTTPException(status_code=400, detail="Title and content are required")
     result = await db.announcements.insert_one(document)
+    announcement_id = str(result.inserted_id)
+    
+    # Broadcast notification to users
+    query = {}
+    if audience == "students":
+        query = {"role": "student"}
+    elif audience == "teachers":
+        query = {"role": "teacher"}
+    else:
+        query = {"role": {"$in": ["student", "teacher"]}}
+        
+    users = db.users.find(query, {"email": 1})
+    notifications = []
+    now = datetime.utcnow()
+    async for u in users:
+        notifications.append({
+            "user_email": u["email"],
+            "type": "announcement",
+            "title": "Platform Announcement",
+            "message": document["title"],
+            "announcement_id": announcement_id,
+            "read": False,
+            "created_at": now
+        })
+        
+    if notifications:
+        await db.notifications.insert_many(notifications)
+
     await log_action("announcement", current_user["email"], "Global announcement published")
-    return {"message": "Announcement published", "announcement_id": str(result.inserted_id)}
+    return {"message": "Announcement published", "announcement_id": announcement_id}
 
 
 @router.get("/analytics")

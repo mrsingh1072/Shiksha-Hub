@@ -11,7 +11,7 @@ import { submitAssignment } from '../../services/studentDashboardService'
 
 const statusStyle = {
   Pending: 'bg-gold/15 text-amber-700',
-  Submitted: 'bg-blue-50 text-blue-700',
+  Submitted: 'bg-green-50 text-green-700',
   Evaluated: 'bg-purple-50 text-purple-700',
   Published: 'bg-green-primary/10 text-green-primary',
   'Under Review': 'bg-amber-50 text-amber-700',
@@ -227,7 +227,7 @@ export default function StudentAssignments() {
                                   )}
                                   {assignment.aiImprovements?.length > 0 && (
                                     <div className="mt-2">
-                                      <p className="text-xs font-semibold text-blue-600">Suggestions:</p>
+                                      <p className="text-xs font-semibold text-green-secondary">Suggestions:</p>
                                       <ul className="list-disc list-inside text-xs text-gray-600 mt-0.5">
                                         {assignment.aiImprovements.map((s, i) => <li key={i}>{s}</li>)}
                                       </ul>

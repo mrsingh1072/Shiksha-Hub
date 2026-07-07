@@ -7,14 +7,14 @@ import {
 } from 'lucide-react'
 import teacherService from '../../services/teacherService'
 
-export default function TeacherAssignments() {
+export default function TeacherAssignments({ classId }) {
   const [assignments, setAssignments] = useState([])
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
   const [showSubmissions, setShowSubmissions] = useState(null)
   const [submissions, setSubmissions] = useState([])
   const [subsLoading, setSubsLoading] = useState(false)
-  const [formData, setFormData] = useState({ title: '', subject: '', description: '', due_date: '', total_marks: 100 })
+  const [formData, setFormData] = useState({ title: '', subject: '', description: '', due_date: '', total_marks: 100, class_id: classId || '' })
 
   // Evaluation state
   const [evalLoading, setEvalLoading] = useState({}) // submissionId -> bool
@@ -23,7 +23,7 @@ export default function TeacherAssignments() {
   const [publishLoading, setPublishLoading] = useState({})
 
   const fetchAssignments = async () => {
-    try { setLoading(true); const res = await teacherService.getAssignments(); setAssignments(res.data) }
+    try { setLoading(true); const res = await teacherService.getAssignments(classId); setAssignments(res.data) }
     catch (err) { console.error(err) }
     finally { setLoading(false) }
   }
@@ -34,7 +34,7 @@ export default function TeacherAssignments() {
     e.preventDefault()
     try {
       await teacherService.createAssignment(formData)
-      setFormData({ title: '', subject: '', description: '', due_date: '', total_marks: 100 })
+      setFormData({ title: '', subject: '', description: '', due_date: '', total_marks: 100, class_id: classId || '' })
       setShowCreate(false)
       fetchAssignments()
     } catch (err) { console.error(err) }
@@ -412,7 +412,7 @@ export default function TeacherAssignments() {
                                       )}
                                       {sub.ai_improvements?.length > 0 && (
                                         <div className="mt-2">
-                                          <p className="text-xs font-semibold text-blue-700">Suggestions:</p>
+                                          <p className="text-xs font-semibold text-green-secondary">Suggestions:</p>
                                           <ul className="list-disc list-inside text-xs text-slate-600">
                                             {sub.ai_improvements.map((im, i) => <li key={i}>{im}</li>)}
                                           </ul>

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.dependencies.roles import require_role
 from app.database.mongodb import db
 from datetime import datetime
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -141,3 +142,44 @@ async def teacher_dashboard(
         "recentActivity": recent_activity[:10],
         "upcomingDeadlines": upcoming_deadlines
     }
+
+
+@router.get("/notifications")
+async def teacher_notifications(
+    current_user=Depends(require_role("teacher"))
+):
+    notifications = []
+    
+    cursor = db.notifications.find(
+        {"user_email": current_user["email"]}
+    ).sort("created_at", -1)
+    
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        if "created_at" in item and isinstance(item["created_at"], datetime):
+            item["created_at"] = item["created_at"].isoformat()
+        else:
+            item["created_at"] = datetime.utcnow().isoformat()
+        notifications.append(item)
+
+    return notifications
+
+
+@router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    current_user=Depends(require_role("teacher"))
+):
+    try:
+        result = await db.notifications.update_one(
+            {
+                "_id": ObjectId(notification_id),
+                "user_email": current_user["email"]
+            },
+            {"$set": {"read": True}}
+        )
+        if result.modified_count == 1:
+            return {"message": "Notification marked as read"}
+        raise HTTPException(status_code=404, detail="Notification not found")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid notification ID")

@@ -27,6 +27,10 @@ export async function fetchStudentDashboard() {
 
   return workspaceFromSettled(results)
 }
+export async function getGlobalAnnouncements() {
+  const response = await api.get('/student/announcements')
+  return response.data
+}
 
 export async function getStudentResources() {
   const response = await api.get('/student/resources')

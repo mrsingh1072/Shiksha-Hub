@@ -25,7 +25,7 @@ const teacherService = {
   getStudent: (email) => api.get(`/teacher/students/${encodeURIComponent(email)}`),
 
   // Assignments
-  getAssignments: () => api.get('/teacher/assignments/'),
+  getAssignments: (classId = '') => api.get(`/teacher/assignments/${classId ? `?class_id=${classId}` : ''}`),
   createAssignment: (data) => api.post('/teacher/assignments/', data),
   getAssignment: (id) => api.get(`/teacher/assignments/${id}`),
   updateAssignment: (id, data) => api.put(`/teacher/assignments/${id}`, data),
@@ -70,6 +70,16 @@ const teacherService = {
     return api.get(`/teacher/attendance/?${params}`)
   },
   getAttendanceReport: (classId) => api.get(`/teacher/attendance/report?class_id=${classId}`),
+
+  // Teacher Global Announcements
+  getAnnouncements: () => api.get('/teacher/announcements/'),
+  createAnnouncement: (data) => api.post('/teacher/announcements/', data),
+  updateAnnouncement: (id, data) => api.put(`/teacher/announcements/${id}`, data),
+  deleteAnnouncement: (id) => api.delete(`/teacher/announcements/${id}`),
+
+  // Notifications
+  getNotifications: () => api.get('/teacher/notifications'),
+  markNotificationAsRead: (id) => api.put(`/teacher/notifications/${id}/read`),
 
   // Classroom Announcements
   getClassAnnouncements: (classId) =>

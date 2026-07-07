@@ -38,7 +38,7 @@ const STATE_META = {
   },
   loading: {
     label: '⏳ Loading…',
-    badgeColor: 'bg-blue-500',
+    badgeColor: 'bg-green-500',
     bodyClass: 'at-breathe',
     imageClass: 'at-image--loading',
     showBlink: true,

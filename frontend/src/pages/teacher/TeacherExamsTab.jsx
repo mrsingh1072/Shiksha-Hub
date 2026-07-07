@@ -150,7 +150,7 @@ export default function TeacherExamsTab({ classId }) {
                         </span>
                         {exam.status === 'published' && (() => {
                           if (!exam.start_time || !exam.end_time) return (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-600">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-gray-100 text-gray-600">
                               ALWAYS ACTIVE
                             </span>
                           );
@@ -337,18 +337,18 @@ export default function TeacherExamsTab({ classId }) {
                   </div>
                 </div>
 
-                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                  <p className="text-xs text-blue-700 mb-3 font-semibold flex items-center gap-1">
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                  <p className="text-xs text-gray-700 mb-3 font-semibold flex items-center gap-1">
                     <Clock size={14} /> Exam will automatically open and close based on schedule. All times are in IST (India).
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Start Time (IST)</label>
-                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} />
+                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary outline-none" value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} />
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">End Time (IST)</label>
-                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} />
+                      <input type="datetime-local" className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-primary outline-none" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} />
                     </div>
                   </div>
                 </div>

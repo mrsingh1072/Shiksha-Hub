@@ -63,9 +63,15 @@ async def get_announcements(
     class_id: str = Query(""),
     current_user=Depends(require_role("teacher"))
 ):
-    query = {"teacher_email": current_user["email"]}
+    query = {
+        "$or": [
+            {"teacher_email": current_user["email"]},
+            {"global": True, "audience": {"$in": ["all", "teachers"]}}
+        ]
+    }
     if class_id:
-        query["class_id"] = class_id
+        # If filtering by a specific class, only show that teacher's class announcements
+        query = {"teacher_email": current_user["email"], "class_id": class_id}
 
     announcements = []
     cursor = db.announcements.find(query).sort("created_at", -1)

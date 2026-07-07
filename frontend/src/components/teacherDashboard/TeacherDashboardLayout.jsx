@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, GraduationCap, ClipboardList, FileText,
   Database, Bot, CalendarCheck, Megaphone, FolderOpen, BarChart3,
-  UserCircle, Settings, LogOut, Menu, X
+  UserCircle, Settings, LogOut, Menu, X, Bell
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import teacherService from '../../services/teacherService'
@@ -21,6 +21,7 @@ const navItems = [
   { to: '/teacher/attendance', label: 'Attendance', icon: CalendarCheck },
   { to: '/teacher/resources', label: 'Resources', icon: FolderOpen },
   { to: '/teacher/analytics', label: 'Analytics', icon: BarChart3 },
+  { to: '/teacher/notifications', label: 'Notifications', icon: Bell },
   { to: '/teacher/profile', label: 'Profile', icon: UserCircle },
   { to: '/teacher/settings', label: 'Settings', icon: Settings },
 ]
@@ -40,8 +41,15 @@ export default function TeacherDashboardLayout() {
   const fetchDashboard = async () => {
     try {
       setIsLoading(true)
-      const res = await teacherService.getDashboard()
-      setDashboard(res.data)
+      const [dashboardRes, notificationsRes] = await Promise.all([
+        teacherService.getDashboard(),
+        teacherService.getNotifications().catch(() => ({ data: [] }))
+      ])
+      
+      setDashboard({
+        ...dashboardRes.data,
+        notifications: notificationsRes.data || []
+      })
       setError(null)
     } catch (err) {
       console.error('Failed to load teacher dashboard:', err)
@@ -59,6 +67,9 @@ export default function TeacherDashboardLayout() {
     logout()
     navigate('/login', { replace: true })
   }
+
+  const notifications = dashboard?.notifications || []
+  const unreadCount = notifications.filter(n => !n.read).length
 
   if (isLoading) {
     return (
@@ -162,6 +173,11 @@ export default function TeacherDashboardLayout() {
                     >
                       <Icon className="h-[1.15rem] w-[1.15rem] shrink-0" />
                       {item.label}
+                      {item.label === 'Notifications' && unreadCount > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                          {unreadCount}
+                        </span>
+                      )}
                     </NavLink>
                   )
                 })}
@@ -224,6 +240,11 @@ export default function TeacherDashboardLayout() {
                 >
                   <Icon className="h-[1.15rem] w-[1.15rem] shrink-0" />
                   {item.label}
+                  {item.label === 'Notifications' && unreadCount > 0 && (
+                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {unreadCount}
+                    </span>
+                  )}
                 </NavLink>
               )
             })}

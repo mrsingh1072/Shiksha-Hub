@@ -6,7 +6,7 @@ import teacherService from '../../services/teacherService'
 const typeBadge = { general: 'teacher-badge-info', assignment: 'teacher-badge-purple', reminder: 'teacher-badge-warning' }
 const typeLabel = { general: 'General', assignment: 'Assignment', reminder: 'Reminder' }
 
-export default function TeacherAnnouncements() {
+export default function TeacherAnnouncements({ classId }) {
   const [announcements, setAnnouncements] = useState([])
   const [classes, setClasses] = useState([])
   const [loading, setLoading] = useState(true)
@@ -15,7 +15,13 @@ export default function TeacherAnnouncements() {
   const [formData, setFormData] = useState({ title: '', content: '', class_id: '', type: 'general' })
 
   const fetch = async () => {
-    try { setLoading(true); const res = await teacherService.getAnnouncements(); setAnnouncements(res.data) }
+    try { 
+      setLoading(true); 
+      const res = classId 
+        ? await teacherService.getClassAnnouncements(classId) 
+        : await teacherService.getAnnouncements(); 
+      setAnnouncements(res.data) 
+    }
     catch (err) { console.error(err) }
     finally { setLoading(false) }
   }
@@ -30,7 +36,7 @@ export default function TeacherAnnouncements() {
     } catch (err) { console.error(err) }
   }
 
-  const resetForm = () => { setFormData({ title: '', content: '', class_id: '', type: 'general' }); setEditId(null); setShowModal(false) }
+  const resetForm = () => { setFormData({ title: '', content: '', class_id: classId || '', type: 'general' }); setEditId(null); setShowModal(false) }
 
   const editItem = (a) => {
     setFormData({ title: a.title, content: a.content, class_id: a.class_id || '', type: a.type || 'general' })
@@ -109,13 +115,15 @@ export default function TeacherAnnouncements() {
                   <div><label className="teacher-label">Title *</label><input className="teacher-input" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required placeholder="Announcement title" /></div>
                   <div><label className="teacher-label">Content *</label><textarea className="teacher-textarea" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} required rows={4} placeholder="Write your announcement here..." /></div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="teacher-label">Class (optional)</label>
-                      <select className="teacher-select" value={formData.class_id} onChange={e => setFormData({...formData, class_id: e.target.value})}>
-                        <option value="">All Classes</option>
-                        {classes.map(c => <option key={c._id} value={c._id}>{c.class_name}</option>)}
-                      </select>
-                    </div>
+                    {!classId && (
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Select Class (Optional)</label>
+                        <select value={formData.class_id} onChange={e => setFormData({ ...formData, class_id: e.target.value })} className="teacher-input">
+                          <option value="">All Classes (Global)</option>
+                          {classes.map(c => <option key={c._id} value={c._id}>{c.class_name}</option>)}
+                        </select>
+                      </div>
+                    )}
                     <div>
                       <label className="teacher-label">Type</label>
                       <select className="teacher-select" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>

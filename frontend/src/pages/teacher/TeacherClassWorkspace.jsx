@@ -17,6 +17,8 @@ import teacherService from "../../services/teacherService";
 import TeacherResources from "./TeacherResources";
 import TeacherExamsTab from "./TeacherExamsTab";
 import TeacherLiveClassTab from "./TeacherLiveClassTab";
+import TeacherAssignments from "./TeacherAssignments";
+import TeacherAnnouncements from "./TeacherAnnouncements";
 
 export default function TeacherClassWorkspace() {
   const { classId } = useParams();
@@ -363,15 +365,11 @@ const rejectStudent = async (requestId) => {
     )}
 
     {activeTab === "assignments" && (
-      <h2 className="text-xl font-semibold">
-        Assignments
-      </h2>
+      <TeacherAssignments classId={classId} />
     )}
 
     {activeTab === "announcements" && (
-      <h2 className="text-xl font-semibold">
-        Announcements
-      </h2>
+      <TeacherAnnouncements classId={classId} />
     )}
 
     {activeTab === "exams" && (

@@ -192,7 +192,7 @@ export default function StudentLiveClassTab({ classId }) {
             {/* Fallback if video hasn't loaded */}
             {!videoRef.current?.srcObject && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
-                    <Radio size={48} className="mb-4 animate-pulse text-blue-500/50" />
+                    <Radio size={48} className="mb-4 animate-pulse text-green-primary/50" />
                     <p className="animate-pulse">Connecting to broadcast...</p>
                 </div>
             )}

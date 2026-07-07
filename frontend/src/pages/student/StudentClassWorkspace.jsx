@@ -727,7 +727,7 @@ const filteredStudents =
 
             <div className="text-sm">
               {announcement.type === "class" ? (
-                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
                   Class
                 </span>
               ) : (
@@ -840,19 +840,19 @@ const filteredStudents =
     {preflightExamId && (
       <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl text-center">
-          <Shield size={50} className="mx-auto text-blue-500 mb-4" />
+          <Shield size={50} className="mx-auto text-green-secondary mb-4" />
           <h2 className="text-2xl font-bold text-gray-800">Proctored Exam Requirements</h2>
           <p className="text-gray-600 mt-2">
             This exam requires your microphone, camera, and a full screen share to be active during the entire duration. Switching tabs more than 5 times will result in automatic submission.
           </p>
-          <div className="bg-blue-50 rounded-lg p-4 mt-4 text-sm text-blue-800 font-semibold flex flex-col gap-2 items-start">
+          <div className="bg-green-50 rounded-lg p-4 mt-4 text-sm text-green-800 font-semibold flex flex-col gap-2 items-start">
             <span className="flex items-center gap-2"><Mic size={16} /> Microphone Access Required</span>
             <span className="flex items-center gap-2"><Video size={16} /> Camera Access Required</span>
             <span className="flex items-center gap-2"><Monitor size={16} /> Screen Share (Entire Screen) Required</span>
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={() => setPreflightExamId(null)} className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200">Cancel</button>
-            <button onClick={handleRequestPermissionsAndStart} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Allow & Start</button>
+            <button onClick={handleRequestPermissionsAndStart} className="flex-1 py-3 bg-green-primary text-white rounded-xl font-bold hover:bg-green-secondary">Allow & Start</button>
           </div>
         </div>
       </div>
@@ -920,7 +920,7 @@ const filteredStudents =
               onClick={() => setCurrentQuestionIdx(i)}
               className={`w-9 h-9 rounded-lg text-sm font-bold transition ${
                 currentQuestionIdx === i
-                  ? "bg-blue-600 text-white"
+                  ? "bg-green-primary text-white"
                   : answers[q.question_id] && (answers[q.question_id].selected_option || answers[q.question_id].answer)
                     ? "bg-green-100 text-green-700 border border-green-300"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -933,7 +933,7 @@ const filteredStudents =
 
         <div className="pt-3 border-t space-y-1 text-xs text-gray-500">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded bg-blue-600" /> Current
+            <span className="w-3 h-3 rounded bg-green-primary" /> Current
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded bg-green-100 border border-green-300" /> Answered
@@ -957,11 +957,11 @@ const filteredStudents =
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">
+                  <span className="bg-green-primary text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm">
                     {currentQuestionIdx + 1}
                   </span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    q.type === "mcq" ? "bg-blue-100 text-blue-700" : "bg-orange-100 text-orange-700"
+                    q.type === "mcq" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
                   }`}>{q.type?.toUpperCase()}</span>
                   <span className="text-xs text-gray-400">{q.marks} marks</span>
                 </div>
@@ -977,7 +977,7 @@ const filteredStudents =
                       key={oi}
                       className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition ${
                         currentAnswer.selected_option === opt
-                          ? "border-blue-500 bg-blue-50"
+                          ? "border-green-primary bg-green-50"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -986,7 +986,7 @@ const filteredStudents =
                         name={`q_${q.question_id}`}
                         checked={currentAnswer.selected_option === opt}
                         onChange={() => handleSaveAnswer(q.question_id, "", opt)}
-                        className="accent-blue-600"
+                        className="accent-green-primary"
                       />
                       <span className="font-medium text-sm text-gray-500 w-5">{String.fromCharCode(65 + oi)}.</span>
                       <span className="text-gray-700">{opt}</span>
@@ -998,7 +998,7 @@ const filteredStudents =
               {/* Descriptive Textarea */}
               {q.type === "descriptive" && (
                 <textarea
-                  className="w-full border rounded-xl p-4 text-sm resize-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none"
+                  className="w-full border rounded-xl p-4 text-sm resize-none focus:ring-2 focus:ring-green-primary/50 focus:border-green-primary outline-none"
                   rows={6}
                   placeholder="Type your answer here..."
                   value={currentAnswer.answer || ""}
@@ -1018,7 +1018,7 @@ const filteredStudents =
                 {currentQuestionIdx < (currentExam.questions?.length || 0) - 1 ? (
                   <button
                     onClick={() => setCurrentQuestionIdx(currentQuestionIdx + 1)}
-                    className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="bg-green-primary text-white px-5 py-2 rounded-lg hover:bg-green-secondary transition"
                   >
                     Next Ã¢â€ â€™
                   </button>

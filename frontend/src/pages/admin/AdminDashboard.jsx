@@ -13,31 +13,18 @@ import {
   UserPlus,
   Users,
   XCircle,
+  LogOut,
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import adminService from '../../services/adminService'
 
-const kpiCards = [
-  { key: 'totalStudents', label: 'Total Students', hint: 'Learners on platform', icon: GraduationCap, tone: 'students' },
-  { key: 'totalTeachers', label: 'Total Teachers', hint: 'Teaching accounts', icon: Users, tone: 'teachers' },
-  { key: 'totalClasses', label: 'Total Classes', hint: 'Active class spaces', icon: Building2, tone: 'classes' },
-  { key: 'totalAssignments', label: 'Total Assignments', hint: 'Published coursework', icon: ClipboardList, tone: 'assignments' },
-  { key: 'pendingTeachers', label: 'Pending Approvals', hint: 'Teacher applications waiting', icon: UserPlus, tone: 'pending' },
-  { key: 'totalResources', label: 'Total Resources', hint: 'Learning assets stored', icon: Database, tone: 'resources' },
-]
 
-const insightCards = [
-  { key: 'activeUsers', label: 'Active Users', hint: 'Signed in within 24 hours', icon: Activity, tone: 'activity' },
-  { key: 'approvedTeachers', label: 'Approved Teachers', hint: 'Ready to teach', icon: UserCheck, tone: 'approved' },
-  { key: 'rejectedTeachers', label: 'Rejected Teachers', hint: 'Application declines', icon: XCircle, tone: 'rejected' },
-  { key: 'platformUsage', label: 'Platform Usage', hint: 'Tracked AI interactions', icon: Sparkles, tone: 'usage' },
-]
 
-const healthMeta = {
-  api: { label: 'API Status', icon: Activity },
-  database: { label: 'Database Status', icon: Database },
-  ai: { label: 'AI Status', icon: Bot },
-}
+const overviewMeta = [
+  { key: 'totalStudents', label: 'Total Students', icon: GraduationCap, getValue: (d) => d?.totalStudents || 0 },
+  { key: 'totalTeachers', label: 'Total Teachers', icon: Users, getValue: (d) => d?.totalTeachers || 0 },
+  { key: 'totalClasses', label: 'Total Classes', icon: Building2, getValue: (d) => d?.totalClasses || 0 },
+]
 
 function formatNumber(value) {
   return Number(value || 0).toLocaleString()
@@ -139,7 +126,6 @@ export default function AdminDashboard() {
 
   const adminName = user?.name || 'Administrator'
   const adminRole = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Admin'
-  const healthEntries = Object.entries(data?.systemHealth || { api: 'operational', database: 'operational', ai: 'operational' })
   const registrations = data?.recentRegistrations || []
   const activities = data?.recentActivities || []
 
@@ -150,7 +136,7 @@ export default function AdminDashboard() {
           <p className="admin-hero__eyebrow">Admin workspace</p>
           <h1>Welcome back, Administrator</h1>
           <p className="admin-hero__description">
-            Manage platform operations, users, approvals and system health from one place.
+            Manage your learning ecosystem, users, classes, AI services, and platform operations from one place.
           </p>
 
           <div className="admin-hero__profile">
@@ -168,32 +154,30 @@ export default function AdminDashboard() {
         <aside className="admin-health-card">
           <div className="admin-health-card__header">
             <div>
-              <p className="admin-eyebrow admin-eyebrow--light">System Health</p>
-              <h2>Operational overview</h2>
+              <p className="admin-eyebrow admin-eyebrow--light">Platform Overview</p>
+              <h2 className="text-sm font-semibold mt-1">Real-time insights across your learning ecosystem</h2>
             </div>
             <span className="admin-status-chip admin-status-chip--hero">
-              <CheckCircle2 size={16} />
-              Stable
+              <Activity size={16} />
+              Active
             </span>
           </div>
 
           <div className="admin-health-list">
-            {healthEntries.map(([key, status]) => {
-              const normalizedStatus = String(status || 'unknown').toLowerCase()
-              const meta = healthMeta[key] || { label: key.toUpperCase(), icon: ShieldCheck }
+            {overviewMeta.map((meta) => {
               const Icon = meta.icon
+              const value = meta.getValue(data)
 
               return (
-                <div className="admin-health-row" key={key}>
+                <div className="admin-health-row" key={meta.key}>
                   <div className="admin-health-row__service">
                     <div className="admin-health-row__icon">
                       <Icon size={16} />
                     </div>
                     <span>{meta.label}</span>
                   </div>
-                  <span className={`admin-status-chip admin-status-chip--${normalizedStatus}`}>
-                    <i />
-                    {normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1)}
+                  <span className="bg-green-50 text-green-700 px-2 py-1 rounded-md text-sm font-bold border border-green-100">
+                    {formatNumber(value)}
                   </span>
                 </div>
               )
@@ -204,19 +188,7 @@ export default function AdminDashboard() {
 
       {error ? <div className="admin-error-banner">{error}</div> : null}
 
-      <section className="admin-section">
-        <div className="admin-section__header">
-          <div>
-            <p className="admin-section__eyebrow">Overview</p>
-            <h2>Core platform KPIs</h2>
-          </div>
-        </div>
-        <div className="admin-metric-grid">
-          {data
-            ? kpiCards.map((card) => <MetricCard key={card.key} {...card} value={data[card.key]} />)
-            : Array.from({ length: kpiCards.length }).map((_, index) => <LoadingCard key={index} />)}
-        </div>
-      </section>
+
 
       <section className="admin-section">
         <div className="admin-section__header">
@@ -226,19 +198,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="admin-workspace-grid">
-          <article className="admin-panel admin-panel--workspace">
+        <div className="admin-workspace-grid items-start">
+          <article className="admin-panel admin-panel--workspace self-start">
             <div className="admin-panel__header">
               <div>
                 <p className="admin-eyebrow">New users</p>
                 <h3>Recent Registrations</h3>
               </div>
-              <span className="admin-panel__count">{formatNumber(registrations.length)}</span>
+              <div className="flex items-center gap-3">
+                {registrations.length > 3 && (
+                  <button className="text-sm font-semibold text-green-primary hover:underline">
+                    View All
+                  </button>
+                )}
+                <span className="admin-panel__count">{formatNumber(registrations.length)}</span>
+              </div>
             </div>
 
             {data ? (
               <PanelList
-                items={registrations}
+                items={[...registrations].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3)}
                 emptyTitle="No recent registrations"
                 emptyMessage="New student and teacher signups will appear here."
                 emptyIcon={UserPlus}
@@ -260,18 +239,25 @@ export default function AdminDashboard() {
             )}
           </article>
 
-          <article className="admin-panel admin-panel--workspace">
+          <article className="admin-panel admin-panel--workspace self-start">
             <div className="admin-panel__header">
               <div>
                 <p className="admin-eyebrow">Timeline</p>
                 <h3>Recent Activity</h3>
               </div>
-              <span className="admin-panel__count">{formatNumber(activities.length)}</span>
+              <div className="flex items-center gap-3">
+                {activities.length > 3 && (
+                  <button className="text-sm font-semibold text-green-primary hover:underline">
+                    View All
+                  </button>
+                )}
+                <span className="admin-panel__count">{formatNumber(activities.length)}</span>
+              </div>
             </div>
 
             {data ? (
               <PanelList
-                items={activities}
+                items={[...activities].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3)}
                 emptyTitle="No recent activity"
                 emptyMessage="Administrative actions and system events will appear here."
                 emptyIcon={Activity}
@@ -295,19 +281,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="admin-section">
-        <div className="admin-section__header">
-          <div>
-            <p className="admin-section__eyebrow">Insights</p>
-            <h2>Platform health and adoption</h2>
-          </div>
-        </div>
-        <div className="admin-metric-grid admin-metric-grid--insights">
-          {data
-            ? insightCards.map((card) => <MetricCard key={card.key} {...card} value={data[card.key]} />)
-            : Array.from({ length: insightCards.length }).map((_, index) => <LoadingCard key={index} />)}
-        </div>
-      </section>
+
     </section>
   )
 }

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from app.database.mongodb import db
 from app.dependencies.roles import require_role
 from bson import ObjectId
@@ -57,12 +57,15 @@ async def create_assignment(
 
 @router.get("/")
 async def get_assignments(
+    class_id: str = Query(""),
     current_user=Depends(require_role("teacher"))
 ):
     assignments = []
-    cursor = db.assignments.find(
-        {"teacher_email": current_user["email"]}
-    ).sort("created_at", -1)
+    query = {"teacher_email": current_user["email"]}
+    if class_id:
+        query["class_id"] = class_id
+
+    cursor = db.assignments.find(query).sort("created_at", -1)
 
     async for item in cursor:
         item["_id"] = str(item["_id"])
@@ -73,8 +76,8 @@ async def get_assignments(
         item["submission_count"] = sub_count
         assignments.append(item)
 
-    # Fallback: show all assignments if none are teacher-specific
-    if not assignments:
+    # Fallback: show all assignments if none are teacher-specific (only if not filtering by class)
+    if not assignments and not class_id:
         cursor = db.assignments.find().sort("_id", -1)
         async for item in cursor:
             item["_id"] = str(item["_id"])

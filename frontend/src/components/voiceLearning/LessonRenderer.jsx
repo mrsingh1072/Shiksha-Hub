@@ -2,7 +2,7 @@ import MarkdownMessage from '../studentDashboard/MarkdownMessage'
 import { BookOpen, Code2, HelpCircle, AlertTriangle, Target, Lightbulb, ListChecks } from 'lucide-react'
 
 const SECTION_COMPONENTS = {
-  overview: { icon: BookOpen, title: 'Overview', color: 'text-blue-300' },
+  overview: { icon: BookOpen, title: 'Overview', color: 'text-emerald-300' },
   learningObjectives: { icon: Target, title: 'Learning Objectives', color: 'text-green-300' },
   concepts: { icon: Lightbulb, title: 'Core Concepts', color: 'text-amber-300' },
   examples: { icon: Lightbulb, title: 'Examples', color: 'text-purple-300' },

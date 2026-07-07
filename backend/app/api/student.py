@@ -139,6 +139,25 @@ async def student_notifications(
     return notifications
 
 
+@router.get("/announcements")
+async def get_global_announcements(
+    current_user=Depends(require_role("student"))
+):
+    from datetime import datetime
+    announcements = []
+    cursor = db.announcements.find({
+        "global": True, 
+        "audience": {"$in": ["all", "students"]}
+    }).sort("created_at", -1)
+    
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        if "created_at" in item and isinstance(item["created_at"], datetime):
+            item["created_at"] = item["created_at"].isoformat()
+        announcements.append(item)
+    return announcements
+
+
 @router.get("/resources")
 async def student_resources(
     current_user=Depends(require_role("student"))
@@ -280,14 +299,27 @@ async def get_class_announcements(
             {"type": "class"},
             {"type": "personal", "student_email": current_user["email"]}
         ]
-    }).sort("created_at", -1)
-
+    })
+    
     async for item in cursor:
         item["_id"] = str(item["_id"])
-
         if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
             item["created_at"] = item["created_at"].isoformat()
-
         announcements.append(item)
+        
+    # Also fetch global announcements targeted at students or all
+    global_cursor = db.announcements.find({
+        "global": True,
+        "audience": {"$in": ["all", "students"]}
+    })
+    
+    async for item in global_cursor:
+        item["_id"] = str(item["_id"])
+        if item.get("created_at") and hasattr(item["created_at"], "isoformat"):
+            item["created_at"] = item["created_at"].isoformat()
+        announcements.append(item)
+        
+    # Sort combined announcements by created_at descending
+    announcements.sort(key=lambda x: x.get("created_at", ""), reverse=True)
 
     return announcements

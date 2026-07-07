@@ -2,11 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   Activity,
   BarChart3,
-  BellRing,
   Bot,
   Brain,
   Building2,
-  CalendarClock,
   CheckCircle2,
   Clock3,
   Database,
@@ -25,10 +23,8 @@ import adminService from '../../services/adminService'
 
 const titles = {
   analytics: ['Analytics', 'Growth and activity indicators across the learning platform.'],
-  ai: ['AI Monitoring', 'AI feature demand and provider telemetry.'],
   logs: ['System Logs', 'Security and platform audit trail.'],
-  profile: ['Admin Profile', 'Identity is supplied by protected server configuration.'],
-  settings: ['System Settings', 'Deployment-managed platform and security configuration.'],
+  profile: ['Admin Profile', 'Manage your administrator account information and platform access.'],
 }
 
 function formatNumber(value) {
@@ -215,90 +211,6 @@ function AnalyticsView({ data }) {
   )
 }
 
-function AiMonitoringView({ data }) {
-  const stats = [
-    { label: 'Tutor Requests', value: formatNumber(data?.tutorRequests), icon: Bot, tone: 'students', hint: 'Student tutor conversations' },
-    { label: 'Voice Requests', value: formatNumber(data?.voiceRequests), icon: Brain, tone: 'activity', hint: 'Voice and avatar sessions' },
-    { label: 'Exam Generation', value: formatNumber(data?.examGenerationRequests), icon: Wand2, tone: 'assignments', hint: 'AI-assisted exam creation' },
-    { label: 'Teacher AI Requests', value: formatNumber(data?.teacherAIRequests), icon: Users, tone: 'teachers', hint: 'Teacher assistant demand' },
-    { label: 'Total Requests', value: formatNumber(data?.totalRequests), icon: Sparkles, tone: 'usage', hint: 'Combined AI workload' },
-  ]
-
-  return (
-    <div className="admin-workspace-stack">
-      <section className="admin-section">
-        <SectionHeader eyebrow="Monitoring" title="AI operations" description="A focused view of AI demand, service posture, and provider readiness." />
-        <div className="admin-metric-grid admin-metric-grid--five">
-          {stats.map((item) => <StatCard key={item.label} {...item} />)}
-        </div>
-      </section>
-
-      <section className="admin-section admin-three-column-grid">
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header">
-            <div>
-              <p className="admin-eyebrow">Usage</p>
-              <h3>Token Consumption</h3>
-            </div>
-            <Database size={18} />
-          </div>
-          <p className="admin-panel__description">Provider-side token telemetry currently supplied by backend configuration.</p>
-          <div className="admin-settings-list">
-            <div className="admin-settings-row">
-              <span>Telemetry</span>
-              <strong>{data?.tokenConsumption || 'Provider telemetry not configured'}</strong>
-            </div>
-            <div className="admin-settings-row">
-              <span>Collection</span>
-              <span className="admin-badge pending">Managed by backend</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header">
-            <div>
-              <p className="admin-eyebrow">Provider</p>
-              <h3>Provider Status</h3>
-            </div>
-            <ShieldCheck size={18} />
-          </div>
-          <div className="admin-health-list admin-health-list--compact">
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><Bot size={16} /></div><span>Inference Provider</span></div>
-              <span className="admin-status-chip admin-status-chip--operational"><i />Operational</span>
-            </div>
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><Database size={16} /></div><span>Telemetry Feed</span></div>
-              <span className="admin-status-chip admin-status-chip--pending"><i />Managed</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header">
-            <div>
-              <p className="admin-eyebrow">Health</p>
-              <h3>AI Health Status</h3>
-            </div>
-            <Activity size={18} />
-          </div>
-          <div className="admin-health-list admin-health-list--compact">
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><Sparkles size={16} /></div><span>Request Flow</span></div>
-              <span className="admin-status-chip admin-status-chip--operational"><i />Healthy</span>
-            </div>
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><Clock3 size={16} /></div><span>Latency Watch</span></div>
-              <span className="admin-status-chip admin-status-chip--pending"><i />Monitor</span>
-            </div>
-          </div>
-        </article>
-      </section>
-    </div>
-  )
-}
-
 function LogsView({ data }) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
@@ -372,7 +284,7 @@ function LogsView({ data }) {
 function ProfileView({ data }) {
   return (
     <div className="admin-workspace-stack">
-      <section className="admin-section admin-two-column-grid admin-two-column-grid--balanced">
+      <section className="admin-section">
         <article className="admin-panel admin-panel--workspace admin-profile-card">
           <div className="admin-profile-card__avatar">
             {(data?.name || 'Platform Administrator').split(' ').map((part) => part[0]).slice(0, 2).join('')}
@@ -383,100 +295,13 @@ function ProfileView({ data }) {
             <p className="admin-panel__description">{data?.email || 'No admin email configured'}</p>
           </div>
           <div className="admin-profile-card__meta">
-            <span className="admin-badge active">Admin</span>
-            <span className={`admin-badge ${statusClass(data?.configurationManaged ? 'managed' : 'pending')}`}>
-              {data?.configurationManaged ? 'Configuration managed' : 'Configuration pending'}
-            </span>
-          </div>
-        </article>
-
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header">
-            <div>
-              <p className="admin-eyebrow">Status</p>
-              <h3>System Status</h3>
-            </div>
-            <Shield size={18} />
-          </div>
-          <div className="admin-health-list admin-health-list--compact">
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><ShieldCheck size={16} /></div><span>Admin Access</span></div>
-              <span className="admin-status-chip admin-status-chip--operational"><i />Verified</span>
-            </div>
-            <div className="admin-health-row">
-              <div className="admin-health-row__service"><div className="admin-health-row__icon"><Settings2 size={16} /></div><span>Security Status</span></div>
-              <span className="admin-status-chip admin-status-chip--operational"><i />Protected</span>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section className="admin-section">
-        <SectionHeader eyebrow="Details" title="Account details" />
-        <div className="admin-detail-grid admin-detail-grid--workspace">
-          <div><span>Configuration Level</span><strong>{data?.configurationManaged ? 'Managed configuration' : 'Manual configuration'}</strong></div>
-          <div><span>Access Type</span><strong>Full Access</strong></div>
-          <div><span>Permissions</span><strong>User management, moderation, analytics, system controls</strong></div>
-          <div><span>Role</span><strong>Administrator</strong></div>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function SettingRow({ label, value, enabled }) {
-  return (
-    <div className="admin-settings-row">
-      <div>
-        <strong>{label}</strong>
-        <p>{value}</p>
-      </div>
-      <button type="button" className={`admin-toggle ${enabled ? 'active' : ''}`} aria-pressed={enabled} disabled />
-    </div>
-  )
-}
-
-function SettingsView({ data }) {
-  return (
-    <div className="admin-workspace-stack">
-      <section className="admin-section admin-two-column-grid admin-two-column-grid--balanced">
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header"><div><p className="admin-eyebrow">Platform</p><h3>Platform settings</h3></div><Building2 size={18} /></div>
-          <div className="admin-settings-list">
-            <div className="admin-settings-row"><span>Platform Name</span><strong>{data?.platformName || 'EduVerse AI'}</strong></div>
-            <div className="admin-settings-row"><span>Environment</span><span className={`admin-badge ${statusClass(data?.environment === 'production' ? 'active' : 'pending')}`}>{sentenceCase(data?.environment || 'development')}</span></div>
-          </div>
-        </article>
-
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header"><div><p className="admin-eyebrow">Session</p><h3>Session settings</h3></div><CalendarClock size={18} /></div>
-          <div className="admin-settings-list">
-            <div className="admin-settings-row"><span>Session Duration</span><strong>{formatNumber(data?.sessionHours)} hours</strong></div>
-            <div className="admin-settings-row"><span>Configuration Mode</span><span className="admin-badge active">Server managed</span></div>
-          </div>
-        </article>
-      </section>
-
-      <section className="admin-section admin-two-column-grid admin-two-column-grid--balanced">
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header"><div><p className="admin-eyebrow">Notifications</p><h3>Notification settings</h3></div><BellRing size={18} /></div>
-          <div className="admin-settings-stack">
-            <SettingRow label="Notifications" value="Platform-wide admin notices and operational updates" enabled={Boolean(data?.notificationsEnabled)} />
-          </div>
-        </article>
-
-        <article className="admin-panel admin-panel--workspace">
-          <div className="admin-panel__header"><div><p className="admin-eyebrow">Security</p><h3>Security settings</h3></div><Shield size={18} /></div>
-          <div className="admin-settings-stack">
-            <SettingRow label="Admin Registration" value="Controls whether new administrators can self-register" enabled={Boolean(data?.adminRegistration)} />
-            <SettingRow label="Security Controls" value="Protected by backend role enforcement and deployment configuration" enabled />
+            <span className="admin-badge active">Administrator</span>
           </div>
         </article>
       </section>
     </div>
   )
 }
-
 
 export function AdminOperationsPage({ mode }) {
   const [data, setData] = useState(null)
@@ -489,7 +314,6 @@ export function AdminOperationsPage({ mode }) {
       ai: adminService.aiMonitoring,
       logs: adminService.logs,
       profile: adminService.profile,
-      settings: adminService.settings,
     }[mode]
 
     request()
@@ -499,14 +323,12 @@ export function AdminOperationsPage({ mode }) {
 
   const renderContent = () => {
     if (!data) {
-      return <LoadingGrid count={mode === 'ai' ? 5 : 4} />
+      return <LoadingGrid count={4} />
     }
 
     if (mode === 'analytics') return <AnalyticsView data={data} />
-    if (mode === 'ai') return <AiMonitoringView data={data} />
     if (mode === 'logs') return <LogsView data={data} />
     if (mode === 'profile') return <ProfileView data={data} />
-    if (mode === 'settings') return <SettingsView data={data} />
     return null
   }
 
@@ -514,7 +336,7 @@ export function AdminOperationsPage({ mode }) {
     <section className="admin-page admin-workspace-page">
       <div className="admin-workspace-hero">
         <div>
-          <p className="admin-workspace-hero__eyebrow">Operations</p>
+          {mode !== 'profile' && <p className="admin-workspace-hero__eyebrow">Operations</p>}
           <h1>{title}</h1>
           <p>{description}</p>
         </div>

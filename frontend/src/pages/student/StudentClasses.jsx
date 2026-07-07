@@ -109,7 +109,7 @@ export default function StudentClasses() {
 {cls.status === "joined" && (
   <button
     onClick={() => navigate(`/student/classes/${cls._id}`)}
-    className="bg-blue-600 text-white px-5 py-2 rounded-lg"
+    className="bg-green-primary text-white px-5 py-2 rounded-lg"
   >
     Open Classroom
   </button>

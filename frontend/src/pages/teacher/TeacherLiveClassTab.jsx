@@ -481,7 +481,7 @@ export default function TeacherLiveClassTab({ classId }) {
                     LIVE
                   </span>
                   {isScreenSharing && (
-                    <span className="bg-blue-500/80 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
+                    <span className="bg-purple-500/80 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm shadow-sm flex items-center gap-1">
                       <Monitor size={12}/> Screen Shared
                     </span>
                   )}
@@ -531,7 +531,7 @@ export default function TeacherLiveClassTab({ classId }) {
               
               <button 
                 onClick={toggleScreenShare}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition shadow-sm ${isScreenSharing ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-gray-700 text-white hover:bg-gray-600"}`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition shadow-sm ${isScreenSharing ? "bg-purple-500 text-white hover:bg-purple-600" : "bg-gray-700 text-white hover:bg-gray-600"}`}
               >
                 <Monitor size={18} /> {isScreenSharing ? "Stop Sharing" : "Share Screen"}
               </button>

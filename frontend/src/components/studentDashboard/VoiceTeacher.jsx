@@ -198,7 +198,7 @@ export default function VoiceTeacher({
                 status === 'playing'
                   ? 'bg-green-primary/10 text-green-primary'
                   : status === 'loading'
-                    ? 'bg-blue-100 text-blue-700'
+                    ? 'bg-green-100 text-green-700'
                     : status === 'paused'
                       ? 'bg-gold/15 text-amber-700'
                       : 'bg-gray-100 text-gray-600'

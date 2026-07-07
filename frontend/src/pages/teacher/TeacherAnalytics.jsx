@@ -112,7 +112,7 @@ export default function TeacherAnalytics() {
                         initial={{ width: 0 }}
                         animate={{ width: `${(subs / maxSubs) * 100}%` }}
                         transition={{ duration: 0.8, delay: i * 0.1 }}
-                        className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-end pr-2"
+                        className="h-full rounded-full bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-end pr-2"
                       >
                         {subs > 0 && <span className="text-[0.65rem] text-white font-bold">{subs}</span>}
                       </motion.div>
@@ -137,7 +137,7 @@ export default function TeacherAnalytics() {
               <div className="h-full bg-green-primary rounded-full" style={{ width: `${Math.min((d.totalClasses || 0) * 20, 100)}%` }} />
             </div>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl">
+          <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
             <p className="text-4xl font-bold text-cyan-600">{d.submissionsReceived || 0}</p>
             <p className="text-sm text-slate-500 mt-1">Total Submissions</p>
             <div className="mt-3 h-2 bg-cyan-100 rounded-full overflow-hidden">
