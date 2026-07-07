@@ -29,7 +29,7 @@
 - **Progress Tracking:** Monitor personal analytics and activity history.
 - **Leaderboard:** Gamified ranking system based on assignment scores and platform engagement.
 
-### 👨‍🏫 Teacher Features
+### 👨🏫 Teacher Features
 - **Teacher Dashboard:** Comprehensive view of classes, students, and resources.
 - **Class & Student Management:** Organize students into class groups and track attendance.
 - **Assignment Creation:** Distribute assignments directly to students with automated AI grading.
@@ -308,7 +308,7 @@ This project is licensed under the **MIT License**. See the `LICENSE` file for d
 
 ---
 
-## 👨‍💻 Author
+## 👨💻 Author
 
 **Saurabh Kumar**
 - 🐙 GitHub: [@mrsingh1072](https://github.com/mrsingh1072)
