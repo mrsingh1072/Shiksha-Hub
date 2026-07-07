@@ -1,5 +1,5 @@
 <div align="center">
-  ![Shiksha Hub Logo](https://via.placeholder.com/150x150.png?text=Shiksha+Hub+Logo)
+  ![Shiksha Hub Logo](https://placehold.co/150x150/4f46e5/ffffff?text=Shiksha+Hub+Logo)
   
   # Shiksha Hub
 
@@ -61,19 +61,19 @@
 
 | Landing Page | Student Dashboard |
 | :---: | :---: |
-| ![Landing Page](https://via.placeholder.com/500x300.png?text=Landing+Page) | ![Student Dashboard](https://via.placeholder.com/500x300.png?text=Student+Dashboard) |
+| ![Landing Page](https://placehold.co/500x300/f8fafc/0f172a?text=Landing+Page) | ![Student Dashboard](https://placehold.co/500x300/f8fafc/0f172a?text=Student+Dashboard) |
 
 | Teacher Dashboard | AI Tutor |
 | :---: | :---: |
-| ![Teacher Dashboard](https://via.placeholder.com/500x300.png?text=Teacher+Dashboard) | ![AI Tutor](https://via.placeholder.com/500x300.png?text=AI+Tutor) |
+| ![Teacher Dashboard](https://placehold.co/500x300/f8fafc/0f172a?text=Teacher+Dashboard) | ![AI Tutor](https://placehold.co/500x300/f8fafc/0f172a?text=AI+Tutor) |
 
 | Practice Exam | Voice Tutor |
 | :---: | :---: |
-| ![Practice Exam](https://via.placeholder.com/500x300.png?text=Practice+Exam) | ![Voice Tutor](https://via.placeholder.com/500x300.png?text=Voice+Tutor) |
+| ![Practice Exam](https://placehold.co/500x300/f8fafc/0f172a?text=Practice+Exam) | ![Voice Tutor](https://placehold.co/500x300/f8fafc/0f172a?text=Voice+Tutor) |
 
 | Analytics | Admin Panel |
 | :---: | :---: |
-| ![Analytics](https://via.placeholder.com/500x300.png?text=Analytics) | ![Admin Panel](https://via.placeholder.com/500x300.png?text=Admin+Panel) |
+| ![Analytics](https://placehold.co/500x300/f8fafc/0f172a?text=Analytics) | ![Admin Panel](https://placehold.co/500x300/f8fafc/0f172a?text=Admin+Panel) |
 
 ---
 
