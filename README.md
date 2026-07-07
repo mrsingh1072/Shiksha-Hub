@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/public/assets/logo.png" alt="Shiksha Hub Logo" width="150" height="150" />
+  <img src="assets/logo.png" alt="Shiksha Hub Logo" width="150" height="150" />
   
   # Shiksha Hub
 
@@ -9,7 +9,7 @@
   [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](#)
   [![React](https://img.shields.io/badge/React-18-61DAFB.svg?style=for-the-badge&logo=react)](#)
   [![FastAPI](https://img.shields.io/badge/FastAPI-0.124-009688.svg?style=for-the-badge&logo=fastapi)](#)
-  [![MongoDB](https://img.shields.io/badge/MongoDB-4.15-47A248.svg?style=for-the-badge&logo=mongodb)](#)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=mongodb)](#)
   [![AI Integration](https://img.shields.io/badge/AI-OpenRouter_&_Gemini-FF6F00.svg?style=for-the-badge)](#)
 </div>
 
@@ -29,7 +29,7 @@
 - **Progress Tracking:** Monitor personal analytics and activity history.
 - **Leaderboard:** Gamified ranking system based on assignment scores and platform engagement.
 
-### 👨🏫 Teacher Features
+### 👨‍🏫 Teacher Features
 - **Teacher Dashboard:** Comprehensive view of classes, students, and resources.
 - **Class & Student Management:** Organize students into class groups and track attendance.
 - **Assignment Creation:** Distribute assignments directly to students with automated AI grading.
@@ -77,6 +77,21 @@
 
 ---
 
+## 🏗️ Architecture Overview
+
+```text
+       Frontend (React + Vite)
+                  │
+                  ▼
+        Backend (FastAPI)
+                  │
+   ┌──────────────┼──────────────┐
+   ▼              ▼              ▼
+MongoDB       LLM APIs     File Processing
+```
+
+---
+
 ## 🛠️ Technology Stack
 
 ### Frontend
@@ -110,6 +125,7 @@
 
 ```text
 Shiksha-Hub/
+├── assets/                 # Project assets (e.g., logo)
 ├── backend/
 │   ├── app/
 │   │   ├── api/            # Route controllers (auth, student, teacher, ai)
@@ -135,6 +151,7 @@ Shiksha-Hub/
 │   ├── package.json
 │   ├── tailwind.config.js
 │   └── vite.config.js
+├── screenshots/            # UI screenshots for documentation
 └── README.md
 ```
 
@@ -167,13 +184,13 @@ npm install
 
 Create a `.env` file in the `backend/` folder:
 ```env
-MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/?appName=Cluster0
-DATABASE_NAME=eduverse
-JWT_SECRET=YourSuperSecretKey
-OPENROUTER_API_KEY=your_openrouter_api_key
-GEMINI_API_KEY=your_gemini_api_key
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=securepassword
+MONGODB_URL=your_mongodb_connection_string
+DATABASE_NAME=shiksha_hub
+JWT_SECRET=your_secret_key
+OPENROUTER_API_KEY=your_api_key
+GEMINI_API_KEY=your_api_key
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
 MAIL_FROM=your_email@gmail.com
@@ -205,20 +222,54 @@ API documentation is available at `http://localhost:8000/docs`.
 
 ---
 
+## 🔑 Demo Access
+
+### Student
+Register directly from the application landing page.
+
+### Teacher
+Create a teacher account and wait for admin approval before accessing the dashboard.
+
+### Admin
+Admin credentials are securely managed through backend environment variables and provisioned on deployment.
+
+---
+
 ## 📚 API Documentation
 
 FastAPI provides interactive documentation out of the box. Below are key modular endpoints:
 
-| Module | Endpoints |
-| :--- | :--- |
-| **Authentication** | `POST /auth/register`, `POST /auth/login` |
-| **Student** | `GET /student/dashboard`, `GET /student/exams` |
-| **Teacher** | `GET /teacher/classes`, `POST /teacher/assignments`, `GET /teacher/students` |
-| **Admin** | `GET /admin/dashboard`, `GET /api/public/stats` |
-| **AI Services** | `POST /ai/tutor`, `POST /ai/notes`, `POST /ai/exam`, `POST /ai/assignment-check` |
-| **Assignments** | `POST /assignment-upload/`, `GET /submissions/` |
-| **History** | `GET /history/` |
-| **Profile** | `GET /profile/me`, `PUT /profile/update` |
+### Authentication
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Authenticate user and receive JWT
+
+### Student
+- `GET /student/dashboard` - Retrieve student analytics and pending tasks
+- `GET /student/exams` - List available practice exams for the student
+
+### Teacher
+- `GET /teacher/classes` - View all assigned classes
+- `POST /teacher/assignments` - Create a new assignment for a class
+- `GET /teacher/students` - Monitor student progress and attendance
+
+### Admin
+- `GET /admin/dashboard` - Get high-level system metrics
+- `GET /api/public/stats` - Fetch public platform statistics
+
+### AI Services
+- `POST /ai/tutor` - Chat with the AI tutor for academic help
+- `POST /ai/notes` - Generate study notes based on topic or uploaded file
+- `POST /ai/exam` - Generate a practice exam using AI
+- `POST /ai/assignment-check` - Evaluate a submitted assignment
+
+### Assignments & Submissions
+- `POST /assignment-upload/` - Upload assignment files for processing
+- `GET /submissions/` - Fetch submission history
+
+### History & Profile
+- `GET /history/` - View past AI interactions
+- `GET /profile/me` - Get current user profile details
+- `PUT /profile/update` - Update user information
 
 ---
 
@@ -308,12 +359,11 @@ This project is licensed under the **MIT License**. See the `LICENSE` file for d
 
 ---
 
-## 👨💻 Author
+## 👨‍💻 Author
 
 **Saurabh Kumar**
-- 🐙 GitHub: [@mrsingh1072](https://github.com/mrsingh1072)
-- 💼 LinkedIn: [Saurabh Singh](https://www.linkedin.com/in/saurabh-singh-959b48323/)
-- 🌐 Portfolio: [Coming Soon](#)
+- 🐙 GitHub: [https://github.com/mrsingh1072](https://github.com/mrsingh1072)
+- 💼 LinkedIn: [https://www.linkedin.com/in/saurabh-singh-959b48323/](https://www.linkedin.com/in/saurabh-singh-959b48323/)
 
 ---
 
@@ -322,3 +372,9 @@ This project is licensed under the **MIT License**. See the `LICENSE` file for d
 If you encounter any issues or have questions, please [open an issue](https://github.com/mrsingh1072/Shiksha-Hub/issues) on GitHub.
 
 ⭐ **If you find Shiksha Hub helpful, please consider giving this repository a star!** ⭐
+
+---
+
+Made with ❤️ and lots of ☕
+
+---
