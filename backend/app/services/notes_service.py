@@ -11,7 +11,7 @@ OPENROUTER_API_KEY = os.getenv(
 def generate_notes(topic: str):
 
     prompt = f"""
-You are EduVerse AI Notes Generator.
+You are Shiksha Hub Notes Generator.
 
 Create well-structured study notes on:
 

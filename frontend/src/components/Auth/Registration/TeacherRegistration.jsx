@@ -356,7 +356,7 @@ setShowSuccessModal(true)
         </h2>
 
         <p className="text-gray-600 mb-6">
-          Welcome to EduVerse AI
+          Welcome to Shiksha Hub
         </p>
 
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4 text-left">

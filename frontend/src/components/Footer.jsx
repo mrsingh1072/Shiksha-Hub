@@ -63,7 +63,7 @@ export default function Footer() {
               </div>
 
               <span className="text-2xl font-bold">
-                EduVerse AI
+                Shiksha Hub
               </span>
             </div>
 
@@ -114,7 +114,7 @@ export default function Footer() {
             viewport={{ once: true }}
             className="text-white/60 text-sm"
           >
-            © {currentYear} EduVerse AI. All rights reserved.
+            © {currentYear} Shiksha Hub. All rights reserved.
           </motion.p>
 
           <motion.div

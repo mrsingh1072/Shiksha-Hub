@@ -113,7 +113,7 @@ export default function TeacherDashboardLayout() {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-primary to-green-secondary flex items-center justify-center text-sm font-bold text-white">
                 E
               </div>
-              <span className="font-bold text-green-primary">EduVerse AI</span>
+              <span className="font-bold text-green-primary">Shiksha Hub</span>
             </div>
           </div>
           <button onClick={handleLogout} className="rounded-lg p-2 text-slate-500 hover:text-green-primary">
@@ -146,7 +146,7 @@ export default function TeacherDashboardLayout() {
                     E
                   </div>
                   <div>
-                    <p className="font-bold text-green-primary text-sm">EduVerse AI</p>
+                    <p className="font-bold text-green-primary text-sm">Shiksha Hub</p>
                     <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-gray-400">Teacher Workspace</p>
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function TeacherDashboardLayout() {
                 E
               </div>
               <div>
-                <p className="font-bold text-green-primary text-sm tracking-tight">EduVerse AI</p>
+                <p className="font-bold text-green-primary text-sm tracking-tight">Shiksha Hub</p>
                 <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-gray-400">Teacher Workspace</p>
               </div>
             </div>

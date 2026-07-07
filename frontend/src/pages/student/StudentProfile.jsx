@@ -229,7 +229,7 @@ export default function StudentProfile() {
         </DashboardCard>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-500">Email is managed by your account. Other fields save to your EduVerse profile.</p>
+          <p className="text-sm text-gray-500">Email is managed by your account. Other fields save to your Shiksha Hub profile.</p>
           <button
             type="submit"
             disabled={isSaving}

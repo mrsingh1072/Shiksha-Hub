@@ -66,7 +66,7 @@ export default function Register() {
                 Create Your Account
               </h1>
               <p className="text-gray-600">
-                Join EduVerse AI and revolutionize your learning journey
+                Join Shiksha Hub and revolutionize your learning journey
               </p>
             </motion.div>
 

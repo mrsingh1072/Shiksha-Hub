@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { BookOpen, Zap, BarChart3, Users } from 'lucide-react'
 
-export default function WhyEduVerse() {
+export default function WhyShikshaHub() {
   const features = [
   {
     icon: BookOpen,

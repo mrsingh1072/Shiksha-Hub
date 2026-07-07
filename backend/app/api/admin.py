@@ -493,7 +493,7 @@ async def profile(current_user=Depends(admin_only)):
 @router.get("/settings")
 async def settings(current_user=Depends(admin_only)):
     return {
-        "platformName": os.getenv("PLATFORM_NAME", "EduVerse AI"),
+        "platformName": os.getenv("PLATFORM_NAME", "Shiksha Hub"),
         "environment": os.getenv("ENVIRONMENT", "development"),
         "sessionHours": 24,
         "adminRegistration": False,

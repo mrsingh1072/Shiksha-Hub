@@ -1,6 +1,6 @@
-# EduVerse AI - Landing Page
+# Shiksha Hub - Landing Page
 
-A modern, premium landing page for EduVerse AI built with React, Vite, Tailwind CSS, Framer Motion, and Three.js.
+A modern, premium landing page for Shiksha Hub built with React, Vite, Tailwind CSS, Framer Motion, and Three.js.
 
 ## 🚀 Features
 
@@ -16,7 +16,7 @@ A modern, premium landing page for EduVerse AI built with React, Vite, Tailwind 
 1. **Premium Navbar** - Sticky navigation with mobile menu
 2. **Hero Section** - 3D educational scene with call-to-action
 3. **Trusted By** - Social proof from leading institutions
-4. **Why EduVerse AI** - Key features and benefits
+4. **Why Shiksha Hub** - Key features and benefits
 5. **AI Tutor** - 24/7 personalized tutoring feature
 6. **Notes Generator** - AI-powered study notes creation
 7. **Exam Generator** - Practice tests and exam preparation
@@ -65,7 +65,7 @@ src/
 │   ├── Hero.jsx
 │   ├── Scene3D.jsx
 │   ├── TrustedBy.jsx
-│   ├── WhyEduVerse.jsx
+│   ├── WhyShiksha Hub.jsx
 │   ├── AITutor.jsx
 │   ├── NotesGenerator.jsx
 │   ├── ExamGenerator.jsx
@@ -153,7 +153,7 @@ MIT License - Feel free to use this project for personal and commercial purposes
 
 ## 👨‍💻 Author
 
-Created for EduVerse AI - Your AI-Powered Learning Platform
+Created for Shiksha Hub - Your AI-Powered Learning Platform
 
 ## 📞 Support
 

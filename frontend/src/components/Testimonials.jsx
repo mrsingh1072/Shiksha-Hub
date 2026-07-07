@@ -17,7 +17,7 @@ export default function Testimonials({ feedbacks = [] }) {
           </h2>
 
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Real feedback shared by students and teachers using EduVerse AI.
+            Real feedback shared by students and teachers using Shiksha Hub.
           </p>
         </motion.div>
 

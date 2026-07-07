@@ -1,6 +1,6 @@
-# EduVerse AI
+# Shiksha Hub
 
-EduVerse AI is an AI-powered educational platform developed to help students and teachers with learning, assignments, notes generation, exam preparation, and performance tracking.
+Shiksha Hub is an AI-powered educational platform developed to help students and teachers with learning, assignments, notes generation, exam preparation, and performance tracking.
 
 The main purpose of this project is to make learning easier by using Generative AI. Instead of manually creating notes, question papers, and assignment feedback, users can generate them with the help of AI.
 
@@ -10,7 +10,7 @@ This project is built using FastAPI, MongoDB, and Large Language Models (LLMs).
 
 # Project Overview
 
-EduVerse AI provides different features for students, teachers, and administrators.
+Shiksha Hub provides different features for students, teachers, and administrators.
 
 ### Students can:
 
@@ -200,11 +200,11 @@ The leaderboard helps track student performance.
 ## Clone Repository
 
 ```bash
-git clone https://github.com/mrsingh1072/EduVerse-AI.git
+git clone https://github.com/mrsingh1072/Shiksha-Hub.git
 ```
 
 ```bash
-cd EduVerse-AI
+cd Shiksha-Hub
 ```
 
 ## Create Virtual Environment
@@ -320,7 +320,7 @@ backend/
 
 # Future Improvements
 
-Currently, EduVerse AI is an LLM-based educational platform.
+Currently, Shiksha Hub is an LLM-based educational platform.
 
 Future versions may include Retrieval-Augmented Generation (RAG) to provide more accurate and personalized responses.
 

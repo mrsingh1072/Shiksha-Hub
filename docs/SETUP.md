@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - EduVerse AI Landing Page
+# 🚀 Quick Start Guide - Shiksha Hub Landing Page
 
 ## Installation & Setup
 
@@ -34,7 +34,7 @@ All components are located in `src/components/`:
 | **Hero** | 3D hero section with call-to-action |
 | **Scene3D** | Three.js 3D scene with particles and objects |
 | **TrustedBy** | Social proof section |
-| **WhyEduVerse** | Key features in cards |
+| **WhyShiksha Hub** | Key features in cards |
 | **AITutor** | AI tutoring feature showcase |
 | **NotesGenerator** | Notes generation feature |
 | **ExamGenerator** | Exam preparation tools |

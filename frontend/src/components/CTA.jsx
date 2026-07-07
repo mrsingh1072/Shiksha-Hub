@@ -37,7 +37,7 @@ export default function CTA() {
             variants={itemVariants}
             className="text-xl text-white/90 mb-6 max-w-xl mx-auto leading-relaxed"
           >
-            Join thousands of students and teachers using EduVerse AI to achieve academic excellence. Start for free today.
+            Join thousands of students and teachers using Shiksha Hub to achieve academic excellence. Start for free today.
           </motion.p>
 
           <motion.div

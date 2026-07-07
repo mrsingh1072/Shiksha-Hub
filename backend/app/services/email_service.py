@@ -20,19 +20,19 @@ conf = ConnectionConfig(
 async def send_otp_email(email: str, otp: str):
     try:
         message = MessageSchema(
-            subject="EduVerse AI - Verification Code",
+            subject="Shiksha Hub - Verification Code",
             recipients=[email],
             body=f"""
 Hello,
 
-Your EduVerse AI verification code is:
+Your Shiksha Hub verification code is:
 
 {otp}
 
 This OTP will expire in 10 minutes.
 
 Regards,
-EduVerse AI Team
+Shiksha Hub Team
 """,
             subtype="plain"
         )
@@ -53,13 +53,13 @@ async def send_teacher_approval_email(
     teacher_id: str,
 ):
     message = MessageSchema(
-        subject="Welcome to EduVerse AI",
+        subject="Welcome to Shiksha Hub",
         recipients=[email],
         body=f"""Hello {teacher_name},
 
 Congratulations!
 
-Your EduVerse AI teacher account has been approved.
+Your Shiksha Hub teacher account has been approved.
 
 Your Details:
 
@@ -67,12 +67,12 @@ Name: {teacher_name}
 User ID: {teacher_id}
 Email: {email}
 
-You are now officially a part of EduVerse AI.
+You are now officially a part of Shiksha Hub.
 
 You can login and access your Teacher Workspace.
 
 Thank you,
-EduVerse AI Team
+Shiksha Hub Team
 """,
         subtype="plain",
     )

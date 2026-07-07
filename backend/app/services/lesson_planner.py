@@ -15,7 +15,7 @@ from app.services.ai_client import chat_completion
 logger = logging.getLogger(__name__)
 
 _ROADMAP_SYSTEM_PROMPT = """\
-You are EduVerse AI – an expert curriculum designer.
+You are Shiksha Hub – an expert curriculum designer.
 
 Generate a detailed, multi-week learning roadmap for the student's goal.
 Return ONLY valid JSON (no markdown fences).

@@ -41,7 +41,7 @@ export default function AdminDashboardLayout() {
     <>
       <div className="admin-brand">
         <div className="admin-logo"><ShieldCheck size={20} /></div>
-        <div><strong>EduVerse</strong><span>Control Center</span></div>
+        <div><strong>Shiksha Hub</strong><span>Control Center</span></div>
         <button className="admin-close" onClick={() => setOpen(false)}><X size={20} /></button>
       </div>
       <nav className="admin-nav">
@@ -57,7 +57,7 @@ export default function AdminDashboardLayout() {
           <div className="admin-avatar shrink-0">{getInitials(user?.name)}</div>
           <div className="admin-account__details min-w-0">
             <strong className="block truncate text-sm text-white">{user?.name || 'Platform Administrator'}</strong>
-            <span className="block truncate text-xs text-gray-400">{user?.email || 'admin@eduverse.ai'}</span>
+            <span className="block truncate text-xs text-gray-400">{user?.email || 'admin@shiksha-hub.ai'}</span>
           </div>
         </div>
         <button 

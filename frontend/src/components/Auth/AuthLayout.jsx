@@ -15,7 +15,7 @@ export default function AuthLayout({ children }) {
           to="/"
           className="text-2xl font-bold leading-none bg-gradient-to-r from-green-primary to-green-secondary bg-clip-text text-transparent"
         >
-          EduVerse AI
+          Shiksha Hub
         </Link>
 
         <Link
@@ -37,7 +37,7 @@ export default function AuthLayout({ children }) {
             <div className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-[#2F5D50] to-[#5A8F2D] text-white p-16">
 
               <h1 className="text-6xl font-bold mb-6 leading-tight">
-                EduVerse AI
+                Shiksha Hub
               </h1>
 
               <p className="text-2xl text-white/90 mb-12">

@@ -53,13 +53,13 @@ async def create_otp_request(
             await send_otp_email(user_email, otp)
 
             print(
-                f"[EduVerse OTP] Email sent successfully "
+                f"[Shiksha Hub OTP] Email sent successfully "
                 f"to {user_email}"
             )
 
         else:
             print(
-                f"[EduVerse OTP] Unsupported channel: {channel}"
+                f"[Shiksha Hub OTP] Unsupported channel: {channel}"
             )
 
     except Exception as e:

@@ -145,7 +145,7 @@ function AnalyticsView({ data }) {
   return (
     <div className="admin-workspace-stack">
       <section className="admin-section">
-        <SectionHeader eyebrow="Overview" title="Platform analytics" description="Growth, engagement, and instructional activity across EduVerse AI." />
+        <SectionHeader eyebrow="Overview" title="Platform analytics" description="Growth, engagement, and instructional activity across Shiksha Hub." />
         <div className="admin-metric-grid admin-metric-grid--insights">
           <StatCard icon={GraduationCap} label="Student Growth" value={formatNumber(studentGrowth.reduce((sum, item) => sum + Number(item.value || 0), 0))} hint="New student registrations tracked" tone="students" />
           <StatCard icon={Users} label="Teacher Growth" value={formatNumber(teacherGrowth.reduce((sum, item) => sum + Number(item.value || 0), 0))} hint="Teacher applications and onboarding" tone="teachers" />

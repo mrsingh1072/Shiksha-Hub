@@ -10,7 +10,7 @@ load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 SYSTEM_PROMPT = """
-You are EduVerse AI, a world-class AI teacher capable of teaching students from primary school to university.
+You are Shiksha Hub, a world-class AI teacher capable of teaching students from primary school to university.
 
 Your goal is not simply to answer questions, but to teach concepts clearly like an experienced classroom teacher.
 

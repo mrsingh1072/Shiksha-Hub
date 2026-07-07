@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _QUIZ_SYSTEM_PROMPT = """\
-You are EduVerse AI – an expert quiz generator for educational purposes.
+You are Shiksha Hub – an expert quiz generator for educational purposes.
 
 Generate quiz questions based on the given topic and lesson content.
 Return ONLY valid JSON (no markdown fences).
@@ -98,7 +98,7 @@ def _parse_quiz_response(raw: str, expected: int) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 _EVAL_SYSTEM_PROMPT = """\
-You are EduVerse AI – an expert at evaluating student answers.
+You are Shiksha Hub – an expert at evaluating student answers.
 
 Evaluate the student's answer to the given question. Return ONLY valid JSON:
 {

@@ -86,7 +86,7 @@ export default function NotesGenerator() {
   <div className="inline-block px-4 py-2 bg-gold/20 rounded-full text-gold font-semibold text-sm mb-4">🚀 Learning Workflow</div>
 
   <h2 className="text-4xl md:text-5xl font-bold text-green-primary mb-6">
-    How <span className="text-gold">EduVerse Works</span>
+    How <span className="text-gold">Shiksha Hub Works</span>
   </h2>
 
   <p className="text-gray-600 text-lg leading-relaxed mb-8">Upload your content, let AI analyze it, generate learning resources, and track your progress—all in one seamless workflow.</p>
@@ -101,7 +101,7 @@ export default function NotesGenerator() {
       {
         icon: Zap,
         title: 'AI Processing',
-        desc: 'EduVerse understands concepts and learning needs.',
+        desc: 'Shiksha Hub understands concepts and learning needs.',
       },
       {
         icon: Share2,

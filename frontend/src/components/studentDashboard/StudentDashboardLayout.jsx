@@ -39,7 +39,7 @@ function Brand() {
         E
       </div>
       <div>
-        <p className="text-lg font-bold text-green-primary">EduVerse AI</p>
+        <p className="text-lg font-bold text-green-primary">Shiksha Hub</p>
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Student Workspace</p>
       </div>
     </div>

@@ -151,8 +151,8 @@ export default function TeacherSettings() {
         <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><Info className="h-5 w-5 text-cyan-500" /> About</h3>
         <div className="space-y-2 text-sm text-slate-500">
           <p><span className="font-medium text-slate-700">Version:</span> 1.0.0</p>
-          <p><span className="font-medium text-slate-700">Platform:</span> EduVerse AI — Teacher Module</p>
-          <p><span className="font-medium text-slate-700">Support:</span> support@eduverse-ai.com</p>
+          <p><span className="font-medium text-slate-700">Platform:</span> Shiksha Hub — Teacher Module</p>
+          <p><span className="font-medium text-slate-700">Support:</span> support@shiksha-hub.com</p>
         </div>
       </motion.div>
     </motion.div>

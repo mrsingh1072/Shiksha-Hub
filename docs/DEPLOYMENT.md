@@ -63,7 +63,7 @@ vercel
 ```
 # .env.production
 VITE_API_URL=https://api.example.com
-VITE_APP_NAME=EduVerse AI
+VITE_APP_NAME=Shiksha Hub
 ```
 
 ### 2. Netlify
@@ -100,7 +100,7 @@ amplify publish
 ```bash
 # Update vite.config.js
 export default {
-  base: '/eduverse-ai/',
+  base: '/shiksha-hub/',
   // ... rest of config
 }
 
@@ -198,7 +198,7 @@ CMD ["serve", "-s", "dist", "-l", "3000"]
 Create `.env.production`:
 ```
 VITE_API_URL=https://api.example.com
-VITE_APP_NAME=EduVerse AI
+VITE_APP_NAME=Shiksha Hub
 VITE_ENABLE_ANALYTICS=true
 VITE_SENTRY_DSN=https://your-sentry-dsn
 ```

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 export default function Dashboard() {
   return (
-    <section className="section bg-white">
+    <section className="section bg-gradient-to-br from-green-primary via-green-primary to-green-secondary text-white">
       <div className="section-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -10,10 +10,10 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-green-primary mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Unified <span className="gradient-text">Learning Dashboard</span>
           </h2>
-          <p className="text-gray-600 text-base max-w-2xl mx-auto">
+          <p className="text-white/80 text-base max-w-2xl mx-auto">
             Monitor learning progress, assessments, assignments, and classroom insights from one intelligent dashboard.
           </p>
         </motion.div>
@@ -22,7 +22,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-dark to-green-primary rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden"
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl overflow-hidden"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
             {[
@@ -39,7 +39,7 @@ export default function Dashboard() {
                 className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-center"
               >
                 <p className="text-white/60 text-sm mb-2">{stat.label}</p>
-                <p className="text-xl md:text-3xl font-bold text-gold">{stat.value}</p>
+                <p className="text-xl md:text-3xl font-bold text-white">{stat.value}</p>
               </motion.div>
             ))}
           </div>
@@ -50,7 +50,7 @@ export default function Dashboard() {
   initial={{ opacity: 0, x: -30 }}
   whileInView={{ opacity: 1, x: 0 }}
   transition={{ delay: 0.2 }}
-  className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4"
+  className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-4"
 >
   <p className="text-white font-semibold mb-6">
     Platform Overview
@@ -87,7 +87,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4"
+              className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-4"
             >
               <p className="text-white font-semibold mb-6">Feature Engagement</p>
               <div className="space-y-4">
@@ -105,7 +105,7 @@ export default function Dashboard() {
                         initial={{ width: 0 }}
                         whileInView={{ width: `${item.score}%` }}
                         transition={{ delay: 0.5 + i * 0.05 }}
-                        className="h-2 rounded-full bg-gradient-to-r from-green-secondary to-gold"
+                        className="h-2 rounded-full bg-gradient-to-r from-[#6B8E23] to-[#D6E685]"
                       />
                     </div>
                     <p className="text-gold text-sm font-semibold w-8 text-right">{item.score}%</p>

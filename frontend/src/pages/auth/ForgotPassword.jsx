@@ -179,7 +179,7 @@ export default function ForgotPassword() {
         <h1 className="mt-2 text-3xl font-bold text-text">Reset your password</h1>
         <p className="mt-2 text-sm text-gray-500">
           {step === STEPS.IDENTIFIER && 'Enter your registered email or mobile number.'}
-          {step === STEPS.OTP && 'Enter the verification code sent by EduVerse.'}
+          {step === STEPS.OTP && 'Enter the verification code sent by Shiksha Hub.'}
           {step === STEPS.RESET && 'Create a strong new password for your account.'}
           {step === STEPS.DONE && 'Your password has been updated.'}
         </p>

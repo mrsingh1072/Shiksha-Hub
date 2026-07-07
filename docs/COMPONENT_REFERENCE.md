@@ -1,7 +1,7 @@
 # 🎨 Component Reference Guide
 
 ## Overview
-This guide provides a quick reference for all components used in the EduVerse AI landing page.
+This guide provides a quick reference for all components used in the Shiksha Hub landing page.
 
 ## Components Directory
 
@@ -64,7 +64,7 @@ This guide provides a quick reference for all components used in the EduVerse AI
 **Content**: 6 educational institutions with emoji icons
 **Styling**: Gray cards with green hover state
 
-#### `WhyEduVerse.jsx`
+#### `WhyShiksha Hub.jsx`
 **Purpose**: Key features showcase
 - Dark green background with white text
 - 4 feature cards in grid
@@ -303,7 +303,7 @@ All components are responsive using Tailwind breakpoints:
 
 ## Key Design Decisions
 
-1. **No Glassmorphism Everywhere**: Used sparingly only in WhyEduVerse and Dashboard
+1. **No Glassmorphism Everywhere**: Used sparingly only in WhyShiksha Hub and Dashboard
 2. **Color Consistency**: Green primary for most sections, alternating dark for contrast
 3. **Animation Restraint**: Smooth, purposeful animations, no excessive effects
 4. **Typography Hierarchy**: Clear h1, h2, h3 size progression

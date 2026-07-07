@@ -96,7 +96,7 @@ export default function Login() {
           <h1 className="!text-4xl md:!text-5xl font-bold text-green-primary mb-3 leading-tight">
             Welcome To
             <br />
-            EduVerse AI
+            Shiksha Hub
           </h1>
 
           <p className="text-gray-600 text-lg leading-normal">

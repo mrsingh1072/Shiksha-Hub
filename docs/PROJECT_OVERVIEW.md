@@ -1,8 +1,8 @@
-# 🎓 EduVerse AI - Landing Page - Project Overview
+# 🎓 Shiksha Hub - Landing Page - Project Overview
 
 ## ✅ Project Complete
 
-A world-class, production-ready landing page for EduVerse AI has been successfully created with all requested features and sections.
+A world-class, production-ready landing page for Shiksha Hub has been successfully created with all requested features and sections.
 
 ## 📦 What's Included
 
@@ -10,7 +10,7 @@ A world-class, production-ready landing page for EduVerse AI has been successful
 - ✅ Premium Navbar with mobile menu
 - ✅ Hero Section with 3D interactive scene
 - ✅ Trusted by Students & Teachers section
-- ✅ Why EduVerse AI (features)
+- ✅ Why Shiksha Hub (features)
 - ✅ AI Tutor feature showcase
 - ✅ AI Notes Generator feature
 - ✅ AI Exam Generator feature
@@ -62,7 +62,7 @@ frontend/
 │   │   ├── Hero.jsx
 │   │   ├── Scene3D.jsx      # Three.js 3D scene
 │   │   ├── TrustedBy.jsx
-│   │   ├── WhyEduVerse.jsx
+│   │   ├── WhyShiksha Hub.jsx
 │   │   ├── AITutor.jsx
 │   │   ├── NotesGenerator.jsx
 │   │   ├── ExamGenerator.jsx

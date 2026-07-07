@@ -8,7 +8,7 @@ def generate_exam(
 ):
 
     prompt = f"""
-You are EduVerse AI Exam Generator.
+You are Shiksha Hub Exam Generator.
 
 Generate ONLY valid JSON.
 
@@ -64,7 +64,7 @@ def generate_exam_from_lesson(
     questions: int = 5,
 ):
     prompt = f"""
-You are EduVerse AI Exam Generator.
+You are Shiksha Hub Exam Generator.
 
 Generate ONLY valid JSON based on the lesson content below.
 

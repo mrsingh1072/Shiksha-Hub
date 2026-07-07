@@ -35,7 +35,7 @@ from app.api.live_ws import router as live_ws_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
-    title="EduVerse AI",
+    title="Shiksha Hub",
     version="1.0.0"
 )
 
@@ -213,7 +213,7 @@ async def home():
     try:
         await client.admin.command("ping")
         return {
-            "message": "EduVerse AI Backend Running",
+            "message": "Shiksha Hub Backend Running",
             "database": "MongoDB Connected"
         }
     except Exception as e:

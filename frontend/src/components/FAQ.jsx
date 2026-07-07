@@ -12,9 +12,9 @@ export default function FAQ() {
         'Our AI analyzes your learning patterns, strengths, weaknesses, and pace to create a customized learning experience. It adapts explanations and difficulty levels in real-time based on your performance.',
     },
     {
-      question: 'Can I use EduVerse AI for all subjects?',
+      question: 'Can I use Shiksha Hub for all subjects?',
       answer:
-        'Yes! EduVerse AI supports a wide range of subjects including Mathematics, Physics, Chemistry, Biology, English, History, and more. We continuously add new subjects based on user feedback.',
+        'Yes! Shiksha Hub supports a wide range of subjects including Mathematics, Physics, Chemistry, Biology, English, History, and more. We continuously add new subjects based on user feedback.',
     },
     {
       question: 'Is my data safe and private?',
@@ -40,7 +40,7 @@ export default function FAQ() {
             Frequently Asked <span className="gradient-text">Questions</span>
           </h2>
           <p className="text-gray-600 text-lg">
-            Everything you need to know about EduVerse AI.
+            Everything you need to know about Shiksha Hub.
           </p>
         </motion.div>
 

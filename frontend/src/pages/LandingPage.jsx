@@ -1,7 +1,7 @@
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import TrustedBy from '../components/TrustedBy'
-import WhyEduVerse from '../components/WhyEduVerse'
+import WhyShikshaHub from '../components/WhyShikshaHub'
 import AITutor from '../components/AITutor'
 import HowItWorks from '../components/HowItWorks'
 import ExamGenerator from '../components/ExamGenerator'
@@ -19,7 +19,7 @@ export default function LandingPage() {
       <Navbar />
       <Hero />
       <TrustedBy />
-      <WhyEduVerse />
+      <WhyShikshaHub />
       <AITutor />
       <HowItWorks />
       <ExamGenerator />
