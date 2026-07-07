@@ -1,5 +1,5 @@
 <div align="center">
-  ![Shiksha Hub Logo](https://placehold.co/150x150/4f46e5/ffffff?text=Shiksha+Hub+Logo)
+  <img src="frontend/public/assets/logo.png" alt="Shiksha Hub Logo" width="150" height="150" />
   
   # Shiksha Hub
 
