@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=Shiksha+Hub+Logo" alt="Shiksha Hub Logo" width="150" height="150" />
+  ![Shiksha Hub Logo](https://via.placeholder.com/150x150.png?text=Shiksha+Hub+Logo)
   
   # Shiksha Hub
 
@@ -61,19 +61,19 @@
 
 | Landing Page | Student Dashboard |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/500x300.png?text=Landing+Page" alt="Landing Page" /> | <img src="https://via.placeholder.com/500x300.png?text=Student+Dashboard" alt="Student Dashboard" /> |
+| ![Landing Page](https://via.placeholder.com/500x300.png?text=Landing+Page) | ![Student Dashboard](https://via.placeholder.com/500x300.png?text=Student+Dashboard) |
 
 | Teacher Dashboard | AI Tutor |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/500x300.png?text=Teacher+Dashboard" alt="Teacher Dashboard" /> | <img src="https://via.placeholder.com/500x300.png?text=AI+Tutor" alt="AI Tutor" /> |
+| ![Teacher Dashboard](https://via.placeholder.com/500x300.png?text=Teacher+Dashboard) | ![AI Tutor](https://via.placeholder.com/500x300.png?text=AI+Tutor) |
 
 | Practice Exam | Voice Tutor |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/500x300.png?text=Practice+Exam" alt="Practice Exam" /> | <img src="https://via.placeholder.com/500x300.png?text=Voice+Tutor" alt="Voice Tutor" /> |
+| ![Practice Exam](https://via.placeholder.com/500x300.png?text=Practice+Exam) | ![Voice Tutor](https://via.placeholder.com/500x300.png?text=Voice+Tutor) |
 
 | Analytics | Admin Panel |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/500x300.png?text=Analytics" alt="Analytics" /> | <img src="https://via.placeholder.com/500x300.png?text=Admin+Panel" alt="Admin Panel" /> |
+| ![Analytics](https://via.placeholder.com/500x300.png?text=Analytics) | ![Admin Panel](https://via.placeholder.com/500x300.png?text=Admin+Panel) |
 
 ---
 
